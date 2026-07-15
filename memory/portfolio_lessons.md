@@ -1,0 +1,181 @@
+# Portfolio lessons — The Archive
+
+Implementation notes and known issues. Update after each tricky fix.
+
+## One scroll listener, realms as bands
+`lib/scroll-store.ts` owns the single scroll listener; progress (0..1) maps
+to camera depth, the realm id (`realmAt`), the ambient sound profile, and
+the cursor mode. The camera rig reads `useArchive.getState()` inside
+`useFrame` so scrolling never re-renders React; DOM panels and motes are
+absolute-positioned at `top: offset%` inside one 1000vh container.
+
+## Porting the garden: the remap checklist that finally sticks
+Token remap must cover: Tailwind color utilities (prefix-aware regex, never
+bare substring — "star" lives inside "start"), `var(--token)` refs, glow
+classes, the cookie name, the localStorage persist key in
+`lib/agent-store.ts` (missed once in a previous port), and the login-modal
+copy. After any port: `grep -rn "<old-brand>" src/ scripts/`.
+
+## React 19 purity lint patterns (recur every build)
+- Deterministic scatter (motes, title letters, room stars) from index math
+  or module-scope seeded LCGs — never `Math.random()` in render.
+- Countdown/clock UIs: `useState(() => Date.now())` + an always-running
+  interval; derive in render.
+- Reset-per-subject state: remount with `key`, not effect resets.
+- Never mutate `useThree()` returns; use `<color attach>`/`<fog>` element
+  refs and mutate the ref'd objects in `useFrame`.
+- Ref cleanup warnings: copy `ref.current` to a local inside the effect.
+
+## Hidden preview tabs (verification environment, not app bugs)
+Hidden tabs freeze rAF (3D + pixel canvases black, framer exit animations
+never finish → Radix dialogs stack in the DOM), throttle timers to ~1s, and
+report 0×0 layout (canvas `getBoundingClientRect` is zero → hit-tests
+divide by zero; `window.scrollTo` can't move a 0-height document). Verify
+logic with `element.click()` + localStorage/DOM reads; stub
+`getBoundingClientRect` to exercise canvas hit-test math; stub
+`window.scrollY` + dispatch a scroll event to exercise the scroll pipeline.
+Visuals (wander, campfire color, cursor trail, book-fall feel) need a
+foreground browser.
+
+## Web Audio instead of Howler
+No audio files → no Howler. Ambient beds are gain-node layers (noise
+through filtered lowpass, sine pads, timed chip-arps) crossfaded per realm
+by `setTargetAtTime`; SFX are short enveloped oscillators. The
+AudioContext is created lazily on the first toggle click, so no autoplay
+warnings.
+
+## Known issues / deliberate cuts
+- Firefox untested here (only a Chromium preview available); stack is
+  standard R3F/Framer. Lighthouse not run headlessly — no browser harness
+  for it in this environment.
+- The Game Room avatar can't "carry" items — walking to a cartridge and
+  inspecting it (↑/Space) is the pickup interaction.
+- Workshop card drag positions are playful, not persisted; pins are.
+- The 3D garden door needs a pointer; the observatory console includes a
+  plain link to /garden as the accessible/mobile path.
+
+## Theme switching must wait for hydration
+Stamping palette custom properties onto `<html>` from zustand's
+`onRehydrateStorage` runs before React finishes hydrating → hydration
+mismatch (server HTML has no style attribute). Apply the palette only from
+a `useEffect` keyed on the theme id: it covers both the persisted choice on
+load and later changes, with a one-frame default flash as the only cost.
+
+## The preview console buffer lies; fresh tabs tell the truth
+`read_console_messages` returns the tab's accumulated history — stale
+compile errors survive reloads and even dev-server restarts. When an error
+looks fixed but keeps appearing: restart the dev server (fresh `preview_logs`
+is authoritative for compile state) and open a NEW tab for a clean console.
+
+## v2 additions, structurally
+- Gallery camera: the rig has three modes (vertical fall / gallery rail /
+  frame zoom) blended by damped lerp toward per-frame recomputed targets;
+  `focus` lives in the scroll store and any real scroll (Δp > 0.004)
+  releases the zoom.
+- Resume tilt: DOM path (sanctioned by the brief) — motion values + springs,
+  `onPointerMove` normalized to the sheet's center, clamped ±12°. Pointer
+  events cover touch drags for free (`touch-none` on the sheet).
+
+## v3: the OS shell (scroll journey retired)
+The scroll experience was replaced by a desktop metaphor on user request:
+windows (framer drag via dragControls on the title bar, z-order = an
+incrementing counter in os-store) + fullscreen "spaces". Old scroll files
+were deleted; the 3D gallery room survived and gained a first-person rig.
+- Walkable gallery: no PointerLockControls — drag-to-look (pointer events,
+  works for touch) + a shared `pressed` Set fed by both WASD keys and
+  on-screen pad buttons; movement clamped to room bounds in useFrame.
+  Because the pointer stays a real cursor, R3F hover events keep driving
+  the plaques for free.
+- Esc-in-space handlers must skip when a dialog is open (the Game Room's
+  cartridge modal also closes on Esc).
+- Retro chrome is four CSS utilities (bevel-out/bevel-in/titlebar-gradient/
+  desktop-pattern) over the same palette tokens, so the theme switcher
+  (now the Display app) rethemes the whole OS.
+- Verification in hidden tabs: framer exit animations never finish, so
+  closed windows/spaces linger in the DOM — assert against store-backed
+  UI (taskbar buttons) or successful *next* actions, not element absence.
+
+## v3.1: real content + meme wallpaper
+- Chat-pasted images can't be exported to disk from the session; the fix is
+  slot-based loading: gallery frames point at public/images/gallery/photo-N.jpg
+  via THREE.TextureLoader with an onError no-op → gradient placeholder until
+  the user drops the file. No Suspense, no crash on 404.
+- Real résumé content extracted from the .docx (unzip → word/document.xml →
+  strip runs); originals copied to public/docs/ and linked as folder tabs.
+- Cat-meme wallpaper is a canvas: pixel-grid cats (string maps, module scope)
+  + Impact-style stroked captions, rotated by interval state; redraws on
+  theme change by reading CSS vars at draw time. Toggle lives in Display,
+  persisted in ui-store (default: memes).
+
+## v3.2: trail, real everything, shipped
+- Mouse trail = fixed canvas z-300: tapered polyline (age-based width/alpha
+  + shadowBlur) reading --lumen at draw time, plus pixel sparks; gated on
+  pointer:fine and prefers-reduced-motion.
+- Deployed to Vercel via device-flow login (`npx vercel login` prints a
+  vercel.com/oauth/device code the user confirms — works without TTY).
+  Link → `vercel env add OWNER_PASSWORD production` → `vercel --prod --yes`.
+  NOTE: `vercel link` rewrites .env.local (pulled remote env over it) —
+  keep the password in Vercel env; local dev needs it re-added if lost.
+- After dropping gallery photos into public/images/gallery, the LIVE site
+  needs `npx vercel --prod` again (static assets ship at build time).
+- WorkshopBoard orbs carry names only in aria-label — assert on that, not
+  textContent, when verifying headlessly.
+
+## v3.3: the stamp desk
+- Résumé space gained HIRED/REJECTED rubber stamps: arm from the tray, click
+  the sheet to land a rotated ink mark (position in % so it tilts and
+  scales with the paper; marks live INSIDE the tilting div).
+- Feedback pipeline: public POST /api/resume-feedback appends to
+  memory/resume_feedback.md locally (serialized queue + LOCAL date
+  headings); on Vercel the fs is read-only so the route returns ok:false
+  and the client opens a prefilled mailto to devauntaenorman@gmail.com —
+  feedback is never silently dropped. GET is owner-gated.
+- Esc layering: feedback card closes first, space exits on the next press.
+
+## v3.4: physical stamps, arcade, vinyl, the name
+- Draggable stamps: framer `drag` + `dragSnapToOrigin`; onDragEnd hit-tests
+  `info.point` against pad/sheet rects (inRect). Ink is per-stamp state,
+  spent on each mark. whileDrag lift = scale/rotateX/shadow in a
+  [perspective] wrapper. Gesture untestable in the 0×0 hidden tab (rects
+  are zero-size) — foreground check required.
+- Void Patrol: canvas shooter, all state in refs inside one effect; drops
+  (gem/rapid/spread/shield/cartridge) roll on kill; cartridges call back
+  into React to light the "games i love" shelf.
+- Music app: /api/spotify uses the refresh-token flow behind three env
+  vars, 30s module cache, { configured:false } fallback so the app ships
+  before credentials exist. Vinyl+headphones are a small R3F canvas in a
+  window (dynamic ssr:false).
+- Free "domain": renaming the Vercel project + swapping the project's
+  domains via API (POST /v10/projects/:id/domains with
+  devauntaenorman.vercel.app, DELETE the old) is what makes the name serve
+  directly. `vercel alias` to another alias → 302; alias to a deployment →
+  deployment-protection 302. Project domain = the real fix.
+
+## v3.5: spotify link, note particles, stamp carry, orb art
+- Spotify: /api/spotify/login 307s to the authorize screen; /callback
+  (server component) exchanges ?code for the refresh token and shows it.
+  Redirect URI must EXACTLY match the one registered in the Spotify app
+  dashboard — the user set https://devauntaenorman.vercel.app/callback, so
+  SPOTIFY_REDIRECT_URI is set to that (localhost was unreachable for them).
+  /api/spotify needs all of CLIENT_ID+SECRET+REFRESH_TOKEN → configured:true.
+- Headphones bug was a rotated half-torus putting the band on the bottom (U
+  not ∩). Fix: torus arc=π rotated [PI/2,0,0] as an arch, ear cups = X-axis
+  cylinders at the ±radius band ends. Note particles = geometry (head circle
+  + stem + flag box), rising/fading loop, only visible when playing.
+- Stamp carry: replaced framer drag with a manual pointer-carry model —
+  pointerdown on a tray stamp starts a carry; window pointermove tracks a
+  fixed z-400 ghost (stamp face + ✊ hand, cursor-none on the space) and, over
+  the open paper, a dashed-ring preview mark; pointerup hit-tests pad vs
+  sheet rects. Ink is per-stamp, spent per mark. This fixed "can't see where
+  it lands." Lint: no setState in effect body (clear preview at the state
+  transitions, inline the preview math in onMove).
+- Orb art: each Project got an `art` emoji, shown centered in the orb + big
+  in a tinted gradient preview banner on the expanded card.
+
+## v3.5.1: /callback 500 — server component had an event handler
+The Spotify /callback page (server component) put onFocus on a <textarea> →
+"Event handlers cannot be passed to Client Component props" → hard 500 at
+render, which ALSO consumed the one-time auth code. Fix: moved the token
+display + copy button into a "use client" child (TokenPanel); the page stays
+a server component and only does the code→token exchange. Verified a bogus
+code now renders the graceful "couldn't finish" state (200), not 500.
