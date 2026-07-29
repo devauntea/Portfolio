@@ -15,6 +15,7 @@ import { WorkshopBoard } from "@/components/sections/WorkshopBoard";
 import { LoungeStations } from "@/components/sections/LoungeStations";
 import { ObservatoryConsole } from "@/components/sections/ObservatoryConsole";
 import type { AppId } from "@/lib/os-store";
+import type { PixelIconId } from "./PixelIcons";
 
 export function ThemeApplier() {
   const themeId = useTheme((s) => s.themeId);
@@ -82,6 +83,40 @@ function DisplayApp() {
         follows the scheme.
       </p>
       <WallpaperPicker />
+      <StartupPicker />
+    </div>
+  );
+}
+
+function StartupPicker() {
+  const autoResume = useUi((s) => s.autoResume);
+  const toggleAutoResume = useUi((s) => s.toggleAutoResume);
+  return (
+    <div className="mt-4">
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-faint">
+        Startup items
+      </p>
+      <button
+        onClick={() => {
+          toggleAutoResume();
+          chime();
+        }}
+        aria-pressed={autoResume}
+        className="bevel-out flex w-full items-center gap-2 bg-panel px-2.5 py-2 text-left"
+      >
+        <span
+          aria-hidden
+          className={`${autoResume ? "bevel-in bg-lumen/70" : "bevel-out bg-panel"} grid h-4 w-4 shrink-0 place-items-center font-mono text-[9px] leading-none text-cosmos`}
+        >
+          {autoResume ? "✓" : ""}
+        </span>
+        <span className="flex-1 font-mono text-[10px] text-starlight">
+          Open Résumé at boot
+          <span className="block text-[9px] text-faint">
+            {autoResume ? "launches right after the desktop loads" : "boot straight to the desktop"}
+          </span>
+        </span>
+      </button>
     </div>
   );
 }
@@ -249,9 +284,14 @@ function ReadmeApp() {
 Welcome. This computer *is* the portfolio.
 
   • Double-click desktop icons (single tap works too).
+  • Drag any icon where you like — it snaps to the grid, and
+    dropping it on a taken square trades the two, so nothing
+    ever stacks. Right-click the desktop for "Tidy icons".
   • ABOUT ME, PROJECTS, HOBBIES, CONTACT open as windows — drag
     them by their title bars.
   • RÉSUMÉ, GALLERY and GAME ROOM open as full-screen spaces.
+    RÉSUMÉ is a startup item: it opens itself once the desktop
+    loads (Display → Startup items turns that off).
     The gallery is walkable: click to look around, WASD / arrow
     keys to move, Esc to release the mouse.
   • DISPLAY changes the color scheme (it sticks).
@@ -275,13 +315,13 @@ FOR DEVAUNTAE (customizing):
 
 export const APPS: Record<
   AppId,
-  { title: string; icon: string; width?: string; node: React.ReactNode }
+  { title: string; icon: PixelIconId; width?: string; node: React.ReactNode }
 > = {
-  about: { title: "About Me", icon: "👤", width: "26rem", node: <AboutApp /> },
-  projects: { title: "Projects", icon: "🧰", width: "34rem", node: <WorkshopBoard /> },
-  hobbies: { title: "Hobbies", icon: "🌿", width: "34rem", node: <LoungeStations /> },
-  contact: { title: "Contact", icon: "📡", width: "30rem", node: <ObservatoryConsole /> },
-  display: { title: "Display", icon: "🎨", width: "22rem", node: <DisplayApp /> },
-  music: { title: "Music", icon: "🎧", width: "26rem", node: <MusicApp /> },
-  readme: { title: "README.txt", icon: "📄", width: "30rem", node: <ReadmeApp /> },
+  about: { title: "About Me", icon: "about", width: "26rem", node: <AboutApp /> },
+  projects: { title: "Projects", icon: "projects", width: "34rem", node: <WorkshopBoard /> },
+  hobbies: { title: "Hobbies", icon: "hobbies", width: "34rem", node: <LoungeStations /> },
+  contact: { title: "Contact", icon: "contact", width: "30rem", node: <ObservatoryConsole /> },
+  display: { title: "Display", icon: "display", width: "22rem", node: <DisplayApp /> },
+  music: { title: "Music", icon: "music", width: "26rem", node: <MusicApp /> },
+  readme: { title: "README.txt", icon: "readme", width: "30rem", node: <ReadmeApp /> },
 };

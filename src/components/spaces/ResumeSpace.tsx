@@ -16,6 +16,7 @@ import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motio
 import { RESUME, CONTACT, DOCS } from "@/data/profile";
 import { useOs } from "@/lib/os-store";
 import { setAmbient, chime, thunk, stampSlam } from "@/lib/sound";
+import { PixelIcon } from "@/components/os/PixelIcons";
 
 const MAX_TILT = 12;
 
@@ -531,8 +532,9 @@ export function ResumeSpace() {
 
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 p-3">
-        <span className="bevel-out bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
-          🗂️ Résumé — press a stamp · drop it on ink · then on the paper
+        <span className="bevel-out flex items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
+          <PixelIcon id="resume" className="h-4 w-4 shrink-0" />
+          Résumé — press a stamp · drop it on ink · then on the paper
         </span>
         <button
           onClick={exitSpace}

@@ -16,6 +16,7 @@ import { GameRoom } from "@/components/sections/GameRoom";
 import { SpaceShooter } from "@/components/sections/SpaceShooter";
 import { useOs } from "@/lib/os-store";
 import { setAmbient, chime } from "@/lib/sound";
+import { PixelIcon } from "@/components/os/PixelIcons";
 
 type Cabinet = "patrol" | "den";
 
@@ -40,8 +41,9 @@ export function GamesSpace() {
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 p-3">
         <div className="flex items-center gap-1.5">
-          <span className="bevel-out bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
-            🕹️ The Game Room
+          <span className="bevel-out flex items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
+            <PixelIcon id="games" className="h-4 w-4 shrink-0" />
+            The Game Room
           </span>
           {(
             [

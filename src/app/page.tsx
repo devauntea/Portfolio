@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOs } from "@/lib/os-store";
+import { useUi } from "@/lib/ui-store";
 import { Desktop } from "@/components/os/Desktop";
 import { ThemeApplier } from "@/components/os/apps";
 import { OwnerSync } from "@/components/owner/Owner";
@@ -31,19 +32,25 @@ const BOOT_LINES = [
   "mounting /worlds ... done",
   "loading personality drivers ... done",
   "4 agents found (dormant)",
+  "startup items: resume.folder",
   "starting desktop —",
 ];
 
 function BootScreen({ onDone }: { onDone: () => void }) {
+  const autoResume = useUi((s) => s.autoResume);
   const [lines, setLines] = useState(0);
+  const script = autoResume
+    ? BOOT_LINES
+    : BOOT_LINES.filter((l) => !l.startsWith("startup items"));
+  const total = script.length;
   useEffect(() => {
-    if (lines >= BOOT_LINES.length) {
+    if (lines >= total) {
       const t = setTimeout(onDone, 420);
       return () => clearTimeout(t);
     }
     const t = setTimeout(() => setLines((n) => n + 1), 260);
     return () => clearTimeout(t);
-  }, [lines, onDone]);
+  }, [lines, total, onDone]);
   return (
     <button
       onClick={onDone}
@@ -51,7 +58,7 @@ function BootScreen({ onDone }: { onDone: () => void }) {
       className="crt-scanlines fixed inset-0 z-[80] block w-full cursor-pointer bg-cosmos text-left"
     >
       <div className="p-6 font-mono text-xs leading-relaxed text-sprout sm:p-10 sm:text-sm">
-        {BOOT_LINES.slice(0, lines).map((l) => (
+        {script.slice(0, lines).map((l) => (
           <p key={l}>{l}</p>
         ))}
         <span className="inline-block h-4 w-2 animate-pulse bg-sprout align-middle" aria-hidden />
@@ -64,6 +71,20 @@ export default function Home() {
   const space = useOs((s) => s.space);
   const booted = useOs((s) => s.booted);
   const setBooted = useOs((s) => s.setBooted);
+  const claimStartup = useOs((s) => s.claimStartup);
+  const enterSpace = useOs((s) => s.enterSpace);
+
+  /* startup item: the Résumé folder opens itself once the desktop is up,
+     the way a login item would. Turn it off in Display → Startup items —
+     the setting is read at boot only, so flipping it back on mid-session
+     doesn't launch anything. */
+  useEffect(() => {
+    if (!booted) return;
+    const t = setTimeout(() => {
+      if (useUi.getState().autoResume && claimStartup()) enterSpace("resume");
+    }, 500);
+    return () => clearTimeout(t);
+  }, [booted, claimStartup, enterSpace]);
 
   return (
     <main>

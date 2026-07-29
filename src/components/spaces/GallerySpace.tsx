@@ -14,6 +14,7 @@ import { Gallery3D } from "@/components/archive/OfficeGallery";
 import { paletteById, useTheme } from "@/lib/theme-store";
 import { useOs } from "@/lib/os-store";
 import { setAmbient } from "@/lib/sound";
+import { PixelIcon } from "@/components/os/PixelIcons";
 
 /* movement state shared between DOM controls and the 3D rig */
 const pressed = new Set<string>();
@@ -185,8 +186,9 @@ export function GallerySpace() {
 
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
-        <span className="bevel-out bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
-          🖼️ The Gallery — drag to look · WASD to walk · point at a print for its story
+        <span className="bevel-out flex items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
+          <PixelIcon id="gallery" className="h-4 w-4 shrink-0" />
+          The Gallery — drag to look · WASD to walk · point at a print for its story
         </span>
         <button
           onClick={exitSpace}

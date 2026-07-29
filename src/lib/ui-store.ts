@@ -48,6 +48,9 @@ interface UiState {
   trailOn: boolean;
   toggleTrail: () => boolean;
   setWallpaper: (w: WallpaperId) => void;
+  /** open the Résumé folder automatically once the machine finishes booting */
+  autoResume: boolean;
+  toggleAutoResume: () => boolean;
 }
 
 export const useUi = create<UiState>()(
@@ -59,6 +62,7 @@ export const useUi = create<UiState>()(
       owner: false,
       wallpaper: "memes",
       trailOn: true,
+      autoResume: true,
       collect: (id) => {
         const { motes } = get();
         if (motes.includes(id)) return 0;
@@ -86,6 +90,11 @@ export const useUi = create<UiState>()(
         return next;
       },
       setWallpaper: (wallpaper) => set({ wallpaper }),
+      toggleAutoResume: () => {
+        const next = !get().autoResume;
+        set({ autoResume: next });
+        return next;
+      },
     }),
     {
       name: "archive-ui-v1",
@@ -94,6 +103,7 @@ export const useUi = create<UiState>()(
         pinned: s.pinned,
         soundOn: s.soundOn,
         wallpaper: s.wallpaper,
+        autoResume: s.autoResume,
       }),
     },
   ),

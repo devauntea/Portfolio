@@ -6,6 +6,7 @@
 
 import { motion, useDragControls } from "framer-motion";
 import { useOs, type AppId } from "@/lib/os-store";
+import { PixelIcon, type PixelIconId } from "./PixelIcons";
 
 export function OsWindow({
   id,
@@ -19,7 +20,7 @@ export function OsWindow({
 }: {
   id: AppId;
   title: string;
-  icon: string;
+  icon: PixelIconId;
   z: number;
   dx: number;
   dy: number;
@@ -50,9 +51,7 @@ export function OsWindow({
         onPointerDown={(e) => controls.start(e)}
         className="titlebar-gradient flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-2 py-1 active:cursor-grabbing"
       >
-        <span aria-hidden className="text-sm leading-none">
-          {icon}
-        </span>
+        <PixelIcon id={icon} className="h-4 w-4 shrink-0" />
         <h2 className="flex-1 truncate font-mono text-[11px] font-bold uppercase tracking-wider text-starlight">
           {title}
         </h2>

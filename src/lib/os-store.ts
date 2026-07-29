@@ -32,12 +32,16 @@ interface OsState {
   zTop: number;
   space: SpaceId | null;
   booted: boolean;
+  /** startup items have had their turn (they only fire once per boot) */
+  startupRan: boolean;
   openWindow: (id: AppId) => void;
   closeWindow: (id: AppId) => void;
   focusWindow: (id: AppId) => void;
   enterSpace: (s: SpaceId) => void;
   exitSpace: () => void;
   setBooted: () => void;
+  /** claims the one startup slot; false if it already ran this boot */
+  claimStartup: () => boolean;
 }
 
 let spawnCount = 0;
@@ -47,6 +51,7 @@ export const useOs = create<OsState>()((set, get) => ({
   zTop: 10,
   space: null,
   booted: false,
+  startupRan: false,
 
   openWindow: (id) => {
     const { windows, zTop } = get();
@@ -76,4 +81,10 @@ export const useOs = create<OsState>()((set, get) => ({
   enterSpace: (space) => set({ space }),
   exitSpace: () => set({ space: null }),
   setBooted: () => set({ booted: true }),
+
+  claimStartup: () => {
+    if (get().startupRan) return false;
+    set({ startupRan: true });
+    return true;
+  },
 }));
