@@ -51,6 +51,9 @@ interface UiState {
   /** open the Résumé folder automatically once the machine finishes booting */
   autoResume: boolean;
   toggleAutoResume: () => boolean;
+  /** the intro tour has played (once per visitor) */
+  tourSeen: boolean;
+  setTourSeen: (v: boolean) => void;
 }
 
 export const useUi = create<UiState>()(
@@ -95,6 +98,8 @@ export const useUi = create<UiState>()(
         set({ autoResume: next });
         return next;
       },
+      tourSeen: false,
+      setTourSeen: (tourSeen) => set({ tourSeen }),
     }),
     {
       name: "archive-ui-v1",
@@ -104,6 +109,7 @@ export const useUi = create<UiState>()(
         soundOn: s.soundOn,
         wallpaper: s.wallpaper,
         autoResume: s.autoResume,
+        tourSeen: s.tourSeen,
       }),
     },
   ),

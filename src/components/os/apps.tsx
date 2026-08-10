@@ -118,6 +118,17 @@ function StartupPicker() {
           </span>
         </span>
       </button>
+      <button
+        onClick={() => {
+          useUi.getState().setTourSeen(false);
+          chime();
+          location.reload();
+        }}
+        data-cursor="hand"
+        className="bevel-out mt-2 w-full bg-panel py-1.5 font-mono text-[10px] text-starlight active:bevel-in"
+      >
+        ▶ replay the intro tour
+      </button>
     </div>
   );
 }

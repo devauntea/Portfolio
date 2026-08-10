@@ -187,11 +187,15 @@ export function Desktop() {
   const [gateOpen, setGateOpen] = useState(false);
   const owner = useUi((s) => s.owner);
 
-  /* Unlocking from the Start menu should land in the panel you were after. */
-  const wasOwner = useRef(owner);
+  /* Unlocking from the Start menu should land in the panel you were after.
+     Keyed on the gate having been opened, not on the owner flag flipping:
+     OwnerSync flips it false→true on every load for an already-logged-in
+     owner, which would otherwise pop this window open at every boot. */
+  const cameFromGate = useRef(false);
   useEffect(() => {
-    if (owner && !wasOwner.current) openWindow("admin");
-    wasOwner.current = owner;
+    if (!owner || !cameFromGate.current) return;
+    cameFromGate.current = false;
+    openWindow("admin");
   }, [owner, openWindow]);
 
   // desktop ambience whenever no space is active
@@ -257,7 +261,10 @@ export function Desktop() {
       </AnimatePresence>
 
       {/* taskbar */}
-      <div className="bevel-out absolute inset-x-0 bottom-0 z-[65] flex h-11 items-center gap-1 bg-panel px-1">
+      <div
+        data-tour="taskbar"
+        className="bevel-out absolute inset-x-0 bottom-0 z-[65] flex h-11 items-center gap-1 bg-panel px-1"
+      >
         <div className="relative">
           <button
             onClick={(e) => {
@@ -273,7 +280,13 @@ export function Desktop() {
           </button>
           <AnimatePresence>
             {startOpen && (
-              <StartMenu onClose={() => setStartOpen(false)} onOpenGate={() => setGateOpen(true)} />
+              <StartMenu
+                onClose={() => setStartOpen(false)}
+                onOpenGate={() => {
+                  cameFromGate.current = true;
+                  setGateOpen(true);
+                }}
+              />
             )}
           </AnimatePresence>
         </div>

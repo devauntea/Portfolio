@@ -143,6 +143,9 @@ function Icon({
         zIndex: held ? 30 : 10,
       }}
       data-cursor="hand"
+      /* the boot tour measures these live — icons are draggable and their
+         positions persist, so hardcoded coordinates would drift */
+      data-tour={`icon-${item.id}`}
       aria-label={`Open ${item.label}`}
       title={item.label}
       className={`group absolute flex touch-none select-none flex-col items-center gap-1 p-1 focus-visible:outline focus-visible:outline-1 focus-visible:outline-lumen ${

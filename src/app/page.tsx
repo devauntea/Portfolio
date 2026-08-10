@@ -13,6 +13,7 @@ import { useUi } from "@/lib/ui-store";
 import { Desktop } from "@/components/os/Desktop";
 import { ThemeApplier } from "@/components/os/apps";
 import { OwnerSync } from "@/components/owner/Owner";
+import { BootTour } from "@/components/os/BootTour";
 
 const ResumeSpace = dynamic(
   () => import("@/components/spaces/ResumeSpace").then((m) => ({ default: m.ResumeSpace })),
@@ -74,14 +75,19 @@ export default function Home() {
   const claimStartup = useOs((s) => s.claimStartup);
   const enterSpace = useOs((s) => s.enterSpace);
 
-  /* startup item: the Résumé folder opens itself once the desktop is up,
-     the way a login item would. Turn it off in Display → Startup items —
+  /* startup item: on a first visit the intro tour runs, teaches the desktop,
+     and then opens the Résumé folder the way a login item would; on later
+     visits the folder just opens. Turn it off in Display → Startup items —
      the setting is read at boot only, so flipping it back on mid-session
      doesn't launch anything. */
+  const [tourRunning, setTourRunning] = useState(false);
   useEffect(() => {
     if (!booted) return;
     const t = setTimeout(() => {
-      if (useUi.getState().autoResume && claimStartup()) enterSpace("resume");
+      const { autoResume, tourSeen } = useUi.getState();
+      if (!autoResume || !claimStartup()) return;
+      if (tourSeen) enterSpace("resume");
+      else setTourRunning(true);
     }, 500);
     return () => clearTimeout(t);
   }, [booted, claimStartup, enterSpace]);
@@ -96,7 +102,7 @@ export default function Home() {
       <AnimatePresence>
         {space === "resume" && (
           <motion.div key="resume" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ResumeSpace />
+            <ResumeSpace autoOpen />
           </motion.div>
         )}
         {space === "gallery" && (
@@ -110,6 +116,8 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {tourRunning && <BootTour />}
 
       {!booted && <BootScreen onDone={setBooted} />}
     </main>
