@@ -11,12 +11,13 @@
    feedback card (POST /api/resume-feedback; mailto fallback on read-only
    hosts). */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 import { RESUME, CONTACT, DOCS } from "@/data/profile";
 import { useOs } from "@/lib/os-store";
 import { setAmbient, chime, thunk, stampSlam } from "@/lib/sound";
 import { PixelIcon } from "@/components/os/PixelIcons";
+import { ResumePdf } from "./ResumePdf";
 
 const MAX_TILT = 12;
 
@@ -205,6 +206,35 @@ function InkTray({
   );
 }
 
+/* The fallback sheet: the same content as the PDF, kept in profile.ts, shown
+   whenever pdf.js can't render (old browser, corrupt upload, worker blocked).
+   Never leave the paper blank. */
+function TextResume() {
+  return (
+    <>
+      <header className="border-b-2 border-[#241f1a]/70 pb-3">
+        <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{RESUME.name}</h3>
+        <p className="mt-1 text-sm italic text-[#241f1a]/70">{RESUME.tagline}</p>
+        <p className="mt-1.5 font-mono text-[11px] text-[#241f1a]/60">{RESUME.contact}</p>
+      </header>
+      {RESUME.sections.map((s) => (
+        <section key={s.heading} className="mt-5">
+          <h4 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#241f1a]/60">
+            {s.heading}
+          </h4>
+          <ul className="mt-1.5 space-y-1.5">
+            {s.items.map((it) => (
+              <li key={it} className="text-sm leading-relaxed">
+                {it}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
+  );
+}
+
 function PaperSheet({
   marks,
   preview,
@@ -217,6 +247,8 @@ function PaperSheet({
   outerRef: React.MutableRefObject<HTMLDivElement | null>;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [pdfFailed, setPdfFailed] = useState(false);
+  const handlePdfFail = useCallback(() => setPdfFailed(true), []);
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const srx = useSpring(rx, { stiffness: 180, damping: 18 });
@@ -255,32 +287,18 @@ function PaperSheet({
         highlight ? "ring-4 ring-gilt/70" : ""
       }`}
     >
-      <header className="border-b-2 border-[#241f1a]/70 pb-3">
-        <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{RESUME.name}</h3>
-        <p className="mt-1 text-sm italic text-[#241f1a]/70">{RESUME.tagline}</p>
-        <p className="mt-1.5 font-mono text-[11px] text-[#241f1a]/60">{RESUME.contact}</p>
-      </header>
-      {RESUME.sections.map((s) => (
-        <section key={s.heading} className="mt-5">
-          <h4 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#241f1a]/60">
-            {s.heading}
-          </h4>
-          <ul className="mt-1.5 space-y-1.5">
-            {s.items.map((it) => (
-              <li key={it} className="text-sm leading-relaxed">
-                {it}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      {pdfFailed ? (
+        <TextResume />
+      ) : (
+        <ResumePdf src="/api/resume/file" onFail={handlePdfFail} />
+      )}
       <a
         href={CONTACT.resumeHref}
         download
         data-cursor="hand"
         className="mt-6 inline-block rounded border border-[#241f1a]/40 px-3 py-1.5 font-mono text-xs text-[#241f1a]/80 transition-colors hover:bg-[#241f1a]/5"
       >
-        📄 download the résumé (.docx)
+        📄 download the résumé (PDF)
       </a>
       <div
         aria-hidden
@@ -406,9 +424,10 @@ function FeedbackCard({ verdict, onClose }: { verdict: Verdict; onClose: () => v
   );
 }
 
-export function ResumeSpace() {
+export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
   const exitSpace = useOs((s) => s.exitSpace);
-  const [open, setOpen] = useState(false);
+  /* the intro tour lands here with the folder already untied */
+  const [open, setOpen] = useState(autoOpen);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [feedback, setFeedback] = useState<Verdict | null>(null);
   const [ink, setInk] = useState<Record<Verdict, boolean>>({ hired: false, rejected: false });

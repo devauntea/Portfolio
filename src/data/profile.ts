@@ -240,40 +240,45 @@ export const GALLERY: GalleryFrame[] = [
   },
 ];
 
-/** The resume sheet inside the manila folder — real content from
-    Devauntae_Norman_Resume.docx (public/docs has the originals). */
+/** The résumé sheet's FALLBACK content. The sheet normally renders the real
+    PDF from /api/resume/file; this text stands in when pdf.js can't run, so
+    keep it roughly in step with the uploaded document. */
 export const RESUME = {
   name: "Devauntae Norman",
   tagline: "AI / Fullstack Engineer — builder of worlds, digital and real",
   contact:
-    "devauntaenorman@gmail.com · linkedin.com/in/devauntae-norman · github.com/devauntea",
+    "New York, NY · devauntaenorman@gmail.com · linkedin.com/in/devauntae-norman · github.com/devauntea",
   sections: [
     {
       heading: "Education",
       items: [
-        "Fordham University, New York, NY — B.S. in Computer Science, May 2026. Coursework: Data Structures & Algorithms, Networks, Databases, OS, Data Mining, OOP.",
+        "Fordham University — B.S. in Computer Science, May 2026. Coursework: Data Structures & Algorithms, Database Systems, Operating Systems, Computer Networks, Data Mining.",
       ],
     },
     {
       heading: "Experience",
       items: [
-        "Adaptive Security — AI Product Intern (May 2025–Mar 2026): shipped an AI deepfake-detection pipeline end-to-end; Python/Node + FFmpeg automation cut production time ~80%; built the React/Next.js operator console.",
-        "Anote — Back-End SWE Intern (2023): built ML evaluation infrastructure — benchmarked FT-GPT-3.5 / SETFIT / BERT with a stratified k-fold harness; dataset QA pipeline for reproducibility.",
-        "Fordham CSTEP — Peer Instructor & Academic Counselor (2023–2025): wrote and taught a full Pre-Calculus curriculum; TA'd an intro AI course for high-school seniors.",
-        "Cornell Tech, Break Through Tech AI — AI/ML Intern (2023): production-style supervised learning pipelines with metric-driven iteration.",
+        "Adaptive Security — Artificial Intelligence Product Intern (May 2025–Mar 2026): built a Python and Node.js service automating a four-stage FFmpeg media pipeline, cutting production time roughly 80%; developed an internal React/Next.js console for launching and monitoring long-running jobs, with retry logic and job-state logging.",
+        "Anote — Back-End Software Engineering Intern (Aug–Dec 2023): engineered a Python evaluation harness benchmarking fine-tuned GPT-3.5, SetFit, and BERT with stratified k-fold cross-validation; built a dataset quality pipeline (schema validation, leakage detection, class-balance auditing) so results stayed reproducible across engineers.",
+        "Cornell Tech, Break Through Tech AI — AI/ML Development Intern (Jun–Aug 2023): built supervised learning pipelines with reproducible splits, metric tracking, and error analysis; presented model tradeoffs to non-technical stakeholders.",
+        "Fordham CSTEP — Peer Instructor & Academic Counselor (Sep 2023–May 2025): designed and taught a full Pre-Calculus curriculum and an introductory AI course for high school seniors within a 100+ student STEM program.",
       ],
     },
     {
       heading: "Projects",
       items: [
-        "Aspect Niche (aspectniche.com) — Obsidian-style hobby-discovery graph with AI \"Rabbit Hole\" recommendations (Groq) and location-aware search (Google Places).",
+        "Aspect Niche (aspectniche.com) — full-stack activity discovery app with an interactive graph UI supporting pan, zoom, force-directed clustering, and progressive node expansion; dynamic graph data model with an LLM API behind server-side routes.",
+        "Garment Prediction — reproducible image-classification pipeline split into manifest, preprocessing, training, and evaluation stages, rerunnable end to end from a single command.",
         "This computer — DevauntaeOS: a retro-desktop portfolio with a walkable 3D gallery and a hidden agent-care game.",
       ],
     },
     {
-      heading: "Skills",
+      heading: "Technical Skills",
       items: [
-        "Python · Java · C++ · JavaScript/TypeScript · Swift · PyTorch · TensorFlow · Scikit-Learn · React/Next.js · Tailwind · Git · AWS Bedrock",
+        "Languages: Python · Java · JavaScript · TypeScript · C++ · Swift · SQL · HTML · CSS",
+        "Web and Backend: React · Next.js · Node.js · REST APIs · Tailwind CSS · SwiftUI",
+        "AI and Data: PyTorch · TensorFlow · scikit-learn · AWS Bedrock · model evaluation · data pipelines",
+        "Tools and Practices: Git · GitHub · Postman · Jupyter Notebook · VS Code · FFmpeg · Agile · unit testing · SDLC",
       ],
     },
   ],
@@ -299,5 +304,5 @@ export const CONTACT = {
     { label: "GitHub", href: "https://github.com/devauntea" },
     { label: "LinkedIn", href: "https://linkedin.com/in/devauntae-norman" },
   ],
-  resumeHref: "/docs/Devauntae_Norman_Resume.docx",
+  resumeHref: "/api/resume/file?download=1",
 };
