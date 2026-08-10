@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { promises as fs } from "fs";
 import path from "path";
+import { OWNER_COOKIE, isOwner as isOwnerCookie } from "@/lib/owner-auth";
 
 /* The garden's care journal: memory/garden_journal.md. Owner-gated by the
    same httpOnly cookie as the portal, so public visitors can neither write
@@ -10,15 +11,13 @@ import path from "path";
    fail soft on a read-only filesystem (deployed hosts) — the game keeps
    playing, only the durable log is skipped. */
 
-const COOKIE = "archive_owner";
 const FILE = path.join(process.cwd(), "memory", "garden_journal.md");
 const HEADER =
   "# Agent Garden journal\n\nDaily care log — interactions, stat alerts, and mood shifts, written by the owner portal.\n";
 
 async function isOwner(): Promise<boolean> {
   const jar = await cookies();
-  const pw = process.env.OWNER_PASSWORD ?? "";
-  return pw !== "" && jar.get(COOKIE)?.value === pw;
+  return isOwnerCookie(jar.get(OWNER_COOKIE)?.value);
 }
 
 // Serialize writes: concurrent POSTs (e.g. a tick alert landing alongside a

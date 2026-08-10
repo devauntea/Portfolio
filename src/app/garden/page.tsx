@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Garden } from "@/components/garden/Garden";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 export const metadata: Metadata = {
   title: "Agent Garden — Devauntae Norman",
@@ -15,7 +16,5 @@ export const dynamic = "force-dynamic";
 
 export default async function GardenPage() {
   const jar = await cookies();
-  const pw = process.env.OWNER_PASSWORD ?? "";
-  const isOwner = pw !== "" && jar.get("archive_owner")?.value === pw;
-  return <Garden initialOwner={isOwner} />;
+  return <Garden initialOwner={isOwner(jar.get(OWNER_COOKIE)?.value)} />;
 }

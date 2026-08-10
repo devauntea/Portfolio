@@ -6,15 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test \"tests/*.test.ts\""
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.19",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@vercel/blob": "^2.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "next": "16.2.10",
+    "pdfjs-dist": "^6.2.108",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwind-merge": "^3.6.0",

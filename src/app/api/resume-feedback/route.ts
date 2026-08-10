@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { promises as fs } from "fs";
 import path from "path";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 /* Visitor feedback from the résumé stamps. POST is public (that's the
    point — recruiters stamp and talk); writes append to
@@ -59,8 +60,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   const jar = await cookies();
-  const pw = process.env.OWNER_PASSWORD ?? "";
-  if (pw === "" || jar.get("archive_owner")?.value !== pw) {
+  if (!isOwner(jar.get(OWNER_COOKIE)?.value)) {
     return NextResponse.json({ lines: [] }, { status: 401 });
   }
   try {

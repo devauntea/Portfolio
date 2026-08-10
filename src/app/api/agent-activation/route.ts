@@ -2,18 +2,16 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { promises as fs } from "fs";
 import path from "path";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 /* Appends an activation entry to memory/agent_activation_log.md.
    Owner-gated by the same cookie as the portal — a public visitor can't write
    to the log. This records the *simulated* activation; it does not start any
    real process (see the activation guide in the README). */
 
-const COOKIE = "archive_owner";
-
 export async function POST(req: Request) {
   const jar = await cookies();
-  const pw = process.env.OWNER_PASSWORD ?? "";
-  if (pw === "" || jar.get(COOKIE)?.value !== pw) {
+  if (!isOwner(jar.get(OWNER_COOKIE)?.value)) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
