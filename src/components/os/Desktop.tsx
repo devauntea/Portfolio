@@ -7,7 +7,7 @@
    garden hides in the Start menu — and as a lone plant in the corner for
    the observant. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOs, type AppId, type SpaceId } from "@/lib/os-store";
@@ -19,6 +19,7 @@ import { OsWindow } from "./Window";
 import { MemeWallpaper } from "./MemeWallpaper";
 import { PixelIcon, type PixelIconId } from "./PixelIcons";
 import { IconGrid, useGrid, type DesktopItem } from "./IconGrid";
+import { OwnerGate } from "@/components/owner/Owner";
 
 const DESKTOP_ICONS: (DesktopItem & {
   icon: PixelIconId;
@@ -60,9 +61,10 @@ function Clock() {
   );
 }
 
-function StartMenu({ onClose }: { onClose: () => void }) {
+function StartMenu({ onClose, onOpenGate }: { onClose: () => void; onOpenGate: () => void }) {
   const openWindow = useOs((s) => s.openWindow);
   const enterSpace = useOs((s) => s.enterSpace);
+  const owner = useUi((s) => s.owner);
   return (
     <motion.nav
       initial={{ opacity: 0, y: 8 }}
@@ -92,6 +94,20 @@ function StartMenu({ onClose }: { onClose: () => void }) {
         </button>
       ))}
       <div className="my-1 border-t border-seam" />
+      {/* the keeper's door — password-gated, so harmless in plain sight */}
+      <button
+        onClick={() => {
+          if (owner) openWindow("admin");
+          else onOpenGate();
+          chime();
+          onClose();
+        }}
+        data-cursor="hand"
+        className="flex w-full items-center gap-2 px-2 py-1.5 text-left font-mono text-[11px] text-gilt hover:bg-seam/50"
+      >
+        🔑 Admin
+        <span className="ml-auto text-[9px] text-faint">{owner ? "unlocked" : "locked"}</span>
+      </button>
       <Link
         href="/garden"
         data-cursor="hand"
@@ -168,6 +184,15 @@ export function Desktop() {
   const toggleTrail = useUi((s) => s.toggleTrail);
   const [startOpen, setStartOpen] = useState(false);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [gateOpen, setGateOpen] = useState(false);
+  const owner = useUi((s) => s.owner);
+
+  /* Unlocking from the Start menu should land in the panel you were after. */
+  const wasOwner = useRef(owner);
+  useEffect(() => {
+    if (owner && !wasOwner.current) openWindow("admin");
+    wasOwner.current = owner;
+  }, [owner, openWindow]);
 
   // desktop ambience whenever no space is active
   useEffect(() => {
@@ -246,7 +271,11 @@ export function Desktop() {
           >
             <PixelIcon id="start" className="h-3.5 w-3.5" /> START
           </button>
-          <AnimatePresence>{startOpen && <StartMenu onClose={() => setStartOpen(false)} />}</AnimatePresence>
+          <AnimatePresence>
+            {startOpen && (
+              <StartMenu onClose={() => setStartOpen(false)} onOpenGate={() => setGateOpen(true)} />
+            )}
+          </AnimatePresence>
         </div>
         <div className="mx-1 h-7 w-px bg-seam" aria-hidden />
         {/* open-window buttons */}
@@ -287,6 +316,8 @@ export function Desktop() {
         </button>
         <Clock />
       </div>
+
+      <OwnerGate open={gateOpen} onClose={() => setGateOpen(false)} />
     </div>
   );
 }

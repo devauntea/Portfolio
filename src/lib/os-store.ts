@@ -15,7 +15,8 @@ export type AppId =
   | "contact"
   | "display"
   | "music"
-  | "readme";
+  | "readme"
+  | "admin";
 
 export type SpaceId = "resume" | "gallery" | "games";
 

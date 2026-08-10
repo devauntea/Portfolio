@@ -14,6 +14,7 @@ import { chime } from "@/lib/sound";
 import { WorkshopBoard } from "@/components/sections/WorkshopBoard";
 import { LoungeStations } from "@/components/sections/LoungeStations";
 import { ObservatoryConsole } from "@/components/sections/ObservatoryConsole";
+import { AdminApp } from "@/components/admin/AdminApp";
 import type { AppId } from "@/lib/os-store";
 import type { PixelIconId } from "./PixelIcons";
 
@@ -324,4 +325,5 @@ export const APPS: Record<
   display: { title: "Display", icon: "display", width: "22rem", node: <DisplayApp /> },
   music: { title: "Music", icon: "music", width: "26rem", node: <MusicApp /> },
   readme: { title: "README.txt", icon: "readme", width: "30rem", node: <ReadmeApp /> },
+  admin: { title: "Admin", icon: "readme", width: "22rem", node: <AdminApp /> },
 };
