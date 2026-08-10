@@ -179,3 +179,44 @@ render, which ALSO consumed the one-time auth code. Fix: moved the token
 display + copy button into a "use client" child (TokenPanel); the page stays
 a server component and only does the code→token exchange. Verified a bogus
 code now renders the graceful "couldn't finish" state (200), not 500.
+
+## v3.6: the résumé became data
+- Blob auth on this project is OIDC (`VERCEL_OIDC_TOKEN` + `BLOB_STORE_ID`),
+  NOT `BLOB_READ_WRITE_TOKEN` — the SDK ignores the static token whenever OIDC
+  and a store id are both present. Connecting a store in the dashboard sets the
+  store id on Production+Preview only.
+- **OIDC blob auth does not work from localhost**: "OIDC is enabled for this
+  project, but not for the development environment." Local uploads need a
+  `BLOB_READ_WRITE_TOKEN` from the store's `.env.local` tab; `resume-store.ts`
+  accepts either auth path so nothing changes in production.
+- Blobs are `access: 'private'` and read through `/api/resume/file`, so there is
+  exactly one path to the document. `get(..., { useCache: false })` matters —
+  the pathname is overwritten in place, and a cached copy keeps serving the
+  previous résumé after an upload. `PutBody` takes Buffer, not bare Uint8Array.
+- **Never read `public/` from a route handler.** Those are CDN assets and are
+  not reliably in the serverless bundle; the bundled fallback redirects to the
+  static path instead of `fs.readFile`.
+- Uploads trust the magic number (`%PDF-`), never the browser's content-type.
+  A .docx is a ZIP (`PK\x03\x04`) and is caught by exactly this check.
+- The owner cookie now holds sha256(salt + password). `timingSafeEqual` throws
+  on length mismatch — length-check first. `grep -rn "archive_owner"` found a
+  FIFTH gated surface the plan missed (`app/garden/page.tsx` did its own raw
+  comparison); after any auth change, grep before trusting the file list.
+- Node 24 runs `.ts` under `node --test` with no loader and no dev dependency,
+  but: `node --test tests/` resolves the directory as a module (use a glob),
+  test imports need explicit `.ts` extensions, which in turn needs
+  `allowImportingTsExtensions` in tsconfig, and a `tests/package.json` with
+  `{"type":"module"}` silences the ESM warning without touching the root.
+- pdf.js v6 `render()` takes `canvas`; `canvasContext` is the legacy path and
+  passing both is contradictory. The worker resolves fine through
+  `new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url)`.
+- BootTour measures anchors from `data-tour` attributes because desktop icons
+  are draggable AND persist — hardcoded coordinates point at bare desktop on a
+  returning visitor. Measure on a `setTimeout`, not rAF: background tabs freeze
+  rAF outright but only throttle timers. Entrance animations that start at
+  opacity 0 leave copy invisible when stalled — slide instead of fade.
+- OwnerSync flips `owner` false→true on every load, so "open the admin window
+  when the owner appears" fires at every boot. Key that off the gate having
+  been opened instead.
+- React 19 purity lint also rejects a plain function call in an effect body if
+  that function sets state (`finish()`); move it into the timeout callback.
