@@ -228,7 +228,7 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Mobile/short viewports use server-renderable reading content and do not mount WebGL. Canvas errors and context loss switch to reading view. Do not hide the content behind successful scene initialization.
 - Dialogs use Radix for focus trapping/restoration. Scene hotspot DOM nodes unmount during a camera move, so focus restoration falls back to the persistent Explore button. Computer section IDs are prefixed to remain unique if a dialog stays open across a resize into reading view.
 - All materials read `--desk-*` tokens; generated textures are disposed on scene teardown. No external models or HDRIs are required.
-- The readable résumé summary is profile data; downloads still use the original private Blob proxy with the bundled-PDF fallback. Keep the distinction clear when updating either source.
+- Superseded in v4.6.2: both visible résumé papers now render the current PDF through the private Blob proxy, replacing the separately maintained profile summary.
 - Clamp the frame delta when resuming demand rendering. Otherwise the idle time makes the first camera/drawer interpolation jump straight to its target.
 
 ## v4.1: detailed desk materials and construction
@@ -280,3 +280,9 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 ## v4.6.1: image loading inside 3D screens
 - Local gallery files and optimized image endpoints were available, but viewport-based lazy loading left the transformed monitor's About photos blank while deferred. `SectionContent` now explicitly requests eager images for the active monitor section; reading-page Work/About retain lazy loading. Sections only mount when opened, so this does not preload the entire portfolio on arrival.
 - The 3D camera's filmstrip and monitor music artwork also load when their app opens. The main camera photo was already eager. Keep responsive `sizes` and optimization; the fix concerns request timing inside CSS perspective/clipped scrolling containers, not missing assets.
+
+## v4.6.2: one current résumé and an explorable original desktop
+- `CurrentResume` is shared by the new drawer and original stamp desk. It reads uncached metadata on opening and window focus/visibility, keys the renderer by upload revision, and fetches the current PDF without cache. Text for screen readers is extracted from the same PDF. Failed previews offer retry / View PDF, never the outdated profile summary.
+- The original desktop's fixed link to the 3D desk had a higher z-index than the résumé's exit and covered it. Show that link only when no fullscreen space is active. The résumé has a visible, focused Back to desktop control; background desktop controls are inert while a space is open, with focus restored to the originating icon on return.
+- New visitors and migrated version-0 preferences start on the desktop. The introductory tour ends there unless the résumé startup item is explicitly enabled. User navigation consumes the startup slot, and opening/focusing an app exits a fullscreen space. Preserve other persisted preferences and all Agent Garden behavior.
+- The favicon is a local SVG dn monogram drawn with paths, so its rendering does not depend on a loaded font. Next's file metadata convention versions its URL when the asset changes.

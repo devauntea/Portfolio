@@ -1125,43 +1125,21 @@ body {
 }
 .resume-paper {
   background: var(--desk-white);
-  padding: 42px;
+  padding: 12px;
   box-shadow: 0 3px 20px color-mix(in srgb, var(--desk-ink) 8%, transparent);
 }
-.resume-paper header {
-  border-bottom: 1px solid var(--desk-ink);
-  padding-bottom: 25px;
+.current-resume-error {
+  padding: 24px;
+  font-size: 14px;
+  line-height: 1.6;
 }
-.resume-paper header > span {
-  font:
-    30px Georgia,
-    serif;
-}
-.resume-paper header p {
-  font-size: 11px;
-  margin-top: 8px;
-}
-.resume-paper header small {
-  display: block;
-  font-size: 9px;
-  margin-top: 10px;
-}
-.resume-paper section {
-  margin-top: 26px;
-}
-.resume-paper section h3 {
-  font:
-    10px var(--font-geist-mono),
-    monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border-bottom: 1px solid var(--desk-line);
-  padding-bottom: 8px;
-}
-.resume-paper section p {
-  font-size: 11px;
-  line-height: 1.8;
-  margin-top: 13px;
+.current-resume-error button,
+.current-resume-error a {
+  display: inline-block;
+  margin: 16px 20px 0 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
 }
 .resume-footer {
   display: flex;
@@ -1651,10 +1629,7 @@ body {
     font-size: 8px;
   }
   .resume-paper {
-    padding: 24px 20px;
-  }
-  .resume-paper header > span {
-    font-size: 24px;
+    padding: 4px;
   }
   .resume-actions {
     gap: 20px;

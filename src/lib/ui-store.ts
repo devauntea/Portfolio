@@ -65,7 +65,7 @@ export const useUi = create<UiState>()(
       owner: false,
       wallpaper: "memes",
       trailOn: true,
-      autoResume: true,
+      autoResume: false,
       collect: (id) => {
         const { motes } = get();
         if (motes.includes(id)) return 0;
@@ -103,6 +103,20 @@ export const useUi = create<UiState>()(
     }),
     {
       name: "archive-ui-v1",
+      version: 1,
+      // Older visits inherited autoResume=true. Start at the desktop once
+      // after this update; Display can still opt into the startup item.
+      migrate: (saved) => {
+        const previous = saved as Partial<UiState> | null;
+        return {
+          motes: previous?.motes ?? [],
+          pinned: previous?.pinned ?? [],
+          soundOn: previous?.soundOn ?? false,
+          wallpaper: previous?.wallpaper ?? "memes",
+          tourSeen: previous?.tourSeen ?? false,
+          autoResume: false,
+        };
+      },
       partialize: (s) => ({
         motes: s.motes,
         pinned: s.pinned,

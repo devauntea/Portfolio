@@ -11,13 +11,13 @@
    feedback card (POST /api/resume-feedback; mailto fallback on read-only
    hosts). */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
-import { RESUME, CONTACT, DOCS } from "@/data/profile";
+import { CONTACT, DOCS, LEGACY_NAV } from "@/data/profile";
 import { useOs } from "@/lib/os-store";
 import { setAmbient, chime, thunk, stampSlam } from "@/lib/sound";
 import { PixelIcon } from "@/components/os/PixelIcons";
-import { ResumePdf } from "./ResumePdf";
+import { CurrentResume } from "@/components/resume/CurrentResume";
 
 const MAX_TILT = 12;
 
@@ -206,35 +206,6 @@ function InkTray({
   );
 }
 
-/* The fallback sheet: the same content as the PDF, kept in profile.ts, shown
-   whenever pdf.js can't render (old browser, corrupt upload, worker blocked).
-   Never leave the paper blank. */
-function TextResume() {
-  return (
-    <>
-      <header className="border-b-2 border-[#241f1a]/70 pb-3">
-        <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{RESUME.name}</h3>
-        <p className="mt-1 text-sm italic text-[#241f1a]/70">{RESUME.tagline}</p>
-        <p className="mt-1.5 font-mono text-[11px] text-[#241f1a]/60">{RESUME.contact}</p>
-      </header>
-      {RESUME.sections.map((s) => (
-        <section key={s.heading} className="mt-5">
-          <h4 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#241f1a]/60">
-            {s.heading}
-          </h4>
-          <ul className="mt-1.5 space-y-1.5">
-            {s.items.map((it) => (
-              <li key={it} className="text-sm leading-relaxed">
-                {it}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </>
-  );
-}
-
 function PaperSheet({
   marks,
   preview,
@@ -247,8 +218,6 @@ function PaperSheet({
   outerRef: React.MutableRefObject<HTMLDivElement | null>;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [pdfFailed, setPdfFailed] = useState(false);
-  const handlePdfFail = useCallback(() => setPdfFailed(true), []);
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const srx = useSpring(rx, { stiffness: 180, damping: 18 });
@@ -283,15 +252,11 @@ function PaperSheet({
       transition={{ type: "spring", stiffness: 170, damping: 22 }}
       style={{ rotateX: srx, rotateY: sry, transformStyle: "preserve-3d" }}
       aria-label="Résumé sheet — carry an inked stamp over it, then release to stamp"
-      className={`touch-none relative mx-auto max-h-[72vh] w-full max-w-2xl overflow-y-auto rounded-[3px] bg-[#f5f1e6] p-6 text-[#241f1a] shadow-[0_34px_80px_rgb(0_0_0/0.6)] sm:p-10 ${
+      className={`touch-pan-y relative mx-auto max-h-[72vh] w-full max-w-2xl overflow-y-auto rounded-[3px] bg-[#f5f1e6] p-3 text-[#241f1a] shadow-[0_34px_80px_rgb(0_0_0/0.6)] sm:p-5 ${
         highlight ? "ring-4 ring-gilt/70" : ""
       }`}
     >
-      {pdfFailed ? (
-        <TextResume />
-      ) : (
-        <ResumePdf src="/api/resume/file" onFail={handlePdfFail} />
-      )}
+      <CurrentResume />
       <a
         href={CONTACT.resumeHref}
         download
@@ -551,16 +516,19 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
 
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 p-3">
-        <span className="bevel-out flex items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
+        <span className="bevel-out flex min-w-0 items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
           <PixelIcon id="resume" className="h-4 w-4 shrink-0" />
-          Résumé — press a stamp · drop it on ink · then on the paper
+          {LEGACY_NAV.resumeTitle}
+          <span className="hidden sm:inline">— {LEGACY_NAV.stampHint}</span>
         </span>
         <button
           onClick={exitSpace}
+          autoFocus
           data-cursor="hand"
-          className="bevel-out bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight active:bevel-in"
+          className="bevel-out flex min-h-11 shrink-0 items-center gap-2 bg-panel px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-starlight active:bevel-in"
         >
-          ← desktop (Esc)
+          {LEGACY_NAV.backToDesktop}
+          <kbd className="hidden opacity-60 sm:inline">{LEGACY_NAV.escapeHint}</kbd>
         </button>
       </div>
 

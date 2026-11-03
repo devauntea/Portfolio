@@ -8,8 +8,8 @@ import {
   DESK,
   PROJECTS,
   PROJECT_NOTES,
-  RESUME,
 } from "@/data/profile";
+import { CurrentResume } from "@/components/resume/CurrentResume";
 
 export type Section = (typeof DESK.nav)[number]["id"];
 type ImageLoading = "eager" | "lazy";
@@ -388,21 +388,7 @@ export function ResumeContent() {
         </a>
       </div>
       <div className="resume-paper">
-        <header>
-          <span>{RESUME.name}</span>
-          <p>{RESUME.tagline}</p>
-          <small>
-            {DESK.location} / {CONTACT.email}
-          </small>
-        </header>
-        {RESUME.sections.map((section) => (
-          <section key={section.heading}>
-            <h3>{section.heading}</h3>
-            {section.items.map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-          </section>
-        ))}
+        <CurrentResume />
       </div>
       <div className="resume-footer">
         <span>{DESK.resume.note}</span>

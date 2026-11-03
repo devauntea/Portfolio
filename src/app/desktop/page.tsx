@@ -16,6 +16,7 @@ import { ThemeApplier } from "@/components/os/apps";
 import { OwnerSync } from "@/components/owner/Owner";
 import { BootTour } from "@/components/os/BootTour";
 import { MouseTrail } from "@/components/os/MouseTrail";
+import { LEGACY_NAV } from "@/data/profile";
 
 const ResumeSpace = dynamic(
   () => import("@/components/spaces/ResumeSpace").then((m) => ({ default: m.ResumeSpace })),
@@ -77,27 +78,27 @@ export default function Home() {
   const claimStartup = useOs((s) => s.claimStartup);
   const enterSpace = useOs((s) => s.enterSpace);
 
-  /* startup item: on a first visit the intro tour runs, teaches the desktop,
-     and then opens the Résumé folder the way a login item would; on later
-     visits the folder just opens. Turn it off in Display → Startup items —
-     the setting is read at boot only, so flipping it back on mid-session
-     doesn't launch anything. */
+  // Land on the desktop. Opening the résumé at boot is an explicit opt-in.
   const [tourRunning, setTourRunning] = useState(false);
   useEffect(() => {
     if (!booted) return;
     const t = setTimeout(() => {
       const { autoResume, tourSeen } = useUi.getState();
-      if (!autoResume || !claimStartup()) return;
-      if (tourSeen) enterSpace("resume");
-      else setTourRunning(true);
+      if (!claimStartup()) return;
+      if (!tourSeen) setTourRunning(true);
+      else if (autoResume) enterSpace("resume");
     }, 500);
     return () => clearTimeout(t);
   }, [booted, claimStartup, enterSpace]);
 
+  useEffect(() => () => useOs.getState().exitSpace(), []);
+
   return (
     <main>
       <MouseTrail />
-      <Link className="legacy-desk-return" href="/">← Back to the desk</Link>
+      {booted && space === null && (
+        <Link className="legacy-desk-return" href="/">{LEGACY_NAV.backToDesk}</Link>
+      )}
       <ThemeApplier />
       <OwnerSync />
 

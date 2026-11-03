@@ -599,7 +599,11 @@ export const DESK = {
     download: "Download résumé",
     view: "View PDF",
     cover: "Cover letter",
-    note: "A quick overview. Download the PDF for my current résumé.",
+    note: "The current résumé, shown exactly as uploaded. Download a copy to keep.",
+    loading: "Loading the current résumé…",
+    previewFailed: "The résumé preview couldn’t load. Try again or open the current PDF.",
+    retry: "Try again",
+    pageLabel: (page: number, total: number) => `Résumé page ${page} of ${total}`,
     close: "Close résumé drawer",
   },
   mobile: {
@@ -613,6 +617,15 @@ export const DESK = {
     legacy: "Visit the original DevauntaeOS",
     admin: "Admin",
   },
+};
+
+export const LEGACY_NAV = {
+  backToDesk: "← Back to the desk",
+  backToDesktop: "← Back to desktop",
+  escapeHint: "Esc",
+  resumeTitle: "Résumé",
+  stampHint: "press a stamp · drop it on ink · then on the paper",
+  tourEnd: "open any folder to explore — Escape brings you back to the desktop",
 };
 
 export const CAPABILITIES = [
