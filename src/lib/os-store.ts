@@ -67,6 +67,8 @@ export const useOs = create<OsState>()((set, get) => ({
         { id, z: zTop + 1, dx: (spawnCount % 5) * 28, dy: (spawnCount % 5) * 24 },
       ],
       zTop: zTop + 1,
+      space: null,
+      startupRan: true,
     });
   },
 
@@ -77,9 +79,11 @@ export const useOs = create<OsState>()((set, get) => ({
     set((s) => ({
       windows: s.windows.map((w) => (w.id === id ? { ...w, z: s.zTop + 1 } : w)),
       zTop: s.zTop + 1,
+      space: null,
+      startupRan: true,
     })),
 
-  enterSpace: (space) => set({ space }),
+  enterSpace: (space) => set({ space, startupRan: true }),
   exitSpace: () => set({ space: null }),
   setBooted: () => set({ booted: true }),
 

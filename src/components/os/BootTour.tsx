@@ -1,20 +1,21 @@
 "use client";
 
-/* The intro. A ghost cursor drifts between real on-screen elements, drops a
-   coach mark at each, then "double-clicks" the Résumé icon to open the folder.
+/* The intro. A ghost cursor drifts between real on-screen elements and drops
+   a coach mark at each, leaving visitors on the desktop to choose a folder.
 
    Anchor rects are measured live from data-tour attributes rather than
    hardcoded, because desktop icons are draggable and their positions persist
    across visits — a fixed coordinate would point at bare desktop.
 
-   Plays once per visitor (tourSeen), obeys the same autoResume switch the
-   startup item uses, and exits on Esc, the skip button, or any real click. */
+   Plays once per visitor (tourSeen), opens the résumé only if explicitly
+   enabled, and exits on Esc, the skip button, or any real click. */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOs } from "@/lib/os-store";
 import { useUi } from "@/lib/ui-store";
 import { chime } from "@/lib/sound";
+import { LEGACY_NAV } from "@/data/profile";
 
 interface Beat {
   anchor: string;
@@ -38,7 +39,7 @@ const BEATS: Beat[] = [
     text: "right-click the desktop for more. and look for the plant 🌱",
     hold: 2600,
   },
-  { anchor: "icon-resume", text: "let's start with the résumé…", hold: 1600 },
+  { anchor: "icon-resume", text: LEGACY_NAV.tourEnd, hold: 2000 },
 ];
 
 interface Rect {
@@ -95,7 +96,7 @@ export function BootTour() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const t = setTimeout(
       () => {
-        if (step + 1 >= BEATS.length) finish(true);
+        if (step + 1 >= BEATS.length) finish(useUi.getState().autoResume);
         else setStep(step + 1);
       },
       reduced ? Math.min(beat.hold, 1100) : beat.hold,

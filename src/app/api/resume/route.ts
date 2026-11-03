@@ -6,5 +6,7 @@ import { resumeMeta } from "@/lib/resume-store";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  return NextResponse.json(await resumeMeta());
+  return NextResponse.json(await resumeMeta(), {
+    headers: { "Cache-Control": "no-store" },
+  });
 }

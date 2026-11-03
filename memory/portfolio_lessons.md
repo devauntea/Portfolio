@@ -181,10 +181,11 @@ a server component and only does the code→token exchange. Verified a bogus
 code now renders the graceful "couldn't finish" state (200), not 500.
 
 ## v3.6: the résumé became data
-- Blob auth on this project is OIDC (`VERCEL_OIDC_TOKEN` + `BLOB_STORE_ID`),
-  NOT `BLOB_READ_WRITE_TOKEN` — the SDK ignores the static token whenever OIDC
-  and a store id are both present. Connecting a store in the dashboard sets the
-  store id on Production+Preview only.
+- Blob auth on this project uses OIDC with `BLOB_STORE_ID`. Deployed functions
+  receive the token in request context (`x-vercel-oidc-token`); an environment
+  `VERCEL_OIDC_TOKEN` is not required. The Blob SDK resolves it. Only check for
+  the connected store ID (or a static read/write token) before calling the SDK.
+  Connecting a store sets the store ID on Production+Preview only.
 - **OIDC blob auth does not work from localhost**: "OIDC is enabled for this
   project, but not for the development environment." Local uploads need a
   `BLOB_READ_WRITE_TOKEN` from the store's `.env.local` tab; `resume-store.ts`
@@ -220,3 +221,73 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   been opened instead.
 - React 19 purity lint also rejects a plain function call in an effect body if
   that function sets state (`finish()`); move it into the timeout callback.
+
+## v4: the working desk
+- The physical desk is the home route; the complete original OS is preserved at `/desktop`, including owner access. The global cursor trail was moved to that route.
+- The scene uses `frameloop="demand"`; the camera and drawer invalidate only while converging. Native pointer movement wakes the camera for subtle parallax. Reduced motion snaps both camera and drawer to their destination.
+- Mobile/short viewports use server-renderable reading content and do not mount WebGL. Canvas errors and context loss switch to reading view. Do not hide the content behind successful scene initialization.
+- Dialogs use Radix for focus trapping/restoration. Scene hotspot DOM nodes unmount during a camera move, so focus restoration falls back to the persistent Explore button. Computer section IDs are prefixed to remain unique if a dialog stays open across a resize into reading view.
+- All materials read `--desk-*` tokens; generated textures are disposed on scene teardown. No external models or HDRIs are required.
+- Superseded in v4.6.2: both visible résumé papers now render the current PDF through the private Blob proxy, replacing the separately maintained profile summary.
+- Clamp the frame delta when resuming demand rendering. Otherwise the idle time makes the first camera/drawer interpolation jump straight to its target.
+
+## v4.1: detailed desk materials and construction
+- Use Three's `RoundedBoxGeometry` for textured solids. The extruded drei `RoundedBox` UVs stretch or clamp procedural wood on large surfaces; normalized per-face UVs preserve the grain. Clamp rounding to the smallest dimension.
+- Keyboard caps and their legend atlas are merged into three meshes. Vent slots are merged per surface; tiny grooves and rings do not need to cast shadows. In local Chromium QA, the detail pass was reduced from ~307k to ~90k rendered triangles; demand rendering's frame counter stayed unchanged at rest. These are scene measurements, not device frame-rate guarantees.
+- Environment reflections are generated locally with Lightformers at 128px, once. Surface grain, fabric, pottery, and plaster maps are deterministic and explicitly disposed. Keep micro-bump strengths small to avoid harsh faceting.
+- The résumé drawer is hollow, with rails and suspended labeled folders; its longer travel reveals the contents beyond the desktop edge. Directly printed hardware labels use transparency so they do not create floating rectangular patches.
+- Evening readability uses a subtle left vignette and light foreground copy. Scope the light brand color to immersive mode so reading/mobile mode retains contrast.
+
+## v4.2: a maker’s desk and a working window
+- The main accent is now burnt orange/amber (`accent`/`accentLight`); foliage has its own tokens so changing interface colors does not recolor plants. Blue/red/sky tokens remain centralized in global CSS.
+- The window is an actual opening between four plaster wall panels, with an exterior skyline behind it. Blinds gather at the top; pointer drag, click, Enter, and Space share the same target. Pointer cancellation, Escape, and blur restore the starting state and remove temporary listeners.
+- Demand-rendered blinds clamp delta, stop invalidating after convergence, and snap for reduced motion. The sewing needle and wheel animate only for a bounded interaction; its timeout is cleared on unmount.
+- Manga uses generated page-edge/spine textures and original abstract cover art. Brick geometry is merged by color. RoundedBoxGeometry is non-indexed, so convert cylinder studs with `toNonIndexed()` before merging; mixed indices return null and break rendering.
+- Recheck the entire desktop composition after adding props: book stacks can cover the intro copy, and large windows can collide with the header. Check both desktop aspect ratios and mobile reading mode.
+
+
+## v4.3: the computer becomes the screen
+- Computer content is a 960×680 DOM surface inside a transformed drei Html at the CRT glass, distanceFactor 1.1583. It is physically aligned with the 2.78-unit glass width, and the camera zoom retains the bezel. Only the résumé remains a Radix dialog.
+- Stop pointer/click propagation at the screen root and gate the 3D monitor click to desk focus. Otherwise a game click can reopen the Work app behind it. Restore focus on the next animation frame, after inert is removed.
+- The original shooter and pixel room accept an optional embedded prop. The shooter pauses on blur; cartridge memories use an inline overlay. Default /desktop behavior remains intact. Keep CSS game canvas aspect ratios intact: object-fit letterboxing breaks pointer coordinate mapping.
+- Music reuses /api/spotify and shows truthful offline/paused/live states plus the existing top tracks. Opening it plays a bounded disc-tray sequence, then approaches the screen; speaker notes also stop after a bounded period. Reduced motion skips these. No audio autoplays.
+- The shelf replaces the desk stack, a merged brick cat replaces the robot, and two generated poster textures replace the plant. No additional external model or art requests. Use independent muted object colors and neutral interface tokens.
+
+
+## v4.4: camera roll, window detail, and résumé administration
+- `/admin` uses the existing owner login and server-validated cookie, not a separate auth system. File selection only creates a local object URL; **Replace résumé** sends the PDF through the existing private Blob API. Downloads across the desk still share that proxy.
+- Vercel functions cap request bodies at 4.5 MB. Limit PDF files to 4 MB to leave multipart headroom; share the validation constant between client and server. Do not change production credentials to test this locally.
+- Native PDF iframe previews can be blank in embedded browsers. Reuse the lazy pdf.js renderer and keep an Open selected PDF fallback; cancel render tasks and destroy workers on selection change/unmount.
+- The desk camera itself translates, turns, and scales toward the visitor; its rear LCD hosts a 640×420 DOM photo surface at distanceFactor 0.4. It reuses the existing gallery, with wheel throttling, keyboard navigation, thumbnails, and a non-WebGL mobile alternative. Reduced motion snaps the movement; Escape cancels pickup and restores persistent focus.
+- User-supplied wall photos are locally optimized WebP assets (~131 KB combined), framed without stretching or cropping. Dispose the Three textures when the scene unmounts.
+- Exterior detail combines deterministic skyline/facade canvas textures with real buildings, roof tanks, and merged fire escapes. No continuous animation is needed. Move the open-blind control beside the cord to avoid covering the view.
+
+
+## v4.5: final material pass and Swale
+- Retina rendering now uses up to 2× DPR, constrained by a five-million-pixel framebuffer budget. Resize updates the Canvas dpr prop; the scene still renders on demand. Do not imperatively setDpr while leaving a different Canvas dpr prop: R3F re-applies that prop on navigation renders. Keep the cap when tuning visual sharpness.
+- Walnut uses a 2048×1024 deterministic map with broad board variation beneath fine grain; texture filtering uses 8× anisotropy. Bevelled poster rails, plastic microstructure, and merged camera dial ridges provide close-up detail.
+- Swale’s description and stack come from its public repository README. The tour-poster asset is locally optimized (~45 KB). The README’s CloudFront address did not resolve during verification, so the portfolio links to the repository. No deployment or impact claims were invented.
+- Work counters derive from PROJECTS.length. Project images remain uncropped; the monitor uses a wider letterboxed image area so the project title stays visible on smaller desktop screens.
+
+
+## v4.6: résumé storage repair and grounded lighting
+- Never gate Blob calls on an environment OIDC token. That rejected real production uploads before SDK authentication. Configuration checks are covered by a regression test for a store ID without an env token; owner authentication remains mandatory for writes.
+- Aspect Niche uses the user's website screenshot as an optimized 1600px WebP (~49 KB), with the same uncropped project-preview treatment as Swale.
+- Removed one-frame ContactShadows: those captured moving objects at their initial locations and even projected objects that do not cast shadows. Real light shadow maps now update only when the demand-rendered scene changes. The window's shadow-casting spotlight sits behind the blinds; thin slats explicitly cast shadows. At night the lamp's spotlight follows its tilted shade, with a bounded shadow camera.
+- The cup is a closed lathe profile with a rounded lip, inner wall, and foot. Its curved handle meets the body at both ends. The coffee meniscus winds from outside to center so its normals face up. The foot sits on the coaster's actual top face, rather than floating above it.
+- Three r185 uses sampler2DShadow for PCF and already has Vogel filtering. Do not use this installed drei SoftShadows shader patch: it expects the old RGBA-depth shader layout and would inject invalid GLSL.
+
+## v4.6.1: image loading inside 3D screens
+- Local gallery files and optimized image endpoints were available, but viewport-based lazy loading left the transformed monitor's About photos blank while deferred. `SectionContent` now explicitly requests eager images for the active monitor section; reading-page Work/About retain lazy loading. Sections only mount when opened, so this does not preload the entire portfolio on arrival.
+- The 3D camera's filmstrip and monitor music artwork also load when their app opens. The main camera photo was already eager. Keep responsive `sizes` and optimization; the fix concerns request timing inside CSS perspective/clipped scrolling containers, not missing assets.
+
+## v4.6.2: one current résumé and an explorable original desktop
+- `CurrentResume` is shared by the new drawer and original stamp desk. It reads uncached metadata on opening and window focus/visibility, keys the renderer by upload revision, and fetches the current PDF without cache. Text for screen readers is extracted from the same PDF. Failed previews offer retry / View PDF, never the outdated profile summary.
+- The original desktop's fixed link to the 3D desk had a higher z-index than the résumé's exit and covered it. Show that link only when no fullscreen space is active. The résumé has a visible, focused Back to desktop control; background desktop controls are inert while a space is open, with focus restored to the originating icon on return.
+- New visitors and migrated version-0 preferences start on the desktop. The introductory tour ends there unless the résumé startup item is explicitly enabled. User navigation consumes the startup slot, and opening/focusing an app exits a fullscreen space. Preserve other persisted preferences and all Agent Garden behavior.
+- The favicon is a local SVG dn monogram drawn with paths, so its rendering does not depend on a loaded font. Next's file metadata convention versions its URL when the asset changes.
+
+## v4.6.3: Safari PDF compatibility and a white monogram
+- The modern `pdfjs-dist` entry point rendered in Chromium but failed in the user's Safari. Use `pdfjs-dist/legacy/build/pdf.mjs` with its matching legacy worker; PDF.js 6 uses newer built-ins such as `Math.sumPrecise`, `Promise.try`, `Promise.withResolvers`, and `URL.parse`, and only the compatibility build supplies the polyfills. Both are still lazy-loaded. A compatibility smoke check rendered the uploaded PDF with those built-ins removed before import.
+- PDF text extraction is optional after visual rendering. An extraction error now leaves the drawn page in place, gives its canvas an accessible label, and logs a diagnostic; it must not replace a valid visible résumé with a preview error.
+- The favicon now uses filled, forward-slanted dn letterforms on white, following the user's monogram reference.

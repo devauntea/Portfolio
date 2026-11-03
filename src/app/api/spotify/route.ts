@@ -12,10 +12,11 @@ interface Track {
   artist: string;
   album: string;
   art: string | null;
+  url?: string;
 }
 interface Payload {
   configured: boolean;
-  now: (Track & { progressMs?: number }) | null;
+  now: (Track & { progressMs?: number; isPlaying?: boolean }) | null;
   top: Track[];
 }
 
@@ -25,8 +26,11 @@ let cache: { at: number; data: Payload } | null = null;
 function toTrack(item: any): Track {
   return {
     name: item?.name ?? "Unknown",
-    artist: (item?.artists ?? []).map((a: { name: string }) => a.name).join(", "),
+    artist: (item?.artists ?? [])
+      .map((a: { name: string }) => a.name)
+      .join(", "),
     album: item?.album?.name ?? "",
+    url: item?.external_urls?.spotify,
     art: item?.album?.images?.[1]?.url ?? item?.album?.images?.[0]?.url ?? null,
   };
 }
@@ -36,7 +40,11 @@ export async function GET() {
   const secret = process.env.SPOTIFY_CLIENT_SECRET;
   const refresh = process.env.SPOTIFY_REFRESH_TOKEN;
   if (!id || !secret || !refresh) {
-    return NextResponse.json({ configured: false, now: null, top: [] } satisfies Payload);
+    return NextResponse.json({
+      configured: false,
+      now: null,
+      top: [],
+    } satisfies Payload);
   }
   if (cache && Date.now() - cache.at < 30_000) {
     return NextResponse.json(cache.data);
@@ -49,22 +57,36 @@ export async function GET() {
         Authorization: `Basic ${Buffer.from(`${id}:${secret}`).toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refresh }),
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refresh,
+      }),
       cache: "no-store",
     });
     const { access_token: token } = await tokenRes.json();
     if (!token) throw new Error("no access token");
 
-    const auth = { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" as const };
+    const auth = {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store" as const,
+    };
     const [nowRes, topRes] = await Promise.all([
       fetch("https://api.spotify.com/v1/me/player/currently-playing", auth),
-      fetch("https://api.spotify.com/v1/me/top/tracks?limit=6&time_range=short_term", auth),
+      fetch(
+        "https://api.spotify.com/v1/me/top/tracks?limit=6&time_range=short_term",
+        auth,
+      ),
     ]);
 
     let now: Payload["now"] = null;
     if (nowRes.status === 200) {
       const d = await nowRes.json();
-      if (d?.item) now = { ...toTrack(d.item), progressMs: d.progress_ms };
+      if (d?.item)
+        now = {
+          ...toTrack(d.item),
+          progressMs: d.progress_ms,
+          isPlaying: d.is_playing === true,
+        };
     }
     const top: Track[] = topRes.ok
       ? ((await topRes.json())?.items ?? []).map(toTrack)

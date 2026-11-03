@@ -198,6 +198,17 @@ export function Desktop() {
     openWindow("admin");
   }, [owner, openWindow]);
 
+  const previousSpace = useRef<SpaceId | null>(null);
+  useEffect(() => {
+    const previous = previousSpace.current;
+    previousSpace.current = space;
+    if (space !== null || previous === null) return;
+    const frame = requestAnimationFrame(() => {
+      document.querySelector<HTMLButtonElement>(`[data-tour="icon-${previous}"]`)?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [space]);
+
   // desktop ambience whenever no space is active
   useEffect(() => {
     if (space === null) setAmbient(soundOn ? "title" : null);
@@ -214,6 +225,7 @@ export function Desktop() {
   return (
     <div
       className="desktop-pattern fixed inset-0 overflow-hidden"
+      inert={space !== null}
       onClick={() => {
         if (startOpen) setStartOpen(false);
         if (menu) setMenu(null);

@@ -1,9 +1,9 @@
 /* Where the current résumé lives. Blob first, bundled PDF second.
 
-   Auth is OIDC (VERCEL_OIDC_TOKEN + BLOB_STORE_ID) on this project — the SDK
-   ignores BLOB_READ_WRITE_TOKEN whenever OIDC and a store id are both present.
-   Both paths are accepted so reconnecting the store with a static token later
-   changes nothing here.
+   A connected store supplies BLOB_STORE_ID. In deployed functions, the Blob
+   SDK gets the OIDC token from the request context, not necessarily an env
+   variable. Let the SDK authenticate; configuration is not authentication.
+   Static BLOB_READ_WRITE_TOKEN connections remain supported too.
 
    Blobs are private on purpose: /api/resume/file is the only read path, so a
    public URL would just be a second, uncontrolled way to reach the document. */
@@ -20,9 +20,8 @@ export interface ResumeMeta {
   filename: string;
 }
 
-export function blobConfigured(): boolean {
-  const viaOidc = Boolean(process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID);
-  return viaOidc || Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+export function blobConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+  return Boolean(env.BLOB_STORE_ID?.trim() || env.BLOB_READ_WRITE_TOKEN?.trim());
 }
 
 const bundled = (): ResumeMeta => ({

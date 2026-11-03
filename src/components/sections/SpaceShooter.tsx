@@ -7,18 +7,48 @@
    one of Devauntae's favorite games in the side panel (onCartridge). */
 
 import { useEffect, useRef, useState } from "react";
+import { DESK } from "@/data/profile";
 import { chime, thunk, fanfare } from "@/lib/sound";
 
 const W = 160; // logical grid
 const H = 100;
 const PX = 5; // canvas pixels per cell
 
-interface Bullet { x: number; y: number; vx: number }
-interface Enemy { x: number; y: number; vx: number; vy: number; hp: number; kind: 0 | 1 | 2; t: number }
-interface Drop { x: number; y: number; kind: "gem" | "rapid" | "spread" | "shield" | "cart" }
-interface Particle { x: number; y: number; vx: number; vy: number; life: number; c: string }
+interface Bullet {
+  x: number;
+  y: number;
+  vx: number;
+}
+interface Enemy {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  hp: number;
+  kind: 0 | 1 | 2;
+  t: number;
+}
+interface Drop {
+  x: number;
+  y: number;
+  kind: "gem" | "rapid" | "spread" | "shield" | "cart";
+}
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  c: string;
+}
 
-export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
+export function SpaceShooter({
+  onCartridge,
+  embedded = false,
+}: {
+  onCartridge: () => void;
+  embedded?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cartRef = useRef(onCartridge);
   useEffect(() => {
@@ -48,12 +78,15 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
     let spreadUntil = 0;
     let lastShot = 0;
     let firing = false;
+    let active = !embedded;
     let over = false;
     let raf = 0;
     let last = 0;
 
     const css = (name: string, fb: string) =>
-      getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fb;
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim() || fb;
 
     function reset() {
       ship = { x: W / 2, y: H - 10 };
@@ -75,7 +108,8 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       wave += 1;
       const n = 3 + wave * 2;
       for (let i = 0; i < n; i++) {
-        const kind = (wave > 2 && i % 5 === 4 ? 2 : i % 3 === 2 ? 1 : 0) as 0 | 1 | 2;
+        const kind = (wave > 2 && i % 5 === 4 ? 2 : i % 3 === 2 ? 1 : 0) as
+          0 | 1 | 2;
         enemies.push({
           x: 12 + Math.random() * (W - 24),
           y: -6 - Math.random() * 40 - (i % 4) * 10,
@@ -91,7 +125,8 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
     function boom(x: number, y: number, c: string, n = 10) {
       for (let i = 0; i < n; i++) {
         parts.push({
-          x, y,
+          x,
+          y,
           vx: (Math.random() - 0.5) * 50,
           vy: (Math.random() - 0.5) * 50,
           life: 0.5 + Math.random() * 0.4,
@@ -107,11 +142,15 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       const roll = Math.random();
       if (roll < 0.32) {
         const kind =
-          roll < 0.16 ? "gem"
-          : roll < 0.22 ? "rapid"
-          : roll < 0.27 ? "spread"
-          : roll < 0.305 ? "shield"
-          : "cart";
+          roll < 0.16
+            ? "gem"
+            : roll < 0.22
+              ? "rapid"
+              : roll < 0.27
+                ? "spread"
+                : roll < 0.305
+                  ? "shield"
+                  : "cart";
         drops.push({ x: e.x, y: e.y, kind: kind as Drop["kind"] });
       }
     }
@@ -143,8 +182,12 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
 
     /* ---- input ---- */
     const down = (e: KeyboardEvent) => {
+      if (embedded && document.activeElement !== canvas) return;
       const k = e.key.toLowerCase();
-      if (["arrowleft", "arrowright", "a", "d", " "].includes(k === " " ? " " : k)) e.preventDefault();
+      if (
+        ["arrowleft", "arrowright", "a", "d", " "].includes(k === " " ? " " : k)
+      )
+        e.preventDefault();
       if (k === " ") firing = true;
       else if (k === "r" && over) reset();
       else keys.add(k);
@@ -164,6 +207,8 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       if (gx !== null) ship.x = Math.max(4, Math.min(W - 4, gx));
     };
     const onPointerDown = (e: PointerEvent) => {
+      canvas.focus();
+      active = true;
       if (over) {
         reset();
         return;
@@ -174,6 +219,19 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
     const onPointerUp = () => {
       firing = false;
     };
+    const pause = () => {
+      if (embedded) {
+        active = false;
+        firing = false;
+        keys.clear();
+      }
+    };
+    const resume = () => {
+      active = true;
+    };
+    canvas.addEventListener("blur", pause);
+    canvas.addEventListener("focus", resume);
+    window.addEventListener("blur", pause);
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
     canvas.addEventListener("pointermove", onPointerMove);
@@ -261,13 +319,19 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       // starfield scroll
       for (let i = 0; i < 50; i++) {
         const sx = (i * 37) % W;
-        const sy = (((i * 23) + Math.floor(now / (40 + (i % 5) * 22))) % H + H) % H;
+        const sy =
+          (((i * 23 + Math.floor(now / (40 + (i % 5) * 22))) % H) + H) % H;
         ctx.fillStyle = i % 4 ? "#2c3258" : "#4a5488";
         ctx.fillRect(sx * PX, sy * PX, PX - 2, PX - 2);
       }
       const cell = (x: number, y: number, c: string, w = 1, h = 1) => {
         ctx.fillStyle = c;
-        ctx.fillRect(Math.round(x - w / 2) * PX, Math.round(y - h / 2) * PX, w * PX, h * PX);
+        ctx.fillRect(
+          Math.round(x - w / 2) * PX,
+          Math.round(y - h / 2) * PX,
+          w * PX,
+          h * PX,
+        );
       };
       // ship
       if (!over) {
@@ -283,12 +347,23 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       }
       for (const b of bullets) cell(b.x, b.y, gilt, 0.7, 1.6);
       for (const e of enemies) {
-        const c = e.kind === 2 ? rose : e.kind === 1 ? css("--ember", "#ff8a4d") : "#b48ad6";
+        const c =
+          e.kind === 2
+            ? rose
+            : e.kind === 1
+              ? css("--ember", "#ff8a4d")
+              : "#b48ad6";
         cell(e.x, e.y, c, e.kind === 2 ? 4 : 3, 2);
         cell(e.x, e.y - 1, c, e.kind === 2 ? 2 : 1, 1);
       }
       for (const d of drops) {
-        const glyph = { gem: "◆", rapid: "⚡", spread: "⁂", shield: "▣", cart: "▮" }[d.kind];
+        const glyph = {
+          gem: "◆",
+          rapid: "⚡",
+          spread: "⁂",
+          shield: "▣",
+          cart: "▮",
+        }[d.kind];
         ctx.font = `${PX * 3.2}px monospace`;
         ctx.textAlign = "center";
         ctx.fillStyle = d.kind === "cart" ? rose : gilt;
@@ -309,7 +384,11 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
       ctx.fillStyle = rose;
       ctx.fillText("♥".repeat(Math.max(0, lives)), (W - 2) * PX, PX * 5);
       ctx.fillStyle = gilt;
-      const pow = [now < rapidUntil ? "⚡" : "", now < spreadUntil ? "⁂" : "", shield ? "▣" : ""].join("");
+      const pow = [
+        now < rapidUntil ? "⚡" : "",
+        now < spreadUntil ? "⁂" : "",
+        shield ? "▣" : "",
+      ].join("");
       if (pow) ctx.fillText(pow, (W - 2) * PX, PX * 9);
       if (over) {
         ctx.textAlign = "center";
@@ -318,15 +397,29 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
         ctx.fillText("GAME OVER", (W / 2) * PX, (H / 2 - 4) * PX);
         ctx.fillStyle = "#f0f2ff";
         ctx.font = `${PX * 2.8}px monospace`;
-        ctx.fillText(`score ${score} — press R or tap to fly again`, (W / 2) * PX, (H / 2 + 4) * PX);
+        ctx.fillText(
+          `score ${score} — press R or tap to fly again`,
+          (W / 2) * PX,
+          (H / 2 + 4) * PX,
+        );
       }
     }
 
     const loop = (t: number) => {
       const dt = Math.min(0.05, (t - last) / 1000 || 0.016);
       last = t;
-      if (!over) step(dt, t);
+      if (!over && active && !document.hidden) step(dt, t);
       draw(t);
+      if (!active) {
+        ctx.globalAlpha = 0.87;
+        ctx.fillStyle = css("--cosmos", "#070912");
+        ctx.fillRect(0, 0, W * PX, H * PX);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = css("--starlight", "#f0f2ff");
+        ctx.textAlign = "center";
+        ctx.font = "20px monospace";
+        ctx.fillText(DESK.games.paused, (W * PX) / 2, (H * PX) / 2);
+      }
       raf = requestAnimationFrame(loop);
     };
     reset();
@@ -334,13 +427,16 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      canvas.removeEventListener("blur", pause);
+      canvas.removeEventListener("focus", resume);
+      window.removeEventListener("blur", pause);
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
       window.removeEventListener("pointerup", onPointerUp);
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerdown", onPointerDown);
     };
-  }, []);
+  }, [embedded]);
 
   return (
     <div>
@@ -348,13 +444,15 @@ export function SpaceShooter({ onCartridge }: { onCartridge: () => void }) {
         ref={canvasRef}
         width={W * PX}
         height={H * PX}
+        tabIndex={0}
         data-cursor="hand"
         aria-label="Void Patrol — space shooter. Arrow keys or mouse to move, Space or click to fire."
         className="w-full rounded-lg border border-seam touch-none"
         style={{ imageRendering: "pixelated" }}
       />
       <p className="mt-2 text-center font-mono text-[10px] text-faint">
-        ←→ / mouse to fly · SPACE / hold click to fire · collect ◆⚡⁂▣ · rare ▮ cartridges unlock the shelf →{" "}
+        ←→ / mouse to fly · SPACE / hold click to fire · collect ◆⚡⁂▣ · rare ▮
+        cartridges unlock the shelf →{" "}
         {best > 0 && <span className="text-gilt">best {best}</span>}
       </p>
     </div>
