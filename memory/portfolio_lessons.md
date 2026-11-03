@@ -220,3 +220,12 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   been opened instead.
 - React 19 purity lint also rejects a plain function call in an effect body if
   that function sets state (`finish()`); move it into the timeout callback.
+
+## v4: the working desk
+- The physical desk is the home route; the complete original OS is preserved at `/desktop`, including owner access. The global cursor trail was moved to that route.
+- The scene uses `frameloop="demand"`; the camera and drawer invalidate only while converging. Native pointer movement wakes the camera for subtle parallax. Reduced motion snaps both camera and drawer to their destination.
+- Mobile/short viewports use server-renderable reading content and do not mount WebGL. Canvas errors and context loss switch to reading view. Do not hide the content behind successful scene initialization.
+- Dialogs use Radix for focus trapping/restoration. Scene hotspot DOM nodes unmount during a camera move, so focus restoration falls back to the persistent Explore button. Computer section IDs are prefixed to remain unique if a dialog stays open across a resize into reading view.
+- All materials read `--desk-*` tokens; generated textures are disposed on scene teardown. No external models or HDRIs are required.
+- The readable résumé summary is profile data; downloads still use the original private Blob proxy with the bundled-PDF fallback. Keep the distinction clear when updating either source.
+- Clamp the frame delta when resuming demand rendering. Otherwise the idle time makes the first camera/drawer interpolation jump straight to its target.

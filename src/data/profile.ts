@@ -12,7 +12,12 @@ export const ABOUT = {
     "I'm Devauntae Norman — I build things, climb things, and occasionally burn dinner experimenting. This whole computer is my portfolio: open the folders, poke the apps, find the plant.",
   mission:
     "Fordham CS '26 with AI/ML internships behind me and a return offer in hand — looking for teams exploring the vast possibilities of AI, where ambiguous ideas get turned into shipped, trustworthy systems.",
-  personality: ["builder", "belayer", "fail with purpose", "relentlessly positive"],
+  personality: [
+    "builder",
+    "belayer",
+    "fail with purpose",
+    "relentlessly positive",
+  ],
 };
 
 export interface Project {
@@ -32,7 +37,7 @@ export const PROJECTS: Project[] = [
     art: "🕸️",
     name: "Aspect Niche",
     blurb:
-      "Obsidian-style interactive graph for hobby discovery — pan/zoom node clusters, an AI \"Rabbit Hole\" that invents personalized niches (Groq), and location-aware \"Find Nearby\" via Google Places.",
+      'Obsidian-style interactive graph for hobby discovery — pan/zoom node clusters, an AI "Rabbit Hole" that invents personalized niches (Groq), and location-aware "Find Nearby" via Google Places.',
     tech: ["React/Next.js", "Groq API", "Google Places"],
     link: "https://aspectniche.com",
   },
@@ -144,37 +149,43 @@ export const HOBBIES: HobbyStation[] = [
     id: "climbing",
     icon: "🧗",
     name: "Rock climbing",
-    blurb: "Plastic and real rock — problems are just puzzles you're slightly scared of. The wall over there lights its holds when you look at it.",
+    blurb:
+      "Plastic and real rock — problems are just puzzles you're slightly scared of. The wall over there lights its holds when you look at it.",
   },
   {
     id: "pottery",
     icon: "🏺",
     name: "Pottery",
-    blurb: "Wheel-thrown mugs with personalities. The clay on that wheel never stops morphing, which is honestly accurate to the process.",
+    blurb:
+      "Wheel-thrown mugs with personalities. The clay on that wheel never stops morphing, which is honestly accurate to the process.",
   },
   {
     id: "upcycling",
     icon: "♻️",
     name: "Sewing & upcycling",
-    blurb: "I sew and upcycle clothes and furniture — old parts, new purposes. The kinetic sculpture is made of everything I refused to throw away.",
+    blurb:
+      "I sew and upcycle clothes and furniture — old parts, new purposes. The kinetic sculpture is made of everything I refused to throw away.",
   },
   {
     id: "photo",
     icon: "📷",
     name: "Photography & video",
-    blurb: "I collect vintage digital cameras and actually shoot them — five point-and-shoots deep, capturing friends in that perfect 2007 flash.",
+    blurb:
+      "I collect vintage digital cameras and actually shoot them — five point-and-shoots deep, capturing friends in that perfect 2007 flash.",
   },
   {
     id: "cooking",
     icon: "🍳",
     name: "Cooking",
-    blurb: "Jamaican and Cuban roots, one kitchen. Salmon-shrimp rasta pasta is the house specialty; the recipe cards orbit the campfire for a reason.",
+    blurb:
+      "Jamaican and Cuban roots, one kitchen. Salmon-shrimp rasta pasta is the house specialty; the recipe cards orbit the campfire for a reason.",
   },
   {
     id: "friends",
     icon: "✨",
     name: "Friends",
-    blurb: "The long table with the sparkling chairs — always one seat open. Most of the camera roll is them.",
+    blurb:
+      "The long table with the sparkling chairs — always one seat open. Most of the camera roll is them.",
   },
 ];
 
@@ -194,7 +205,8 @@ export const GALLERY: GalleryFrame[] = [
     id: "g1",
     title: "Cap, gown, Class of 2026",
     date: "May 2026",
-    story: "Fordham quad after the walk — CSTEP stole on, family louder than the bells.",
+    story:
+      "Fordham quad after the walk — CSTEP stole on, family louder than the bells.",
     src: "/images/gallery/photo-1.jpg",
     colors: ["#7ee0ff", "#12172b"],
   },
@@ -202,7 +214,8 @@ export const GALLERY: GalleryFrame[] = [
     id: "g2",
     title: "The point-and-shoot family",
     date: "ongoing",
-    story: "Five rescued digicams, one tripod, zero regrets. The photography habit, fully out of hand.",
+    story:
+      "Five rescued digicams, one tripod, zero regrets. The photography habit, fully out of hand.",
     src: "/images/gallery/photo-2.jpg",
     colors: ["#ffd45e", "#12172b"],
   },
@@ -210,7 +223,8 @@ export const GALLERY: GalleryFrame[] = [
     id: "g3",
     title: "CSTEP send-off",
     date: "2026",
-    story: "The program that had my back through Fordham — one last photoshoot with the cohort.",
+    story:
+      "The program that had my back through Fordham — one last photoshoot with the cohort.",
     src: "/images/gallery/photo-3.jpg",
     colors: ["#ff6e9a", "#12172b"],
   },
@@ -226,7 +240,8 @@ export const GALLERY: GalleryFrame[] = [
     id: "g5",
     title: "Sawdust Saturday",
     date: "2025",
-    story: "Fresh pine legs on the deck, speed square standing by — upcycling build in progress.",
+    story:
+      "Fresh pine legs on the deck, speed square standing by — upcycling build in progress.",
     src: "/images/gallery/photo-5.jpg",
     colors: ["#ff8a4d", "#12172b"],
   },
@@ -234,7 +249,8 @@ export const GALLERY: GalleryFrame[] = [
     id: "g6",
     title: "Salmon-shrimp rasta pasta",
     date: "house specialty",
-    story: "Jamaican and Cuban roots on one plate — scotch-bonnet cream, bell-pepper confetti, zero leftovers on record.",
+    story:
+      "Jamaican and Cuban roots on one plate — scotch-bonnet cream, bell-pepper confetti, zero leftovers on record.",
     src: "/images/gallery/photo-6.jpg",
     colors: ["#ff6e4a", "#97e87a"],
   },
@@ -294,7 +310,11 @@ export interface DocItem {
   gated?: boolean;
 }
 export const DOCS: DocItem[] = [
-  { label: "Cover Letter", icon: "📎", href: "/docs/Devauntae_Norman_Cover_Letter.pdf" },
+  {
+    label: "Cover Letter",
+    icon: "📎",
+    href: "/docs/Devauntae_Norman_Cover_Letter.pdf",
+  },
   { label: "Academic Transcript", icon: "🎓", gated: true },
 ];
 
@@ -305,4 +325,228 @@ export const CONTACT = {
     { label: "LinkedIn", href: "https://linkedin.com/in/devauntae-norman" },
   ],
   resumeHref: "/api/resume/file?download=1",
+};
+
+/** The working desk: presentation copy, with the original résumé as source. */
+export const DESK = {
+  name: "Devauntae Norman",
+  initials: "dn.",
+  role: "AI & full-stack engineer",
+  location: "Based in New York",
+  eyebrow: "A SPACE FOR WORK & WONDER",
+  headline: ["Serious about", "building.", "Curious about", "everything."],
+  intro:
+    "A few things I’ve made. A little of who I am. Pull up a chair and make yourself at home.",
+  enter: "Explore my work",
+  monitor: "Enter the computer",
+  files: "Open the résumé drawer",
+  lamp: "Change the lighting",
+  photo: "Meet the person behind the work",
+  tip: "The objects have stories. Go ahead, click around.",
+  status: "Built with curiosity. Best explored slowly.",
+  loading: "Setting the desk…",
+  sceneLabel:
+    "Interactive 3D desk with a computer, résumé drawer, camera, and desk lamp",
+  shortcuts: "Portfolio shortcuts",
+  folders: "Computer folders",
+  sectionsLabel: "Portfolio sections",
+  resumeLabel: "Résumé",
+  edition: "NEW YORK, NY / PERSONAL WORKSPACE",
+  computerLabel: "NORMAN / PERSONAL COMPUTER",
+  fileLabel: "001 — RÉSUMÉ",
+  notebookLabel: "STAY CURIOUS.",
+  ideasLabel: "IDEAS / IN PROGRESS",
+  miniComputerLabel: "DN / PERSONAL COMPUTER",
+  miniTitle: ["Ideas", "made real."],
+  art: {
+    niche: "ASPECT NICHE",
+    nicheCaption: "FOLLOW A NEW THREAD",
+    forge: "PERSONAFORGE",
+    forgeCaption: "IDEA → PIPELINE → POSSIBILITY",
+    cards: "POKESPIRE",
+    cardsCaption: "ONE MORE RUN",
+  },
+  personalPhotos: [
+    {
+      number: 2,
+      alt: "Devauntae’s collection of vintage digital cameras",
+      caption: "A few old cameras. A new perspective.",
+    },
+    {
+      number: 5,
+      alt: "An upcycling project in progress",
+      caption: "Old parts. New purposes.",
+    },
+    {
+      number: 6,
+      alt: "Homemade salmon and shrimp rasta pasta",
+      caption: "Jamaican & Cuban roots, one kitchen.",
+    },
+  ],
+  fallback: "A different view, the same curiosity. Explore my work below.",
+  simple: "Reading view",
+  immersive: "Back to the desk",
+  close: "Back to desk",
+  escape: "ESC",
+  nav: [
+    { id: "work", label: "Selected work", number: "01" },
+    { id: "about", label: "About me", number: "02" },
+    { id: "skills", label: "Capabilities", number: "03" },
+    { id: "contact", label: "Say hello", number: "04" },
+  ] as const,
+  screen: {
+    system: "DEVAUNTAE / PERSONAL COMPUTER",
+    heading: "Ideas made real.",
+    subheading: "Engineering, imagination & everything in between.",
+    footer: "SELECT A FOLDER TO EXPLORE",
+    greeting: "WELCOME TO MY CORNER OF THE INTERNET",
+  },
+  work: {
+    eyebrow: "SELECTED WORK / 01—07",
+    title: "From what if, to what’s next.",
+    intro:
+      "AI systems, useful tools, and the occasional world to get lost in. A selection of things I’ve built and helped bring to life.",
+    open: "Explore project",
+    private: "Internal project",
+    more: "Project notes",
+    close: "Close project notes",
+  },
+  about: {
+    eyebrow: "THE PERSON AT THE DESK",
+    title: "Always making something.",
+    intro:
+      "I’m Devauntae — an AI and full-stack engineer, Fordham CS ’26, and a firm believer that curiosity is a pretty good compass.",
+    body: "My work connects thoughtful interfaces with reliable systems. I’ve built AI-powered tools at Adaptive Security, evaluated language models at Anote, and explored machine learning through Cornell Tech’s Break Through Tech AI program.",
+    personal:
+      "Away from the keyboard, I’m climbing, throwing pottery, rescuing vintage cameras, or giving old furniture a second life. My Jamaican and Cuban roots tend to show up in the kitchen.",
+    caption: "OFFLINE, BUT STILL BUILDING.",
+    photoAlt: "Devauntae’s Fordham graduation, Class of 2026",
+    philosophy: "Fail with purpose. Make something better. Stay curious.",
+  },
+  skills: {
+    eyebrow: "WHAT I BRING TO THE TABLE",
+    title: "A builder’s toolkit.",
+    intro:
+      "From the first experiment to the interface someone uses every day. I like working across the whole problem.",
+  },
+  contact: {
+    eyebrow: "GOOD THINGS START WITH A CONVERSATION",
+    title: "Have a what if?",
+    line: "Let’s make something of it.",
+    intro:
+      "Have an interesting problem, a project in mind, or just a good climbing recommendation? My inbox is open.",
+    email: "Write me an email",
+    copied: "Email copied",
+    copy: "Copy email address",
+    copyFailed: "Couldn’t copy. You can select the email above.",
+    social: "ELSEWHERE ON THE INTERNET",
+  },
+  resume: {
+    eyebrow: "FILE NO. 001 / THE PAPERWORK",
+    title: "A little more on paper.",
+    intro:
+      "Experience, education, and the tools I work with. The full story is in the résumé.",
+    download: "Download résumé",
+    view: "View PDF",
+    cover: "Cover letter",
+    note: "A quick overview. Download the PDF for my current résumé.",
+    close: "Close résumé drawer",
+  },
+  mobile: {
+    eyebrow: "THE POCKET EDITION",
+    title: "Big curiosity. Smaller screen.",
+    intro:
+      "The same work and stories, with a little more room to read. Visit on a larger screen to take a seat at the 3D desk.",
+  },
+  footer: {
+    note: "Made with care, in New York.",
+    legacy: "Visit the original DevauntaeOS",
+    admin: "Owner & archive",
+  },
+};
+
+export const CAPABILITIES = [
+  {
+    number: "01",
+    name: "Intelligent systems",
+    description:
+      "Useful AI, backed by careful evaluation. From language models to reproducible learning pipelines.",
+    tools: [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "scikit-learn",
+      "AWS Bedrock",
+      "Model evaluation",
+    ],
+  },
+  {
+    number: "02",
+    name: "End-to-end products",
+    description:
+      "Interfaces that feel considered, connected to services that do the work. Built to be used.",
+    tools: ["React", "Next.js", "TypeScript", "Node.js", "REST APIs", "SQL"],
+  },
+  {
+    number: "03",
+    name: "Creative engineering",
+    description:
+      "A place for play in the process. Interactive worlds, native apps, and media workflows.",
+    tools: [
+      "Three.js",
+      "React Three Fiber",
+      "Swift",
+      "SwiftUI",
+      "FFmpeg",
+      "Framer Motion",
+    ],
+  },
+];
+
+export const PROJECT_NOTES: Record<
+  string,
+  { category: string; summary: string; detail: string }
+> = {
+  "aspect-niche": {
+    category: "PRODUCT / DISCOVERY",
+    summary: "Follow your curiosity.",
+    detail:
+      "An interactive graph turns hobby discovery into exploration. Pan and zoom through connected interests, expand a personalized AI rabbit hole, then find somewhere nearby to try something new.",
+  },
+  personaforge: {
+    category: "AI / PRODUCT ENGINEERING",
+    summary: "Less production. More possibility.",
+    detail:
+      "At Adaptive Security, I co-built a four-stage media pipeline with Python, Node.js, and FFmpeg, plus a React console for launching and monitoring jobs. Retry logic and job-state logging made long-running workflows easier to operate. The work reduced demo build time by roughly 80%.",
+  },
+  pokespire: {
+    category: "NATIVE / GAME DEVELOPMENT",
+    summary: "One more run.",
+    detail:
+      "A Swift roguelike deckbuilder that combines Pokémon cards with a branching, Slay the Spire-style run. Decks evolve as players progress toward gym-badge bosses.",
+  },
+  "garment-prediction": {
+    category: "MACHINE LEARNING / VISION",
+    summary: "From pixels to predictions.",
+    detail:
+      "A reproducible garment classification pipeline, organized into manifest generation, preprocessing, training, and evaluation. Each stage can be rerun and inspected, with reports at the end.",
+  },
+  "ml-eval": {
+    category: "NLP / EVALUATION",
+    summary: "Better questions. Better models.",
+    detail:
+      "At Anote, I benchmarked fine-tuned GPT-3.5, SetFit, and BERT using stratified k-fold cross-validation. Macro-F1 and latency tracking were paired with schema validation, leakage detection, and class-balance auditing.",
+  },
+  "agent-fleet": {
+    category: "AI / EXPLORATION",
+    summary: "A garden of possibilities.",
+    detail:
+      "A personal exploration of agent orchestration across research, drafting, applications, and paper trading. Human review sits between each agent and any submission, publication, or trade. Explore the original computer’s garden for the interactive presentation.",
+  },
+  "devauntae-os": {
+    category: "CREATIVE WEB / THIS PORTFOLIO",
+    summary: "A space worth exploring.",
+    detail:
+      "A physical desk becomes the entrance to my portfolio. A custom Three.js scene, smooth camera transitions, a working file drawer, and a responsive reading view bring the work into a more personal setting. The original retro desktop remains available in the archive.",
+  },
 };

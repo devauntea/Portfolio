@@ -1,30 +1,43 @@
-# DevauntaeOS portfolio
+# The Working Desk — Devauntae Norman
 
-**Live: https://devauntaenorman.vercel.app** (Vercel project
-`devauntaenorman`).
+A first-person 3D workspace for an AI and full-stack engineer. The ivory CRT opens the portfolio, the left file drawer reveals the résumé, the camera opens the personal story, and the lamp switches the lighting. Built on the existing Next.js portfolio and its real content.
 
-The portfolio is a retro computer. It boots, drops you on a dithered desktop,
-and everything about Me is a folder or an app: windows you drag around
-for the reading material, and full-screen *spaces* for the big experiences —
-the Résumé folder, a walkable 3D gallery, and the Game Room. A little potted
-plant in the corner leads somewhere green.
+## Run locally
 
-Built with Next.js (App Router) + TypeScript, Tailwind v4, Framer Motion,
-React Three Fiber + drei. Sound is synthesized Web Audio (off by default).
-No database — owner auth is a server-side password check, and the httpOnly
-cookie carries a hash of the password rather than the password itself.
+```sh
+npm ci
+npm run dev
+```
 
-First visit runs a short intro: a ghost cursor points out the desktop, the
-taskbar, and the right-click menu, then opens the Résumé folder. It plays once
-per visitor; replay it from Display, or turn it off with the startup item.
+The app uses Next.js 16, React 19, React Three Fiber, drei, and Three.js. No new runtime dependencies were added for the redesign.
 
-**The résumé is swappable from the site itself.** Unlock `🔑 Admin` in the
-Start menu and drop in a PDF. It goes to a private Vercel Blob and is served
-through `/api/resume/file` — the only path to the document. The Résumé space
-renders that PDF with pdf.js, falling back to the copy bundled in
-`public/docs`, then to the text in `src/data/profile.ts`, so the sheet is
-never blank.
+## Experience
 
-Pure logic (owner auth, upload validation) is unit-tested with `npm test` —
-Node's built-in runner, no framework and no dev dependency. Everything
-involving layout, rAF, or animation is verified in a real browser.
+- `/` — the working desk on desktop; an editorial, scrollable pocket edition on mobile and short viewports.
+- `/desktop` — the preserved original DevauntaeOS, including its owner tools, gallery, game room, and music app.
+- `/garden` — the existing agent garden.
+
+Every desk destination has a normal keyboard-accessible control. Dialogs trap and restore focus and close with Escape. Reading view offers direct access to the same content. Reduced motion disables camera easing, parallax, drawer easing, and interface transitions. A WebGL creation failure or context loss falls back to the reading view.
+
+## Implementation
+
+- `src/components/desk/DeskExperience.tsx` — responsive entry point, scene navigation, focus management, and dialogs.
+- `src/components/desk/DeskScene.tsx` — custom geometry, procedural walnut grain and screen textures, camera, and drawer animation.
+- `src/components/desk/PortfolioContent.tsx` — projects, about, capabilities, contact, and résumé.
+- `src/data/profile.ts` — content, sourced from the existing profile and résumé.
+- `src/app/globals.css` — material colors and visual system.
+
+The desktop scene renders on demand, caps pixel ratio at 1.5, and loads separately from the content. Mobile does not create a canvas. There are no downloaded 3D models, environment maps, or video backgrounds. Photography uses Next.js image optimization.
+
+The existing résumé upload/authentication pipeline is unchanged. Downloads use `/api/resume/file?download=1`: the latest private Vercel Blob if configured, then the bundled PDF. The readable experience summary uses `RESUME` in `profile.ts`; the downloadable PDF remains the authoritative document.
+
+## Validation
+
+```sh
+npm test
+npm run build
+```
+
+The existing owner-auth and résumé-upload tests use Node's native test runner. Browser verification covers desktop and mobile layouts, computer navigation, drawer access, lamp, personal photos, project expansion, Escape/focus restoration, and PDF responses. A WebGL-capable browser is needed for visual 3D verification; no automated screenshot baselines are required.
+
+Deploy on the existing Vercel project `devauntaenorman`; its current environment variables and private Blob configuration continue to apply.
