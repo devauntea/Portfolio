@@ -158,23 +158,31 @@ body {
 
 /* The Working Desk — physical materials and interface share a single palette. */
 :root {
-  --desk-paper: #ecebe2;
-  --desk-ivory: #cfcbb8;
-  --desk-shadow: #aaa58e;
-  --desk-ink: #292e23;
-  --desk-muted: #696d5d;
-  --desk-olive: #68784c;
-  --desk-leaf: #94a16b;
-  --desk-clay: #a5684d;
-  --desk-wood: #68462e;
-  --desk-wood-dark: #302014;
-  --desk-metal: #b3b4a9;
-  --desk-screen: #d5dfb5;
-  --desk-light: #fff0cf;
-  --desk-line: #cecec0;
-  --desk-white: #faf9f2;
-  --desk-pink: #ded2c5;
-  --desk-purple: #d2c9dd;
+  --desk-paper: #eee5d7;
+  --desk-ivory: #d5c8b4;
+  --desk-shadow: #aaa092;
+  --desk-ink: #302a28;
+  --desk-muted: #74665e;
+  --desk-accent: #a84d2c;
+  --desk-accent-light: #dc9c62;
+  --desk-clay: #b56e50;
+  --desk-wood: #745039;
+  --desk-wood-dark: #332117;
+  --desk-metal: #b5b1a8;
+  --desk-screen: #f1d9b3;
+  --desk-light: #ffdfad;
+  --desk-line: #d2c3b0;
+  --desk-white: #fcf6ed;
+  --desk-pink: #e2c5b4;
+  --desk-purple: #c4cbd2;
+  --desk-foliage: #4c5543;
+  --desk-foliage-light: #879175;
+  --desk-blue: #365875;
+  --desk-red: #983b38;
+  --desk-sky: #8db9cf;
+  --desk-sky-night: #26364c;
+  --desk-horizon: #f2cda9;
+  --desk-city: #727e87;
 }
 .working-desk {
   color: var(--desk-ink);
@@ -196,7 +204,7 @@ body {
 }
 .working-desk :focus-visible,
 .desk-dialog :focus-visible {
-  outline: 2px solid var(--desk-olive);
+  outline: 2px solid var(--desk-accent);
   outline-offset: 5px;
   border-radius: 2px;
 }
@@ -267,7 +275,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--desk-olive);
+  background: var(--desk-accent);
 }
 .view-switch {
   display: flex;
@@ -279,7 +287,7 @@ body {
 }
 .view-switch:hover,
 .header-contact:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .header-contact {
   display: flex;
@@ -336,19 +344,19 @@ body {
   margin: 22px 0 20px;
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
-  font-size: clamp(38px, 4vw, 63px);
+  font-size: clamp(32px, 3.5vw, 56px);
   line-height: 1.04;
   letter-spacing: -0.045em;
 }
 .desk-intro h1 em,
 .reading-hero h1 em {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
   font-weight: 400;
 }
 .desk-intro-copy {
   font-size: 12px;
   line-height: 1.85;
-  max-width: 240px;
+  max-width: 200px;
   color: var(--desk-muted);
 }
 .desk-button {
@@ -368,8 +376,8 @@ body {
     transform 0.2s;
 }
 .desk-button:hover {
-  background: var(--desk-olive);
-  border-color: var(--desk-olive);
+  background: var(--desk-accent);
+  border-color: var(--desk-accent);
   transform: translateY(-2px);
 }
 .desk-intro .desk-button {
@@ -386,7 +394,7 @@ body {
   padding: 12px 0;
 }
 .desk-text-link:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .is-away {
   opacity: 0;
@@ -395,28 +403,6 @@ body {
 }
 .is-away .desk-button {
   pointer-events: none;
-}
-.desk-scene-note {
-  position: absolute;
-  right: 4%;
-  top: 18%;
-  z-index: 4;
-  width: 160px;
-  text-align: right;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-.desk-scene-note > span {
-  font:
-    8px var(--font-geist-mono),
-    monospace;
-  letter-spacing: 0.1em;
-}
-.desk-scene-note p {
-  font:
-    italic 17px/1.4 Georgia,
-    serif;
-  margin-top: 12px;
 }
 .desk-bottom {
   position: absolute;
@@ -582,7 +568,7 @@ body {
 .desk-dialog--resume {
   max-width: 1000px;
   border: 1px solid var(--desk-shadow);
-  border-top: 10px solid var(--desk-olive);
+  border-top: 10px solid var(--desk-accent);
   border-radius: 7px;
   background: var(--desk-paper);
 }
@@ -650,8 +636,8 @@ body {
     monospace;
 }
 .computer-nav button[aria-current] {
-  border-bottom-color: var(--desk-olive);
-  color: var(--desk-olive);
+  border-bottom-color: var(--desk-accent);
+  color: var(--desk-accent);
 }
 .computer-nav button:hover {
   background: color-mix(in srgb, var(--desk-screen) 45%, transparent);
@@ -686,7 +672,7 @@ body {
   height: 5px;
   width: 5px;
   border-radius: 50%;
-  background: var(--desk-olive);
+  background: var(--desk-accent);
 }
 .computer-footer {
   display: flex;
@@ -734,7 +720,7 @@ body {
   margin: 17px 0 19px;
 }
 .portfolio-section > h2 em {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .section-intro {
   font-size: 13px;
@@ -754,7 +740,7 @@ body {
   width: 100%;
   overflow: hidden;
   position: relative;
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .project-art svg {
   width: 100%;
@@ -847,8 +833,8 @@ body {
 .card-back {
   background: repeating-linear-gradient(
     45deg,
-    var(--desk-olive),
-    var(--desk-olive) 2px,
+    var(--desk-accent),
+    var(--desk-accent) 2px,
     var(--desk-screen) 2px,
     var(--desk-screen) 5px
   );
@@ -868,7 +854,7 @@ body {
 }
 .card-front svg {
   height: 65%;
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .card-front small {
   font:
@@ -938,7 +924,7 @@ body {
   text-align: left;
 }
 .project-actions button:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .project-actions a {
   padding: 9px;
@@ -997,7 +983,7 @@ body {
   font:
     italic 24px/1.4 Georgia,
     serif;
-  color: var(--desk-olive);
+  color: var(--desk-accent);
   border-top: 1px solid var(--desk-line);
   padding-top: 22px;
   margin-top: 35px;
@@ -1055,7 +1041,7 @@ body {
   font:
     italic 38px Georgia,
     serif;
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .capability h3 {
   font-size: 20px;
@@ -1097,7 +1083,7 @@ body {
   word-break: break-word;
 }
 .contact-email:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .copy-email {
   display: flex;
@@ -1129,7 +1115,7 @@ body {
   font-size: 13px;
 }
 .contact-links a:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .resume-actions {
   display: flex;
@@ -1256,7 +1242,7 @@ body {
 .mini-screen b {
   font-size: 6px;
   letter-spacing: 6px;
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .mini-chin {
   display: flex;
@@ -1267,7 +1253,7 @@ body {
     monospace;
 }
 .mini-chin > span {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .mini-stand {
   width: 90px;
@@ -1314,7 +1300,7 @@ body {
   white-space: nowrap;
 }
 .reading-nav a:hover {
-  color: var(--desk-olive);
+  color: var(--desk-accent);
 }
 .reading-nav span {
   font:
@@ -1352,7 +1338,7 @@ body {
     top: 21%;
   }
   .desk-intro h1 {
-    font-size: 64px;
+    font-size: 56px;
   }
   .desk-scene-note {
     right: 5%;
@@ -1735,4 +1721,36 @@ body {
   .header-contact {
     min-height: 40px;
   }
+}
+
+.blind-control {
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+  gap: 8px;
+  text-align: left;
+  padding: 10px;
+}
+.blind-control small {
+  display: block;
+  color: var(--desk-muted);
+  font-size: 8px;
+  margin-top: 4px;
+}
+.blind-control:hover {
+  transform: none;
+}
+.blind-control.is-pulling {
+  background: var(--desk-screen);
+}
+.blind-control > span {
+  font-size: 16px;
+  color: var(--desk-accent);
+}
+.sewing-control {
+  padding: 9px 11px;
+}
+.sewing-control:disabled {
+  cursor: progress;
+  background: var(--desk-screen);
 }

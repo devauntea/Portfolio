@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
 import { DESK, CONTACT } from "@/data/profile";
 import {
@@ -25,7 +26,8 @@ import {
 import type { DeskFocus } from "./DeskScene";
 
 const DeskScene = dynamic(() => import("./DeskScene"), { ssr: false });
-const wideQuery = "(min-width: 900px) and (min-height: 560px)";
+const wideQuery =
+  "(min-width: 900px) and (min-height: 560px) and (min-aspect-ratio: 6/5)";
 const motionQuery = "(prefers-reduced-motion: reduce)";
 function useMedia(query: string) {
   const subscribe = useCallback(
@@ -125,13 +127,13 @@ export function DeskExperience() {
         {DESK.enter}
       </a>
       <header className="desk-header">
-        <a className="desk-brand" href="/" aria-label={DESK.name}>
+        <Link className="desk-brand" href="/" aria-label={DESK.name}>
           <span className="desk-monogram">{DESK.initials}</span>
           <span>
             {DESK.name}
             <small>{DESK.role}</small>
           </span>
-        </a>
+        </Link>
         <div className="desk-header-right">
           <span className="desk-location">
             <i />
@@ -196,12 +198,6 @@ export function DeskExperience() {
               {DESK.enter}
               <Arrow diagonal />
             </button>
-          </div>
-          <div
-            className={`desk-scene-note ${focus !== "desk" ? "is-away" : ""}`}
-          >
-            <span>{DESK.edition}</span>
-            <p>{DESK.tip}</p>
           </div>
           <footer className="desk-bottom">
             <p>

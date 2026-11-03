@@ -236,3 +236,10 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Environment reflections are generated locally with Lightformers at 128px, once. Surface grain, fabric, pottery, and plaster maps are deterministic and explicitly disposed. Keep micro-bump strengths small to avoid harsh faceting.
 - The résumé drawer is hollow, with rails and suspended labeled folders; its longer travel reveals the contents beyond the desktop edge. Directly printed hardware labels use transparency so they do not create floating rectangular patches.
 - Evening readability uses a subtle left vignette and light foreground copy. Scope the light brand color to immersive mode so reading/mobile mode retains contrast.
+
+## v4.2: a maker’s desk and a working window
+- The main accent is now burnt orange/amber (`accent`/`accentLight`); foliage has its own tokens so changing interface colors does not recolor plants. Blue/red/sky tokens remain centralized in global CSS.
+- The window is an actual opening between four plaster wall panels, with an exterior skyline behind it. Blinds gather at the top; pointer drag, click, Enter, and Space share the same target. Pointer cancellation, Escape, and blur restore the starting state and remove temporary listeners.
+- Demand-rendered blinds clamp delta, stop invalidating after convergence, and snap for reduced motion. The sewing needle and wheel animate only for a bounded interaction; its timeout is cleared on unmount.
+- Manga uses generated page-edge/spine textures and original abstract cover art. Brick geometry is merged by color. RoundedBoxGeometry is non-indexed, so convert cylinder studs with `toNonIndexed()` before merging; mixed indices return null and break rendering.
+- Recheck the entire desktop composition after adding props: book stacks can cover the intro copy, and large windows can collide with the header. Check both desktop aspect ratios and mobile reading mode.

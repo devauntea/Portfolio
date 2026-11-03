@@ -1,6 +1,6 @@
 # The Working Desk — Devauntae Norman
 
-A first-person 3D workspace for an AI and full-stack engineer. The ivory CRT opens the portfolio, the left file drawer reveals the résumé, the camera opens the personal story, and the lamp switches the lighting. Built on the existing Next.js portfolio and its real content.
+A first-person 3D workspace for an AI and full-stack engineer. The ivory CRT opens the portfolio, the left file drawer reveals the résumé, the camera opens the personal story, and the lamp switches the lighting. Pull the window cord to lift the blinds onto a layered city view; press Enter or Space for the same action. The maker’s desk adds printed manga volumes, a studded brick robot, and a sewing machine with a brief needle and handwheel animation. Built on the existing Next.js portfolio and its real content.
 
 ## Run locally
 
@@ -17,19 +17,21 @@ The app uses Next.js 16, React 19, React Three Fiber, drei, and Three.js. No new
 - `/desktop` — the preserved original DevauntaeOS, including its owner tools, gallery, game room, and music app.
 - `/garden` — the existing agent garden.
 
-Every desk destination has a normal keyboard-accessible control. Dialogs trap and restore focus and close with Escape. Reading view offers direct access to the same content. Reduced motion disables camera easing, parallax, drawer easing, and interface transitions. A WebGL creation failure or context loss falls back to the reading view.
+Every desk destination has a normal keyboard-accessible control. Dialogs trap and restore focus and close with Escape. Reading view offers direct access to the same content. Reduced motion disables camera easing, parallax, drawer/blind easing, the sewing animation, and interface transitions. A WebGL creation failure or context loss falls back to the reading view.
 
 ## Implementation
 
 - `src/components/desk/DeskExperience.tsx` — responsive entry point, scene navigation, focus management, and dialogs.
 - `src/components/desk/DeskScene.tsx` — curved CRT, lighting, procedural walnut and screen textures, camera, and working file drawer.
 - `src/components/desk/DeskObjects.tsx` — batched keyboard and legends, vented tower, stitched mat, glazed pottery, spiral notebook, and shaped foliage.
+- `src/components/desk/DeskWindow.tsx` — draggable blinds, cancellation/keyboard controls, and a procedural day/evening city view.
+- `src/components/desk/DeskMakerObjects.tsx` — manga with original cover graphics, merged brick geometry, and the detailed sewing machine.
 - `src/components/desk/DeskMaterials.tsx` — rounded geometry with normalized texture coordinates, shared surface maps, hardware, and merged ventilation slots.
 - `src/components/desk/PortfolioContent.tsx` — projects, about, capabilities, contact, and résumé.
 - `src/data/profile.ts` — content, sourced from the existing profile and résumé.
 - `src/app/globals.css` — material colors and visual system.
 
-The desktop scene renders on demand, caps pixel ratio at 1.5, and loads separately from the content. Mobile does not create a canvas. There are no downloaded 3D models, environment maps, or video backgrounds. Photography uses Next.js image optimization. Softbox reflections are generated locally once at 128px; contact shadows also render once. Keycaps and legends use three batched meshes, and tiny recessed details do not cast expensive shadows.
+The desktop scene renders on demand, caps pixel ratio at 1.5, and loads separately from the content. Mobile does not create a canvas. There are no downloaded 3D models, environment maps, or video backgrounds. Photography uses Next.js image optimization. Softbox reflections are generated locally once at 128px; contact shadows also render once. Keycaps and legends use three batched meshes, and tiny recessed details do not cast expensive shadows. Brick bodies and studs are merged by color. The material palette is warm ivory, walnut, charcoal, and burnt orange, with muted blue on the sewing machine.
 
 The existing résumé upload/authentication pipeline is unchanged. Downloads use `/api/resume/file?download=1`: the latest private Vercel Blob if configured, then the bundled PDF. The readable experience summary uses `RESUME` in `profile.ts`; the downloadable PDF remains the authoritative document.
 
@@ -40,6 +42,6 @@ npm test
 npm run build
 ```
 
-The existing owner-auth and résumé-upload tests use Node's native test runner. Browser verification covers desktop and mobile layouts, computer navigation, drawer access, lamp, personal photos, project expansion, Escape/focus restoration, and PDF responses. A WebGL-capable browser is needed for visual 3D verification; no automated screenshot baselines are required.
+The existing owner-auth and résumé-upload tests use Node's native test runner. Browser verification covers desktop and mobile layouts, computer navigation, drawer access, lamp, blind dragging and keyboard controls, sewing reset, personal photos, project expansion, Escape/focus restoration, and PDF responses. A WebGL-capable browser is needed for visual 3D verification; no automated screenshot baselines are required.
 
 Deploy on the existing Vercel project `devauntaenorman`; its current environment variables and private Blob configuration continue to apply.

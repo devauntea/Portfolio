@@ -11,14 +11,22 @@ export type Palette = Record<
   | "shadow"
   | "ink"
   | "muted"
-  | "olive"
-  | "leaf"
+  | "accent"
+  | "accentLight"
   | "clay"
   | "wood"
   | "woodDark"
   | "metal"
   | "screen"
-  | "light",
+  | "light"
+  | "foliage"
+  | "foliageLight"
+  | "blue"
+  | "red"
+  | "sky"
+  | "skyNight"
+  | "horizon"
+  | "city",
   string
 >;
 export function makeTexture(

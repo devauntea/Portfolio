@@ -178,7 +178,7 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
       {model.merged.slice(0, 2).map((geometry, i) => (
         <mesh key={i} geometry={geometry} castShadow receiveShadow>
           <meshStandardMaterial
-            color={i ? p.olive : p.paper}
+            color={i ? p.accent : p.paper}
             roughness={0.43}
           />
         </mesh>
@@ -198,7 +198,7 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
           rotation={[-Math.PI / 2, 0, 0]}
         >
           <circleGeometry args={[0.018, 12]} />
-          <meshBasicMaterial color={i === 0 ? p.leaf : p.muted} />
+          <meshBasicMaterial color={i === 0 ? p.accentLight : p.muted} />
         </mesh>
       ))}
       <Label
@@ -289,7 +289,7 @@ export function DetailedTower({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
               <Box
                 pos={[-0.29, -0.063, 0.031]}
                 size={[0.025, 0.012, 0.012]}
-                color={p.olive}
+                color={p.accent}
                 radius={0.002}
               />
             </>
@@ -303,7 +303,7 @@ export function DetailedTower({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
       <mesh position={[0.28, -0.29, 0.984]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.072, 0.072, 0.03, 24]} />
         <meshStandardMaterial
-          color={p.olive}
+          color={p.accent}
           metalness={0.15}
           roughness={0.35}
         />
@@ -382,7 +382,7 @@ export function DeskMat({ p, woven }: Pick<Surfaces, "p" | "woven">) {
       <Box
         pos={[0, 0, 0]}
         size={[5.45, 0.035, 2.55]}
-        color={p.olive}
+        color={p.shadow}
         bumpMap={woven}
         bumpScale={0.0012}
         roughness={0.93}
@@ -398,7 +398,7 @@ export function DeskMat({ p, woven }: Pick<Surfaces, "p" | "woven">) {
         pos={[2.18, 0.021, 1.1]}
         width={0.65}
         rotation={[-Math.PI / 2, 0, 0]}
-        background={p.olive}
+        background={p.shadow}
       />
     </group>
   );
@@ -501,9 +501,9 @@ export function Notebook({ p }: { p: Palette }) {
         ctx.font = "italic 32px Georgia";
         ctx.fillText(DESK.notebookLabel, 55, 100);
         ctx.font = "15px monospace";
-        ctx.fillStyle = p.olive;
+        ctx.fillStyle = p.accent;
         ctx.fillText(DESK.details.sketch, 55, 138);
-        ctx.strokeStyle = p.olive;
+        ctx.strokeStyle = p.accent;
         ctx.lineWidth = 2.2;
         [
           [75, 220, 140, 90],
@@ -585,7 +585,7 @@ export function Notebook({ p }: { p: Palette }) {
       <group position={[0.6, 0.195, -0.1]} rotation={[Math.PI / 2, 0, 0.16]}>
         <mesh castShadow>
           <cylinderGeometry args={[0.025, 0.025, 1.19, 6]} />
-          <meshStandardMaterial color={p.olive} roughness={0.5} />
+          <meshStandardMaterial color={p.accent} roughness={0.5} />
         </mesh>
         <mesh position={[0, -0.68, 0]}>
           <coneGeometry args={[0.025, 0.17, 6]} />
@@ -611,7 +611,7 @@ export function Notebook({ p }: { p: Palette }) {
       <Box
         pos={[0.28, 0.153, 0.94]}
         size={[0.13, 0.008, 0.24]}
-        color={p.olive}
+        color={p.accent}
         radius={0.003}
       />
     </group>
@@ -639,12 +639,12 @@ export function DetailedPlant({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
   const veins = useMemo(
     () =>
       makeTexture(256, 512, (ctx) => {
-        ctx.fillStyle = p.olive;
+        ctx.fillStyle = p.foliage;
         ctx.fillRect(0, 0, 256, 512);
         const gradient = ctx.createLinearGradient(0, 0, 256, 0);
-        gradient.addColorStop(0, p.olive);
-        gradient.addColorStop(0.5, p.leaf);
-        gradient.addColorStop(1, p.olive);
+        gradient.addColorStop(0, p.foliage);
+        gradient.addColorStop(0.5, p.foliageLight);
+        gradient.addColorStop(1, p.foliage);
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 256, 512);
         ctx.strokeStyle = p.paper;
@@ -673,7 +673,7 @@ export function DetailedPlant({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
     [leaf, veins],
   );
   return (
-    <group position={[-4.48, 0.14, -1.6]}>
+    <group position={[-5, 0.14, -2.1]}>
       <mesh position={[0, 0.035, 0]} castShadow>
         <cylinderGeometry args={[0.4, 0.37, 0.07, 48]} />
         <meshStandardMaterial
@@ -710,7 +710,7 @@ export function DetailedPlant({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
           <group key={i}>
             <Cable
               p={p}
-              color={p.olive}
+              color={p.foliage}
               radius={0.012}
               points={[
                 [0, 0.63, 0],

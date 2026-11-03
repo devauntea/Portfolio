@@ -31,9 +31,10 @@ import {
   DetailedTower,
   DeskMat,
   Pottery,
-  Notebook,
   DetailedPlant,
 } from "./DeskObjects";
+import { DeskWindow, WINDOW } from "./DeskWindow";
+import { MangaStack, BrickDisplay, SewingMachine } from "./DeskMakerObjects";
 import { DESK } from "@/data/profile";
 
 export type DeskFocus = "desk" | "monitor" | "resume";
@@ -54,14 +55,22 @@ const colorKeys: (keyof Palette)[] = [
   "shadow",
   "ink",
   "muted",
-  "olive",
-  "leaf",
+  "accent",
+  "accentLight",
   "clay",
   "wood",
   "woodDark",
   "metal",
   "screen",
   "light",
+  "foliage",
+  "foliageLight",
+  "blue",
+  "red",
+  "sky",
+  "skyNight",
+  "horizon",
+  "city",
 ];
 
 function palette(): Palette {
@@ -124,7 +133,7 @@ function screenTexture(p: Palette) {
     ctx.font = "18px monospace";
     ctx.fillText(DESK.screen.system, 30, 36);
     ctx.fillText("●  ONLINE", 1030, 36);
-    ctx.fillStyle = p.olive;
+    ctx.fillStyle = p.accent;
     ctx.font = "17px monospace";
     ctx.fillText(DESK.screen.greeting, 62, 145);
     ctx.fillStyle = p.ink;
@@ -137,7 +146,7 @@ function screenTexture(p: Palette) {
     ctx.save();
     ctx.translate(925, 325);
     ctx.rotate(-0.4);
-    ctx.strokeStyle = p.olive;
+    ctx.strokeStyle = p.accent;
     ctx.lineWidth = 2;
     for (let i = 0; i < 9; i++) {
       ctx.beginPath();
@@ -147,7 +156,7 @@ function screenTexture(p: Palette) {
     ctx.restore();
     DESK.nav.forEach((n, i) => {
       const x = 65 + i * 283;
-      ctx.fillStyle = p.olive;
+      ctx.fillStyle = p.accent;
       ctx.beginPath();
       ctx.roundRect(x, 614, 48, 15, 3);
       ctx.fill();
@@ -158,7 +167,7 @@ function screenTexture(p: Palette) {
       ctx.font = "21px monospace";
       ctx.fillText(n.label, x, 713);
     });
-    ctx.strokeStyle = p.olive;
+    ctx.strokeStyle = p.accent;
     ctx.globalAlpha = 0.3;
     ctx.beginPath();
     ctx.moveTo(0, 780);
@@ -173,7 +182,7 @@ function screenTexture(p: Palette) {
 }
 
 function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
-  const { camera, pointer, invalidate, gl } = useThree();
+  const { camera, pointer, invalidate, gl, size } = useThree();
   const target = useRef(new THREE.Vector3(-1.6, 0.7, -0.5));
   const destination = useMemo(() => new THREE.Vector3(), []);
   const look = useMemo(() => new THREE.Vector3(), []);
@@ -193,12 +202,14 @@ function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
       destination.set(-2.8, 2.5, 6.6);
       look.set(-2.8, -0.45, 1.3);
     } else {
+      // Keep the maker’s tools in frame on narrower landscape displays.
+      const extraDistance = Math.max(0, 1.6 - size.width / size.height) * 17;
       destination.set(
         -1.1 + (reduced ? 0 : pointer.x * 0.19),
-        4.4 + (reduced ? 0 : pointer.y * 0.08),
-        10.8,
+        4.4 + extraDistance * 0.2 + (reduced ? 0 : pointer.y * 0.08),
+        10.8 + extraDistance,
       );
-      look.set(-1.6, 0.7, -0.5);
+      look.set(-1.6 - extraDistance * 0.1, 0.7, -0.5);
     }
     // Demand rendering may have been idle for minutes. Do not let that
     // elapsed time turn the first frame of a camera transition into a jump.
@@ -334,11 +345,11 @@ function Monitor({
       />
       <mesh position={[1.34, 0.78, 0.385]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.065, 0.065, 0.04, 20]} />
-        <meshStandardMaterial color={p.olive} />
+        <meshStandardMaterial color={p.accent} />
       </mesh>
       <mesh position={[1.13, 0.78, 0.39]}>
         <sphereGeometry args={[0.023, 12, 12]} />
-        <meshBasicMaterial color={p.leaf} />
+        <meshBasicMaterial color={p.accentLight} />
       </mesh>
       {[-0.7, -0.48, -0.26, -0.04].map((x) => (
         <mesh key={x} position={[x, 0.62, 0.38]} rotation={[Math.PI / 2, 0, 0]}>
@@ -529,13 +540,13 @@ function Drawer({
             <Box
               pos={[0, 0, 0]}
               size={[1.85, 0.92, 0.045]}
-              color={i % 3 === 0 ? p.olive : p.ivory}
+              color={i % 3 === 0 ? p.accent : p.ivory}
               radius={0.012}
             />
             <Box
               pos={[-0.56 + (i % 3) * 0.5, 0.49, 0]}
               size={[0.45, 0.14, 0.045]}
-              color={i % 3 === 0 ? p.olive : p.ivory}
+              color={i % 3 === 0 ? p.accent : p.ivory}
               radius={0.02}
             />
             <Label
@@ -608,7 +619,7 @@ function Lamp({
 }) {
   return (
     <group
-      position={[3.65, 0.1, -1.65]}
+      position={[4.95, 0.1, -1.85]}
       onClick={onClick}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -619,7 +630,11 @@ function Lamp({
     >
       <mesh position={[0, 0.1, 0]} castShadow>
         <cylinderGeometry args={[0.55, 0.59, 0.18, 48]} />
-        <meshStandardMaterial color={p.olive} roughness={0.4} metalness={0.3} />
+        <meshStandardMaterial
+          color={p.accent}
+          roughness={0.4}
+          metalness={0.3}
+        />
       </mesh>
       <mesh position={[0, 1.22, 0]} castShadow>
         <cylinderGeometry args={[0.032, 0.032, 2.2, 16]} />
@@ -655,7 +670,7 @@ function Lamp({
         <mesh castShadow>
           <cylinderGeometry args={[0.24, 0.69, 0.52, 48, 1, true]} />
           <meshStandardMaterial
-            color={p.olive}
+            color={p.accent}
             roughness={0.38}
             metalness={0.2}
             side={THREE.DoubleSide}
@@ -672,7 +687,7 @@ function Lamp({
           pos={[0, 0.26, 0]}
           radius={0.24}
           tube={0.012}
-          color={p.olive}
+          color={p.accent}
           metalness={0.25}
         />
         <mesh position={[0, 0.3, 0]} castShadow>
@@ -742,7 +757,7 @@ function CameraObject({
       <mesh position={[0.13, -0.025, 0.42]}>
         <circleGeometry args={[0.16, 32]} />
         <meshPhysicalMaterial
-          color={p.olive}
+          color={p.accent}
           metalness={0.7}
           roughness={0.1}
           clearcoat={1}
@@ -828,7 +843,8 @@ function CameraObject({
 }
 
 function World(props: SceneProps) {
-  const p = useMemo(palette, []);
+  const { onReady, onFail } = props;
+  const p = useMemo(() => palette(), []);
   const wood = useMemo(() => woodTexture(p), [p]);
   const grain = useMemo(() => surfaceTexture("grain"), []);
   const woven = useMemo(() => surfaceTexture("woven"), []);
@@ -845,20 +861,20 @@ function World(props: SceneProps) {
   );
   const { gl } = useThree();
   useEffect(() => {
-    props.onReady();
+    onReady();
     return () => {
       document.body.style.cursor = "";
       wood.dispose();
     };
-  }, [props.onReady, wood]);
+  }, [onReady, wood]);
   useEffect(() => {
     const failed = (event: Event) => {
       event.preventDefault();
-      props.onFail();
+      onFail();
     };
     gl.domElement.addEventListener("webglcontextlost", failed);
     return () => gl.domElement.removeEventListener("webglcontextlost", failed);
-  }, [gl, props.onFail]);
+  }, [gl, onFail]);
   const click = (fn: () => void) => (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
     document.body.style.cursor = "";
@@ -924,85 +940,51 @@ function World(props: SceneProps) {
         color={p.shadow}
         radius={0.01}
       />
-      <Box
-        pos={[0, 3.4, -4]}
-        size={[40, 13, 0.18]}
-        bumpMap={plaster}
-        bumpScale={0.003}
-        roughness={0.95}
-        color={p.paper}
-        radius={0.01}
-      />
+      {/* Four plaster panels leave a real opening onto the exterior scene. */}
+      {[
+        {
+          x: (-20 + WINDOW.x - WINDOW.width / 2) / 2,
+          y: 3.4,
+          w: 20 + WINDOW.x - WINDOW.width / 2,
+          h: 13,
+        },
+        {
+          x: (20 + WINDOW.x + WINDOW.width / 2) / 2,
+          y: 3.4,
+          w: 20 - WINDOW.x - WINDOW.width / 2,
+          h: 13,
+        },
+        {
+          x: WINDOW.x,
+          y: (-3.1 + WINDOW.y - WINDOW.height / 2) / 2,
+          w: WINDOW.width,
+          h: WINDOW.y - WINDOW.height / 2 + 3.1,
+        },
+        {
+          x: WINDOW.x,
+          y: (9.9 + WINDOW.y + WINDOW.height / 2) / 2,
+          w: WINDOW.width,
+          h: 9.9 - WINDOW.y - WINDOW.height / 2,
+        },
+      ].map((wall, i) => (
+        <Box
+          key={i}
+          pos={[wall.x, wall.y, -4]}
+          size={[wall.w, wall.h, 0.18]}
+          bumpMap={plaster}
+          bumpScale={0.003}
+          roughness={0.95}
+          color={p.paper}
+          radius={0.01}
+        />
+      ))}
       <Box pos={[0, -2.75, -3.85]} size={[40, 0.35, 0.1]} color={p.ivory} />
-      {/* A recessed window: sill, tilted louvers, and a weighted pull cord. */}
-      <group position={[5.9, 4.2, -3.75]}>
-        <Box pos={[0, 0, 0]} size={[3.85, 4.65, 0.14]} color={p.shadow} />
-        <mesh position={[0, 0, 0.08]}>
-          <planeGeometry args={[3.6, 4.4]} />
-          <meshBasicMaterial color={props.night ? p.shadow : p.light} />
-        </mesh>
-        {[-1.88, 1.88].map((x) => (
-          <Box
-            key={x}
-            pos={[x, 0, 0.16]}
-            size={[0.12, 4.7, 0.23]}
-            color={p.paper}
-            radius={0.015}
-          />
-        ))}
-        <Box
-          pos={[0, -2.3, 0.25]}
-          size={[4, 0.16, 0.65]}
-          color={p.ivory}
-          radius={0.025}
-        />
-        <Box
-          pos={[0, 2.3, 0.18]}
-          size={[3.8, 0.2, 0.28]}
-          color={p.paper}
-          radius={0.02}
-        />
-        {Array.from({ length: 11 }, (_, i) => (
-          <group
-            key={i}
-            position={[0, -1.9 + i * 0.38, 0.18]}
-            rotation={[0.25, 0, 0]}
-          >
-            <Box
-              pos={[0, 0, 0]}
-              size={[3.6, 0.035, 0.4]}
-              color={p.paper}
-              radius={0.012}
-            />
-          </group>
-        ))}
-        {[-1.35, 1.35].map((x) => (
-          <Cable
-            key={x}
-            p={p}
-            color={p.ivory}
-            radius={0.008}
-            points={[
-              [x, 2.15, 0.42],
-              [x, -1.95, 0.42],
-            ]}
-          />
-        ))}
-        <Cable
-          p={p}
-          color={p.paper}
-          radius={0.012}
-          points={[
-            [-1.7, 2.1, 0.45],
-            [-1.7, -1.4, 0.45],
-            [-1.66, -2.65, 0.45],
-          ]}
-        />
-        <mesh position={[-1.66, -2.68, 0.45]}>
-          <capsuleGeometry args={[0.035, 0.1, 4, 12]} />
-          <meshStandardMaterial color={p.wood} roughness={0.5} />
-        </mesh>
-      </group>
+      <DeskWindow
+        p={p}
+        night={props.night}
+        reduced={props.reduced}
+        active={active}
+      />
       <Box
         pos={[0, 0, 0]}
         size={[11.2, 0.25, 5.65]}
@@ -1114,54 +1096,14 @@ function World(props: SceneProps) {
       <Lamp p={p} night={props.night} onClick={click(props.onLamp)} />
       <CameraObject p={p} onClick={click(props.onAbout)} />
       <Pottery p={p} ceramic={ceramic} grain={grain} />
-      <Notebook p={p} />
-      <group position={[-4.2, 0.19, 0.52]} rotation={[0, 0.11, 0]}>
-        <Box
-          pos={[0, 0, 0]}
-          size={[1.35, 0.07, 1.78]}
-          color={p.olive}
-          radius={0.025}
-        />
-        <Box
-          pos={[0, 0.065, -0.02]}
-          size={[1.2, 0.055, 1.6]}
-          color={p.ivory}
-          radius={0.012}
-        />
-        <Label
-          text={DESK.ideasLabel}
-          p={p}
-          pos={[0, 0.099, -0.05]}
-          width={1.02}
-          rotation={[-Math.PI / 2, 0, 0]}
-        />
-        <Box
-          pos={[-0.52, 0.103, 0.05]}
-          size={[0.015, 0.006, 1.35]}
-          color={p.clay}
-          radius={0.002}
-        />
-        <group
-          position={[0.38, 0.105, -0.64]}
-          rotation={[-Math.PI / 2, 0, 0.2]}
-        >
-          <Cable
-            p={p}
-            color={p.metal}
-            radius={0.008}
-            points={[
-              [0.04, -0.11, 0],
-              [0.04, 0.08, 0],
-              [0.015, 0.12, 0],
-              [-0.025, 0.09, 0],
-              [-0.025, -0.1, 0],
-              [-0.005, -0.13, 0],
-              [0.015, -0.1, 0],
-              [0.015, 0.065, 0],
-            ]}
-          />
-        </group>
-      </group>
+      <MangaStack p={p} />
+      <BrickDisplay p={p} />
+      <SewingMachine
+        p={p}
+        woven={woven}
+        reduced={props.reduced}
+        active={active}
+      />
       <ContactShadows
         position={[0, 0.128, 0]}
         opacity={0.38}
@@ -1198,7 +1140,7 @@ function World(props: SceneProps) {
               <b>↗</b>
             </button>
           </Html>
-          <Html position={[3.7, 2.9, -1.65]} center zIndexRange={[5, 0]}>
+          <Html position={[4.95, 2.9, -1.85]} center zIndexRange={[5, 0]}>
             <button
               className="desk-hotspot desk-hotspot--small"
               aria-label={DESK.lamp}
