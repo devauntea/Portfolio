@@ -31,7 +31,7 @@ test("rejects a file over the size cap", () => {
   big.set(new TextEncoder().encode("%PDF-"));
   const res = validateResumePdf(big);
   assert.equal(res.ok, false);
-  assert.match(res.ok === false ? res.error : "", /8 MB/);
+  assert.match(res.ok === false ? res.error : "", /4 MB/);
 });
 
 test("accepts a file exactly at the cap", () => {

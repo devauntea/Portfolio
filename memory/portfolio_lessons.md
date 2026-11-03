@@ -251,3 +251,12 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - The original shooter and pixel room accept an optional embedded prop. The shooter pauses on blur; cartridge memories use an inline overlay. Default /desktop behavior remains intact. Keep CSS game canvas aspect ratios intact: object-fit letterboxing breaks pointer coordinate mapping.
 - Music reuses /api/spotify and shows truthful offline/paused/live states plus the existing top tracks. Opening it plays a bounded disc-tray sequence, then approaches the screen; speaker notes also stop after a bounded period. Reduced motion skips these. No audio autoplays.
 - The shelf replaces the desk stack, a merged brick cat replaces the robot, and two generated poster textures replace the plant. No additional external model or art requests. Use independent muted object colors and neutral interface tokens.
+
+
+## v4.4: camera roll, window detail, and résumé administration
+- `/admin` uses the existing owner login and server-validated cookie, not a separate auth system. File selection only creates a local object URL; **Replace résumé** sends the PDF through the existing private Blob API. Downloads across the desk still share that proxy.
+- Vercel functions cap request bodies at 4.5 MB. Limit PDF files to 4 MB to leave multipart headroom; share the validation constant between client and server. Do not change production credentials to test this locally.
+- Native PDF iframe previews can be blank in embedded browsers. Reuse the lazy pdf.js renderer and keep an Open selected PDF fallback; cancel render tasks and destroy workers on selection change/unmount.
+- The desk camera itself translates, turns, and scales toward the visitor; its rear LCD hosts a 640×420 DOM photo surface at distanceFactor 0.4. It reuses the existing gallery, with wheel throttling, keyboard navigation, thumbnails, and a non-WebGL mobile alternative. Reduced motion snaps the movement; Escape cancels pickup and restores persistent focus.
+- User-supplied wall photos are locally optimized WebP assets (~131 KB combined), framed without stretching or cropping. Dispose the Three textures when the scene unmounts.
+- Exterior detail combines deterministic skyline/facade canvas textures with real buildings, roof tanks, and merged fire escapes. No continuous animation is needed. Move the open-blind control beside the cord to avoid covering the view.

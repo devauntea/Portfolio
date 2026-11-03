@@ -4,7 +4,7 @@
    The browser-declared content type is NOT consulted: it is attacker-supplied
    and trivially spoofed. The magic number is the only claim worth believing. */
 
-export const MAX_RESUME_BYTES = 8 * 1024 * 1024;
+export const MAX_RESUME_BYTES = 4 * 1024 * 1024;
 
 const PDF_MAGIC = "%PDF-";
 
@@ -16,7 +16,7 @@ export function validateResumePdf(bytes: Uint8Array): ResumeValidation {
   }
   if (bytes.length > MAX_RESUME_BYTES) {
     const mb = (bytes.length / 1024 / 1024).toFixed(1);
-    return { ok: false, error: `That file is ${mb} MB — the limit is 8 MB.` };
+    return { ok: false, error: `That file is ${mb} MB — the limit is 4 MB.` };
   }
   if (bytes.length < PDF_MAGIC.length) {
     return { ok: false, error: "That doesn't look like a PDF." };

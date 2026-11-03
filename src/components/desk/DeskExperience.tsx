@@ -21,6 +21,7 @@ import {
   SkillsContent,
   WorkContent,
 } from "./PortfolioContent";
+import { CameraRoll } from "./CameraRoll";
 import { ComputerScreen, type ComputerSection } from "./ComputerScreen";
 import type { DeskFocus } from "./DeskScene";
 
@@ -69,6 +70,8 @@ export function DeskExperience() {
   const [panel, setPanel] = useState<"resume" | null>(null);
   const [musicRequest, setMusicRequest] = useState(0);
   const [pocketOpen, setPocketOpen] = useState(false);
+  const [pocketCamera, setPocketCamera] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const returnFocus = useRef<HTMLElement | null>(null);
   const enterRef = useRef<HTMLButtonElement>(null);
   const pocketRef = useRef<HTMLDivElement>(null);
@@ -99,12 +102,12 @@ export function DeskExperience() {
   }, [focus, musicRequest, reduced]);
 
   useEffect(() => {
-    if (!pocketOpen) return;
+    if (!pocketOpen && !pocketCamera) return;
     pocketRef.current?.scrollIntoView({
       behavior: reduced ? "instant" : "smooth",
       block: "start",
     });
-  }, [pocketOpen, reduced]);
+  }, [pocketOpen, pocketCamera, reduced]);
 
   useEffect(() => {
     if (focus === "desk" || panel) return;
@@ -121,6 +124,24 @@ export function DeskExperience() {
     return () => window.removeEventListener("keydown", escape);
   }, [focus, panel]);
 
+  useEffect(() => {
+    if (focus !== "camera") return;
+    const timeout = setTimeout(() => setCameraReady(true), reduced ? 0 : 1100);
+    return () => clearTimeout(timeout);
+  }, [focus, reduced]);
+
+  function openCamera() {
+    returnFocus.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setCameraReady(false);
+    if (simple) {
+      setPocketOpen(false);
+      setPocketCamera(true);
+    } else setFocus("camera");
+  }
+
   function open(target: "computer" | "resume", next: ComputerSection = "work") {
     returnFocus.current =
       document.activeElement instanceof HTMLElement
@@ -132,6 +153,7 @@ export function DeskExperience() {
       return;
     }
     setSection(next);
+    setPocketCamera(false);
     if (simple) {
       setPocketOpen(true);
       return;
@@ -144,9 +166,13 @@ export function DeskExperience() {
   function close() {
     setPanel(null);
     setPocketOpen(false);
+    setPocketCamera(false);
     setFocus("desk");
     window.requestAnimationFrame(() => {
-      if (returnFocus.current?.isConnected && !returnFocus.current.closest("[inert]"))
+      if (
+        returnFocus.current?.isConnected &&
+        !returnFocus.current.closest("[inert]")
+      )
         returnFocus.current.focus();
       else enterRef.current?.focus();
     });
@@ -217,7 +243,8 @@ export function DeskExperience() {
                 onGames={() => open("computer", "games")}
                 onMonitor={() => open("computer")}
                 onResume={() => open("resume")}
-                onAbout={() => open("computer", "about")}
+                onCamera={openCamera}
+                cameraReady={cameraReady}
                 onLamp={() => setNight((v) => !v)}
                 onReady={onReady}
                 onFail={onFail}
@@ -272,16 +299,22 @@ export function DeskExperience() {
               <button onClick={() => open("computer", "music")}>
                 {DESK.computer.apps[2].label}
               </button>
+              <button onClick={openCamera}>{DESK.camera.title}</button>
               <button onClick={() => open("resume")}>
                 {DESK.resumeLabel} <span aria-hidden="true">↗</span>
               </button>
+              <Link href="/admin">{DESK.footer.admin}</Link>
             </nav>
           </footer>
           {focus !== "desk" && !panel && (
             <div className="desk-return-bar">
               <button onClick={close}>
-                ← {DESK.close} <kbd>{DESK.escape}</kbd>
+                ← {focus === "camera" ? DESK.camera.close : DESK.close}{" "}
+                <kbd>{DESK.escape}</kbd>
               </button>
+              {focus === "camera" && !cameraReady && (
+                <span role="status">{DESK.camera.loading}</span>
+              )}
               {focus === "music" && (
                 <span role="status">{DESK.room.musicLoading}</span>
               )}
@@ -363,18 +396,23 @@ export function DeskExperience() {
             <button onClick={() => open("computer", "music")}>
               ♫ {DESK.computer.apps[2].label}
             </button>
+            <button onClick={openCamera}>◎ {DESK.camera.title}</button>
           </section>
-          {pocketOpen && (
+          {(pocketOpen || pocketCamera) && (
             <div ref={pocketRef} className="pocket-computer">
-              <ComputerScreen
-                pocket
-                section={section}
-                onSection={changeSection}
-                onResume={() => open("resume")}
-                onClose={close}
-                active
-                reduced={reduced}
-              />
+              {pocketCamera ? (
+                <CameraRoll pocket onClose={close} />
+              ) : (
+                <ComputerScreen
+                  pocket
+                  section={section}
+                  onSection={changeSection}
+                  onResume={() => open("resume")}
+                  onClose={close}
+                  active
+                  reduced={reduced}
+                />
+              )}
             </div>
           )}
           <div className="reading-content">
@@ -385,6 +423,7 @@ export function DeskExperience() {
           </div>
           <footer className="reading-footer">
             <span>{DESK.footer.note}</span>
+            <Link href="/admin">{DESK.footer.admin} ↗</Link>
             <a href="/desktop">
               {DESK.footer.legacy}
               <Arrow diagonal />
@@ -429,7 +468,8 @@ export function DeskExperience() {
               <ResumeContent />
               <footer className="computer-footer">
                 <span>{DESK.footer.note}</span>
-                <a href="/desktop">{DESK.footer.admin} ↗</a>
+                <Link href="/admin">{DESK.footer.admin} ↗</Link>
+                <a href="/desktop">{DESK.footer.legacy} ↗</a>
               </footer>
             </div>
             <div className="computer-bottom">

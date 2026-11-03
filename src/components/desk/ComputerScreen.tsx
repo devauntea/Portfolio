@@ -344,7 +344,7 @@ export function ComputerScreen({
           <i />
           {DESK.computer.footer}
         </span>
-        <a href="/desktop">{DESK.footer.admin} ↗</a>
+        <a href="/admin">{DESK.footer.admin} ↗</a>
       </footer>
     </div>
   );

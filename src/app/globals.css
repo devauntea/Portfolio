@@ -713,7 +713,7 @@ body {
 }
 .portfolio-section > h2 {
   font:
-    400 clamp(34px, 4vw, 58px)/1.08 Georgia,
+    400 clamp(34px, 4vw, 58px) / 1.08 Georgia,
     serif;
   letter-spacing: -0.045em;
   max-width: 850px;
@@ -1186,7 +1186,7 @@ body {
 }
 .reading-hero h1 {
   font:
-    400 clamp(48px, 7vw, 92px)/1.03 Georgia,
+    400 clamp(48px, 7vw, 92px) / 1.03 Georgia,
     serif;
   letter-spacing: -0.05em;
   margin: 25px 0;
@@ -2728,3 +2728,184 @@ body {
     transition: none;
   }
 }
+
+/* A digital camera lifted off the desk, with playback on its actual rear LCD. */
+.camera-roll {
+  width: 640px;
+  height: 420px;
+  background: var(--desk-ink);
+  color: var(--desk-white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 9px;
+  font-family: var(--font-geist-sans), sans-serif;
+  backface-visibility: hidden;
+  outline: none;
+}
+.camera-roll header {
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  font: 10px var(--font-geist-mono);
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--desk-muted);
+}
+.camera-photo {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--desk-ink);
+}
+.camera-photo img {
+  object-fit: contain;
+}
+.camera-photo > button {
+  position: absolute;
+  top: 45%;
+  width: 32px;
+  height: 40px;
+  border: 1px solid var(--desk-shadow);
+  background: var(--desk-ink);
+  color: var(--desk-white);
+  font-size: 26px;
+  line-height: 1;
+  border-radius: 3px;
+}
+.camera-prev {
+  left: 10px;
+}
+.camera-next {
+  right: 10px;
+}
+.camera-photo > button:hover {
+  background: var(--desk-muted);
+}
+.camera-caption {
+  padding: 9px 15px 6px;
+  min-height: 57px;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 12px;
+  border-top: 1px solid var(--desk-muted);
+}
+.camera-caption strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.camera-caption span {
+  font: 9px var(--font-geist-mono);
+  color: var(--desk-shadow);
+}
+.camera-caption p {
+  grid-column: 1/-1;
+  font-size: 9px;
+  color: var(--desk-paper);
+  line-height: 1.4;
+}
+.camera-filmstrip {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  padding: 5px 15px;
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+.camera-filmstrip button {
+  position: relative;
+  width: 68px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  opacity: 0.65;
+  overflow: hidden;
+  border-radius: 3px;
+}
+.camera-filmstrip button[aria-current] {
+  border-color: var(--desk-white);
+  opacity: 1;
+}
+.camera-filmstrip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.camera-filmstrip span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: var(--desk-ink);
+  font: 7px var(--font-geist-mono);
+  padding: 2px 3px;
+}
+.camera-roll footer {
+  font: 8px var(--font-geist-mono);
+  text-align: center;
+  padding: 7px 10px 9px;
+  color: var(--desk-shadow);
+  flex-shrink: 0;
+}
+.camera-roll button:focus-visible {
+  outline: 2px solid var(--desk-white);
+  outline-offset: 2px;
+}
+.camera-roll--pocket {
+  width: 100%;
+  max-width: 800px;
+  height: 650px;
+  margin: auto;
+  border-radius: 18px;
+  border: 8px solid var(--desk-metal);
+}
+.camera-roll--pocket header {
+  height: 42px;
+  font-size: 11px;
+}
+.camera-roll--pocket header button {
+  font-size: 24px;
+}
+.camera-roll--pocket .camera-caption {
+  padding: 16px;
+}
+.camera-roll--pocket .camera-caption strong {
+  font-size: 16px;
+}
+.camera-roll--pocket .camera-caption p {
+  font-size: 12px;
+}
+.camera-roll--pocket footer {
+  font-size: 10px;
+  line-height: 1.7;
+}
+.desk-bottom nav > a {
+  font-size: inherit;
+}
+@media (max-width: 1150px) {
+  .desk-bottom nav {
+    gap: 9px;
+    font-size: 9px;
+  }
+  .desk-bottom > p {
+    max-width: 150px;
+    font-size: 9px;
+  }
+  .camera-roll--pocket {
+    height: 590px;
+  }
+  .camera-roll--pocket .camera-filmstrip {
+    justify-content: flex-start;
+  }
+}
+
+:root {
+  --desk-brick: #876454;
+  --desk-limestone: #b8aca0;
+  --desk-window-glass: #3a4b55;
+}
+
+.blind-control.is-open { width:36px; height:40px; padding:8px; justify-content:center; }
+.blind-control.is-open>div { display:none; }

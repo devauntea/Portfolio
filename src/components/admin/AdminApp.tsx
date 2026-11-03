@@ -130,7 +130,7 @@ export function AdminApp() {
         <p className="mt-1.5 text-[11px] text-starlight">
           {dragging ? "drop it" : "drop a PDF here, or click to choose"}
         </p>
-        <p className="mt-0.5 text-[10px] text-faint">PDF only · 8 MB max</p>
+        <p className="mt-0.5 text-[10px] text-faint">PDF only · 4 MB max</p>
         <input
           ref={inputRef}
           type="file"

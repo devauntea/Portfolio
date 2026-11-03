@@ -25,18 +25,22 @@ export function ResumePdf({ src, onFail }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+    let loadingTask: import("pdfjs-dist").PDFDocumentLoadingTask | undefined;
+    let renderTask: import("pdfjs-dist").RenderTask | undefined;
     const host = hostRef.current;
     if (!host) return;
 
     (async () => {
       try {
         const pdfjs = await import("pdfjs-dist");
+        if (cancelled) return;
         pdfjs.GlobalWorkerOptions.workerSrc = new URL(
           "pdfjs-dist/build/pdf.worker.min.mjs",
           import.meta.url,
         ).toString();
 
-        const doc = await pdfjs.getDocument({ url: src }).promise;
+        loadingTask = pdfjs.getDocument({ url: src });
+        const doc = await loadingTask.promise;
         if (cancelled) return;
 
         host.replaceChildren();
@@ -48,7 +52,9 @@ export function ResumePdf({ src, onFail }: Props) {
           if (cancelled) return;
 
           const unscaled = page.getViewport({ scale: 1 });
-          const viewport = page.getViewport({ scale: (width / unscaled.width) * dpr });
+          const viewport = page.getViewport({
+            scale: (width / unscaled.width) * dpr,
+          });
 
           const canvas = document.createElement("canvas");
           canvas.width = Math.floor(viewport.width);
@@ -57,12 +63,16 @@ export function ResumePdf({ src, onFail }: Props) {
           canvas.style.display = "block";
           canvas.style.marginBottom = n < doc.numPages ? "1rem" : "0";
           canvas.setAttribute("role", "img");
-          canvas.setAttribute("aria-label", `Résumé page ${n} of ${doc.numPages}`);
+          canvas.setAttribute(
+            "aria-label",
+            `Résumé page ${n} of ${doc.numPages}`,
+          );
 
           host.appendChild(canvas);
           /* v6 takes the canvas itself; canvasContext is the legacy path and
              passing both is contradictory. */
-          await page.render({ canvas, viewport }).promise;
+          renderTask = page.render({ canvas, viewport });
+          await renderTask.promise;
           if (cancelled) return;
         }
 
@@ -74,6 +84,8 @@ export function ResumePdf({ src, onFail }: Props) {
 
     return () => {
       cancelled = true;
+      renderTask?.cancel();
+      void loadingTask?.destroy();
     };
   }, [src, onFail]);
 

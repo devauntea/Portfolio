@@ -27,6 +27,9 @@ export type Palette = Record<
   | "skyNight"
   | "horizon"
   | "city"
+  | "brick"
+  | "limestone"
+  | "windowGlass"
   | "posterRose"
   | "posterMint"
   | "posterSand",
@@ -134,6 +137,7 @@ export function Label({
   width = 0.8,
   rotation = [0, 0, 0],
   background,
+  color = p.ink,
   printOnly = false,
 }: {
   text: string;
@@ -142,11 +146,12 @@ export function Label({
   width?: number;
   rotation?: [number, number, number];
   background?: string;
+  color?: string;
   printOnly?: boolean;
 }) {
   const tex = useMemo(
-    () => labelTexture(text, p, background, p.ink, printOnly),
-    [text, p, background, printOnly],
+    () => labelTexture(text, p, background, color, printOnly),
+    [text, p, background, color, printOnly],
   );
   useEffect(() => () => tex.dispose(), [tex]);
   return (

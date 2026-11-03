@@ -341,7 +341,7 @@ export const DESK = {
   monitor: "Enter the computer",
   files: "Open the résumé drawer",
   lamp: "Change the lighting",
-  photo: "Meet the person behind the work",
+  photo: "Pick up the camera",
   tip: "The objects have stories. Go ahead, click around.",
   status: "Built with curiosity. Best explored slowly.",
   loading: "Setting the desk…",
@@ -394,21 +394,27 @@ export const DESK = {
   room: {
     shelf: "THE GOOD STUFF / VOL. 01—05",
     posters: [
-      {
-        title: ["AFTER", "HOURS"],
-        subtitle: "A LITTLE NOISE. A LOT OF SOUL.",
-        issue: "LISTENING CLUB / NYC",
-      },
-      {
-        title: ["MAKE /", "REMAKE"],
-        subtitle: "NOTHING IS EVER REALLY FINISHED.",
-        issue: "STUDIO NOTES / 026",
-      },
+      { src: "/images/posters/portrait-warm.webp", ratio: 1024 / 983 },
+      { src: "/images/posters/portrait-mono.webp", ratio: 1024 / 1007 },
     ],
     speakers: "STEREO / 02",
     disc: "DEVAUNTAE / ON REPEAT",
     musicAction: "See what I’m listening to",
     musicLoading: "Loading the listening room…",
+  },
+  camera: {
+    title: "The camera roll",
+    label: "A few favorite frames",
+    counter: "PLAYBACK",
+    previous: "Previous photo",
+    next: "Next photo",
+    close: "Put the camera down",
+    hint: "Scroll to browse · ← → to change frames",
+    pocketHint:
+      "A few moments worth keeping. Swipe the strip or choose a frame.",
+    loading: "Picking up the camera…",
+    model: "NORMAN / DIGITAL 06",
+    set: "SET",
   },
   computer: {
     title: "NORMAN OS",
@@ -580,7 +586,7 @@ export const DESK = {
   footer: {
     note: "Made with care, in New York.",
     legacy: "Visit the original DevauntaeOS",
-    admin: "Owner & archive",
+    admin: "Admin",
   },
 };
 
@@ -668,4 +674,50 @@ export const PROJECT_NOTES: Record<
     detail:
       "A physical desk becomes the entrance to my portfolio. A custom Three.js scene, smooth camera transitions, a working file drawer, and a responsive reading view bring the work into a more personal setting. The original retro desktop remains available in the archive.",
   },
+};
+
+export const ADMIN = {
+  title: "Studio admin",
+  eyebrow: "BEHIND THE DESK",
+  intro: "Keep your résumé up to date, right here.",
+  back: "Back to the desk",
+  loginTitle: "Your side of the desk.",
+  loginDetail:
+    "Use your existing owner password to manage the résumé visitors download.",
+  password: "Owner password",
+  login: "Sign in",
+  signingIn: "Signing in…",
+  denied: "That password didn’t match. Try again.",
+  unavailable: "Sign-in is unavailable right now. Please try again shortly.",
+  logout: "Sign out",
+  current: "CURRENT RÉSUMÉ",
+  currentDetail: "This is the PDF linked everywhere on your portfolio.",
+  original: "Original portfolio PDF",
+  uploaded: "Uploaded replacement",
+  checking: "Checking the current document…",
+  metadataError: "Couldn’t check the current document. Reload to try again.",
+  view: "View current PDF",
+  updated: "Last replaced",
+  replace: "Replace your résumé",
+  choose: "Choose a PDF",
+  drop: "Drop your PDF here",
+  limit: "PDF only · up to 4 MB",
+  instruction:
+    "Choose a file, check the preview, then publish it. The new PDF becomes available immediately.",
+  selected: "READY TO REPLACE",
+  publish: "Replace résumé",
+  publishing: "Uploading…",
+  cancel: "Choose a different file",
+  success:
+    "Your résumé has been replaced. Every résumé download now uses the new PDF.",
+  failure:
+    "The upload didn’t finish. Your current résumé is still available. Try again.",
+  expired: "Your session expired. Sign in again to replace the résumé.",
+  preview: "Selected résumé preview",
+  previewEmpty: "Your next chapter, on paper.",
+  previewHint: "Select a PDF to preview it here before publishing.",
+  previewLink: "Open selected PDF",
+  previewFallback:
+    "If the preview isn’t available in your browser, open the selected PDF above.",
+  note: "Replacing the PDF updates the downloadable document. The written experience summary on the portfolio is maintained separately.",
 };
