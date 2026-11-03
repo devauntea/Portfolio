@@ -136,81 +136,81 @@ function ProjectArt({ id }: { id: string }) {
 }
 
 export function WorkContent({ idPrefix = "" }: { idPrefix?: string }) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [selected, setSelected] = useState(PROJECTS[0].id);
+  const project = PROJECTS.find((item) => item.id === selected) ?? PROJECTS[0];
+  const notes = PROJECT_NOTES[project.id];
+  const title =
+    project.id === "devauntae-os" ? DESK.work.deskTitle : project.name;
   return (
     <section
-      className="portfolio-section"
+      className="portfolio-section work-browser"
       id={`${idPrefix}work`}
       aria-labelledby={`${idPrefix}work-title`}
     >
-      <p className="desk-eyebrow">{DESK.work.eyebrow}</p>
-      <h2 id={`${idPrefix}work-title`}>{DESK.work.title}</h2>
-      <p className="section-intro">{DESK.work.intro}</p>
-      <div className="project-grid">
-        {PROJECTS.map((project, index) => {
-          const notes = PROJECT_NOTES[project.id];
-          const isOpen = expanded === project.id;
-          const title =
-            project.id === "devauntae-os" ? "The Working Desk" : project.name;
-          return (
-            <article
-              key={project.id}
-              className={`project-item ${index > 2 ? "project-item--compact" : ""}`}
+      <header className="work-browser-heading">
+        <div>
+          <p className="desk-eyebrow">{DESK.work.collection}</p>
+          <h2 id={`${idPrefix}work-title`}>{DESK.work.selected}</h2>
+        </div>
+        <span>{DESK.work.count}</span>
+      </header>
+      <div className="work-browser-layout">
+        <nav className="project-index" aria-label={DESK.work.index}>
+          {PROJECTS.map((item, index) => (
+            <button
+              key={item.id}
+              aria-pressed={selected === item.id}
+              onClick={() => setSelected(item.id)}
             >
-              {index < 3 && <ProjectArt id={project.id} />}
-              <div className="project-category">
-                <span>{notes.category}</span>
-                <span>{String(index + 1).padStart(2, "0")}</span>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <strong>
+                  {item.id === "devauntae-os" ? DESK.work.deskTitle : item.name}
+                </strong>
+                <small>{PROJECT_NOTES[item.id].category}</small>
               </div>
-              <h3>{title}</h3>
-              <p className="project-summary">{notes.summary}</p>
-              <div className="project-tech">
-                {project.tech.map((t) => (
-                  <span key={t}>{t}</span>
-                ))}
-              </div>
-              <div className="project-actions">
-                <button
-                  aria-expanded={isOpen}
-                  aria-controls={`${idPrefix}notes-${project.id}`}
-                  onClick={() => setExpanded(isOpen ? null : project.id)}
-                >
-                  {isOpen ? DESK.work.close : DESK.work.more}
-                  <span aria-hidden="true">{isOpen ? "−" : "+"}</span>
-                </button>
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`${DESK.work.open}: ${title}`}
-                  >
-                    <Arrow diagonal />
-                  </a>
-                )}
-              </div>
-              {isOpen && (
-                <div
-                  id={`${idPrefix}notes-${project.id}`}
-                  className="project-detail"
-                >
-                  <p>{notes.detail}</p>
-                  {project.link ? (
-                    <a href={project.link} target="_blank" rel="noreferrer">
-                      {DESK.work.open}
-                      <Arrow diagonal />
-                    </a>
-                  ) : (
-                    (project.id === "personaforge" ||
-                      project.id === "ml-eval") && (
-                      <small>{DESK.work.private}</small>
-                    )
-                  )}
-                </div>
-              )}
-            </article>
-          );
-        })}
+              <b aria-hidden="true">↗</b>
+            </button>
+          ))}
+        </nav>
+        <article
+          className={`project-feature project-feature--${project.id}`}
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div className="project-feature-art">
+            <ProjectArt id={project.id} />
+            <span className="project-feature-number">
+              {String(PROJECTS.indexOf(project) + 1).padStart(2, "0")}
+            </span>
+          </div>
+          <div className="project-feature-body">
+            <p className="desk-eyebrow">{notes.category}</p>
+            <h3>{title}</h3>
+            <p className="project-feature-summary">{notes.summary}</p>
+            <div className="project-tech">
+              {project.tech.map((tool) => (
+                <span key={tool}>{tool}</span>
+              ))}
+            </div>
+            <p className="project-feature-detail">{notes.detail}</p>
+            {project.link ? (
+              <a
+                className="project-feature-link"
+                href={project.link}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {DESK.work.open}
+                <Arrow diagonal />
+              </a>
+            ) : (
+              (project.id === "personaforge" || project.id === "ml-eval") && (
+                <small className="project-private">{DESK.work.private}</small>
+              )
+            )}
+          </div>
+        </article>
       </div>
     </section>
   );

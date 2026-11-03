@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Canvas,
   useFrame,
@@ -31,15 +31,24 @@ import {
   DetailedTower,
   DeskMat,
   Pottery,
-  DetailedPlant,
 } from "./DeskObjects";
 import { DeskWindow, WINDOW } from "./DeskWindow";
-import { MangaStack, BrickDisplay, SewingMachine } from "./DeskMakerObjects";
+import { BrickDisplay, SewingMachine } from "./DeskMakerObjects";
+import { RoomDecor } from "./DeskRoomDecor";
+import { DeskSpeakers } from "./DeskMedia";
+import { ComputerScreen, type ComputerSection } from "./ComputerScreen";
 import { DESK } from "@/data/profile";
 
-export type DeskFocus = "desk" | "monitor" | "resume";
+export type DeskFocus = "desk" | "monitor" | "resume" | "music";
 type SceneProps = {
   focus: DeskFocus;
+  section: ComputerSection;
+  onSection: (section: ComputerSection) => void;
+  onClose: () => void;
+  musicRequest: number;
+  musicActive: boolean;
+  onMusic: () => void;
+  onGames: () => void;
   reduced: boolean;
   night: boolean;
   onMonitor: () => void;
@@ -71,6 +80,9 @@ const colorKeys: (keyof Palette)[] = [
   "skyNight",
   "horizon",
   "city",
+  "posterRose",
+  "posterMint",
+  "posterSand",
 ];
 
 function palette(): Palette {
@@ -125,59 +137,37 @@ function woodTexture(p: Palette) {
 
 function screenTexture(p: Palette) {
   return makeTexture(1200, 860, (ctx) => {
-    ctx.fillStyle = p.screen;
+    ctx.fillStyle = p.ink;
     ctx.fillRect(0, 0, 1200, 860);
-    ctx.fillStyle = p.ink;
-    ctx.fillRect(0, 0, 1200, 56);
     ctx.fillStyle = p.paper;
-    ctx.font = "18px monospace";
-    ctx.fillText(DESK.screen.system, 30, 36);
-    ctx.fillText("●  ONLINE", 1030, 36);
-    ctx.fillStyle = p.accent;
-    ctx.font = "17px monospace";
-    ctx.fillText(DESK.screen.greeting, 62, 145);
-    ctx.fillStyle = p.ink;
-    ctx.font = "92px Georgia";
-    ctx.fillText("Ideas", 58, 280);
-    ctx.fillText("made real.", 58, 383);
-    ctx.font = "25px sans-serif";
-    ctx.fillText("Engineering, imagination", 62, 450);
-    ctx.fillText("& everything in between.", 62, 487);
-    ctx.save();
-    ctx.translate(925, 325);
-    ctx.rotate(-0.4);
-    ctx.strokeStyle = p.accent;
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 9; i++) {
+    ctx.font = "22px monospace";
+    ctx.fillText(DESK.computer.title, 50, 60);
+    ctx.fillText(DESK.computer.edition, 780, 60);
+    ctx.strokeStyle = p.muted;
+    ctx.beginPath();
+    ctx.moveTo(50, 90);
+    ctx.lineTo(1150, 90);
+    ctx.stroke();
+    ctx.font = "bold 110px sans-serif";
+    ctx.fillText(DESK.computer.standby[0], 50, 280);
+    ctx.fillText(DESK.computer.standby[1], 50, 395);
+    ctx.font = "25px monospace";
+    ctx.fillText(DESK.computer.idleNote, 55, 475);
+    DESK.computer.apps.slice(0, 3).forEach((app, i) => {
+      const x = 55 + i * 370;
+      ctx.fillStyle = [p.posterMint, p.posterRose, p.posterSand][i];
       ctx.beginPath();
-      ctx.ellipse(0, 0, 150, 45 + i * 14, i * 0.23, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-    DESK.nav.forEach((n, i) => {
-      const x = 65 + i * 283;
-      ctx.fillStyle = p.accent;
-      ctx.beginPath();
-      ctx.roundRect(x, 614, 48, 15, 3);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.roundRect(x, 624, 75, 51, 4);
+      ctx.roundRect(x, 560, 335, 190, 14);
       ctx.fill();
       ctx.fillStyle = p.ink;
-      ctx.font = "21px monospace";
-      ctx.fillText(n.label, x, 713);
+      ctx.font = "65px sans-serif";
+      ctx.fillText(app.symbol, x + 25, 643);
+      ctx.font = "bold 30px sans-serif";
+      ctx.fillText(app.label.toUpperCase(), x + 25, 713);
     });
-    ctx.strokeStyle = p.accent;
-    ctx.globalAlpha = 0.3;
-    ctx.beginPath();
-    ctx.moveTo(0, 780);
-    ctx.lineTo(1200, 780);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = p.ink;
-    ctx.font = "17px monospace";
-    ctx.fillText(DESK.screen.footer, 34, 823);
-    ctx.fillText("DN / 2026", 1010, 823);
+    ctx.fillStyle = p.paper;
+    ctx.font = "18px monospace";
+    ctx.fillText(DESK.computer.idleLinks, 55, 812);
   });
 }
 
@@ -196,8 +186,15 @@ function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
   }, [gl, invalidate]);
   useFrame((_, delta) => {
     if (focus === "monitor") {
-      destination.set(0.35, 2.01, 2.5);
-      look.set(0.35, 2.01, -0.33);
+      destination.set(0.35, 2.12, 4.1);
+      look.set(0.35, 2.01, -0.24);
+    } else if (focus === "music") {
+      destination.set(
+        -1.1,
+        3.8,
+        9.4 + Math.max(0, 1.6 - size.width / size.height) * 12,
+      );
+      look.set(-0.8, 1.2, -0.5);
     } else if (focus === "resume") {
       destination.set(-2.8, 2.5, 6.6);
       look.set(-2.8, -0.45, 1.3);
@@ -228,9 +225,11 @@ function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
 
 function Monitor({
   p,
+  screen,
   onClick,
 }: {
   p: Palette;
+  screen: ReactNode;
   onClick: (event: ThreeEvent<MouseEvent>) => void;
 }) {
   const texture = useMemo(() => screenTexture(p), [p]);
@@ -336,6 +335,18 @@ function Monitor({
           depthWrite={false}
         />
       </mesh>
+      {screen && (
+        <Html
+          transform
+          position={[0, 2.01, 0.566]}
+          distanceFactor={1.1583}
+          zIndexRange={[7, 1]}
+          wrapperClass="crt-html"
+          pointerEvents="auto"
+        >
+          {screen}
+        </Html>
+      )}
       <Label
         text={DESK.computerLabel}
         printOnly
@@ -1036,7 +1047,24 @@ function World(props: SceneProps) {
         wood={wood}
       />
       <DeskMat p={p} woven={woven} />
-      <Monitor p={p} onClick={click(props.onMonitor)} />
+      <Monitor
+        p={p}
+        onClick={click(() => {
+          if (props.focus === "desk") props.onMonitor();
+        })}
+        screen={
+          props.focus === "monitor" ? (
+            <ComputerScreen
+              section={props.section}
+              onSection={props.onSection}
+              onResume={props.onResume}
+              onClose={props.onClose}
+              active
+              reduced={props.reduced}
+            />
+          ) : null
+        }
+      />
       <DetailedKeyboard p={p} />
       <group position={[2.52, 0.27, 1.3]} rotation={[0, -0.16, 0]}>
         <mesh
@@ -1091,12 +1119,22 @@ function World(props: SceneProps) {
           [-0.7, 0.16, -0.7],
         ]}
       />
-      <DetailedTower p={p} ceramic={ceramic} />
-      <DetailedPlant p={p} ceramic={ceramic} />
+      <DetailedTower
+        p={p}
+        ceramic={ceramic}
+        musicRequest={props.musicRequest}
+        reduced={props.reduced}
+      />
+      <RoomDecor p={p} />
+      <DeskSpeakers
+        p={p}
+        request={props.musicRequest}
+        active={props.musicActive}
+        reduced={props.reduced}
+      />
       <Lamp p={p} night={props.night} onClick={click(props.onLamp)} />
       <CameraObject p={p} onClick={click(props.onAbout)} />
       <Pottery p={p} ceramic={ceramic} grain={grain} />
-      <MangaStack p={p} />
       <BrickDisplay p={p} />
       <SewingMachine
         p={p}
@@ -1126,6 +1164,12 @@ function World(props: SceneProps) {
       />
       {active && (
         <>
+          <Html position={[-2.5, 2.45, -0.5]} center zIndexRange={[5, 0]}>
+            <button className="desk-hotspot" onClick={props.onMusic}>
+              <span>♫</span>
+              {DESK.room.musicAction}
+            </button>
+          </Html>
           <Html position={[0.35, 3.6, -0.4]} center zIndexRange={[5, 0]}>
             <button className="desk-hotspot" onClick={props.onMonitor}>
               <span>01</span>

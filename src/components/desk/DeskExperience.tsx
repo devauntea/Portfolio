@@ -18,11 +18,10 @@ import {
   Arrow,
   ContactContent,
   ResumeContent,
-  SectionContent,
   SkillsContent,
   WorkContent,
-  type Section,
 } from "./PortfolioContent";
+import { ComputerScreen, type ComputerSection } from "./ComputerScreen";
 import type { DeskFocus } from "./DeskScene";
 
 const DeskScene = dynamic(() => import("./DeskScene"), { ssr: false });
@@ -66,11 +65,13 @@ export function DeskExperience() {
   const [ready, setReady] = useState(false);
   const [night, setNight] = useState(false);
   const [focus, setFocus] = useState<DeskFocus>("desk");
-  const [section, setSection] = useState<Section>("work");
-  const [panel, setPanel] = useState<"computer" | "resume" | null>(null);
+  const [section, setSection] = useState<ComputerSection>("work");
+  const [panel, setPanel] = useState<"resume" | null>(null);
+  const [musicRequest, setMusicRequest] = useState(0);
+  const [pocketOpen, setPocketOpen] = useState(false);
   const returnFocus = useRef<HTMLElement | null>(null);
   const enterRef = useRef<HTMLButtonElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const pocketRef = useRef<HTMLDivElement>(null);
   const simple = !wide || reading || failed;
   const onReady = useCallback(() => setReady(true), []);
   const onFail = useCallback(() => {
@@ -80,39 +81,80 @@ export function DeskExperience() {
   }, []);
 
   useEffect(() => {
-    if (focus === "desk") return;
+    if (focus !== "resume") return;
     const timeout = window.setTimeout(
-      () => setPanel(focus === "resume" ? "resume" : "computer"),
-      reduced || simple ? 0 : focus === "resume" ? 1100 : 850,
+      () => setPanel("resume"),
+      reduced || simple ? 0 : 1100,
     );
     return () => window.clearTimeout(timeout);
   }, [focus, reduced, simple]);
 
   useEffect(() => {
+    if (focus !== "music") return;
+    const timeout = window.setTimeout(
+      () => setFocus("monitor"),
+      reduced ? 0 : 3400,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [focus, musicRequest, reduced]);
+
+  useEffect(() => {
+    if (!pocketOpen) return;
+    pocketRef.current?.scrollIntoView({
+      behavior: reduced ? "instant" : "smooth",
+      block: "start",
+    });
+  }, [pocketOpen, reduced]);
+
+  useEffect(() => {
     if (focus === "desk" || panel) return;
-    const escape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFocus("desk");
+    const escape = (event: KeyboardEvent) => {
+      if (
+        event.key === "Escape" &&
+        !document.querySelector("[data-game-memory]")
+      ) {
+        setFocus("desk");
+        window.requestAnimationFrame(() => enterRef.current?.focus());
+      }
     };
     window.addEventListener("keydown", escape);
     return () => window.removeEventListener("keydown", escape);
   }, [focus, panel]);
 
-  function open(target: "computer" | "resume", next: Section = "work") {
+  function open(target: "computer" | "resume", next: ComputerSection = "work") {
     returnFocus.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
+    if (target === "resume") {
+      if (simple) setPanel("resume");
+      else setFocus("resume");
+      return;
+    }
     setSection(next);
-    if (simple) setPanel(target);
-    else setFocus(target === "resume" ? "resume" : "monitor");
+    if (simple) {
+      setPocketOpen(true);
+      return;
+    }
+    if (next === "music") {
+      setMusicRequest((request) => request + 1);
+      setFocus("music");
+    } else setFocus("monitor");
   }
   function close() {
     setPanel(null);
+    setPocketOpen(false);
     setFocus("desk");
+    window.requestAnimationFrame(() => {
+      if (returnFocus.current?.isConnected && !returnFocus.current.closest("[inert]"))
+        returnFocus.current.focus();
+      else enterRef.current?.focus();
+    });
   }
-  function changeSection(next: Section) {
-    setSection(next);
-    scrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  function changeSection(next: ComputerSection) {
+    if (next === "music" && section !== "music" && !simple)
+      open("computer", "music");
+    else setSection(next);
   }
   function toggleReading() {
     close();
@@ -121,12 +163,12 @@ export function DeskExperience() {
 
   return (
     <main
-      className={`working-desk ${simple ? "is-reading" : "is-immersive"} ${night ? "is-evening" : ""}`}
+      className={`working-desk ${simple ? "is-reading" : "is-immersive"} ${night ? "is-evening" : ""} ${!simple && focus !== "desk" ? "is-at-computer" : ""}`}
     >
       <a className="desk-skip" href={simple ? "#work" : "#desk-navigation"}>
         {DESK.enter}
       </a>
-      <header className="desk-header">
+      <header className="desk-header" inert={!simple && focus !== "desk"}>
         <Link className="desk-brand" href="/" aria-label={DESK.name}>
           <span className="desk-monogram">{DESK.initials}</span>
           <span>
@@ -163,6 +205,16 @@ export function DeskExperience() {
                 focus={focus}
                 reduced={reduced}
                 night={night}
+                section={section}
+                onSection={changeSection}
+                onClose={close}
+                musicRequest={musicRequest}
+                musicActive={
+                  section === "music" &&
+                  (focus === "music" || focus === "monitor")
+                }
+                onMusic={() => open("computer", "music")}
+                onGames={() => open("computer", "games")}
                 onMonitor={() => open("computer")}
                 onResume={() => open("resume")}
                 onAbout={() => open("computer", "about")}
@@ -178,7 +230,11 @@ export function DeskExperience() {
               </div>
             )}
           </div>
-          <div className={`desk-intro ${focus !== "desk" ? "is-away" : ""}`}>
+          <div
+            className={`desk-intro ${focus !== "desk" ? "is-away" : ""}`}
+            inert={focus !== "desk"}
+            aria-hidden={focus !== "desk"}
+          >
             <p className="desk-eyebrow">{DESK.eyebrow}</p>
             <h1>
               {DESK.headline[0]}
@@ -199,7 +255,7 @@ export function DeskExperience() {
               <Arrow diagonal />
             </button>
           </div>
-          <footer className="desk-bottom">
+          <footer className="desk-bottom" inert={focus !== "desk"}>
             <p>
               <span className="status-dot" />
               {DESK.status}
@@ -210,11 +266,27 @@ export function DeskExperience() {
                   {item.label}
                 </button>
               ))}
+              <button onClick={() => open("computer", "games")}>
+                {DESK.computer.apps[1].label}
+              </button>
+              <button onClick={() => open("computer", "music")}>
+                {DESK.computer.apps[2].label}
+              </button>
               <button onClick={() => open("resume")}>
                 {DESK.resumeLabel} <span aria-hidden="true">↗</span>
               </button>
             </nav>
           </footer>
+          {focus !== "desk" && !panel && (
+            <div className="desk-return-bar">
+              <button onClick={close}>
+                ← {DESK.close} <kbd>{DESK.escape}</kbd>
+              </button>
+              {focus === "music" && (
+                <span role="status">{DESK.room.musicLoading}</span>
+              )}
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -280,6 +352,31 @@ export function DeskExperience() {
               </a>
             ))}
           </nav>
+          <section className="pocket-launcher">
+            <div>
+              <p className="desk-eyebrow">{DESK.computer.pocket}</p>
+              <p>{DESK.computer.pocketIntro}</p>
+            </div>
+            <button onClick={() => open("computer", "games")}>
+              ✳ {DESK.computer.apps[1].label}
+            </button>
+            <button onClick={() => open("computer", "music")}>
+              ♫ {DESK.computer.apps[2].label}
+            </button>
+          </section>
+          {pocketOpen && (
+            <div ref={pocketRef} className="pocket-computer">
+              <ComputerScreen
+                pocket
+                section={section}
+                onSection={changeSection}
+                onResume={() => open("resume")}
+                onClose={close}
+                active
+                reduced={reduced}
+              />
+            </div>
+          )}
           <div className="reading-content">
             <WorkContent />
             <AboutContent />
@@ -305,7 +402,7 @@ export function DeskExperience() {
         <Dialog.Portal>
           <Dialog.Overlay className="desk-dialog-overlay" />
           <Dialog.Content
-            className={`desk-dialog ${panel === "resume" ? "desk-dialog--resume" : "desk-dialog--computer"}`}
+            className="desk-dialog desk-dialog--resume"
             aria-describedby={undefined}
             onCloseAutoFocus={(event) => {
               event.preventDefault();
@@ -328,35 +425,8 @@ export function DeskExperience() {
                 <b aria-hidden="true">×</b>
               </Dialog.Close>
             </div>
-            {panel === "computer" && (
-              <nav className="computer-nav" aria-label={DESK.folders}>
-                {DESK.nav.map((item) => (
-                  <button
-                    key={item.id}
-                    aria-current={section === item.id ? "page" : undefined}
-                    onClick={() => changeSection(item.id)}
-                  >
-                    <span>{item.number}</span>
-                    {item.label}
-                  </button>
-                ))}
-                <button
-                  className="computer-resume"
-                  onClick={() => {
-                    setFocus("resume");
-                    setPanel("resume");
-                  }}
-                >
-                  {DESK.resumeLabel} ↗
-                </button>
-              </nav>
-            )}
-            <div className="computer-scroll" ref={scrollRef}>
-              {panel === "resume" ? (
-                <ResumeContent />
-              ) : (
-                <SectionContent key={section} section={section} />
-              )}
+            <div className="computer-scroll">
+              <ResumeContent />
               <footer className="computer-footer">
                 <span>{DESK.footer.note}</span>
                 <a href="/desktop">{DESK.footer.admin} ↗</a>
@@ -365,11 +435,7 @@ export function DeskExperience() {
             <div className="computer-bottom">
               <span className="power-indicator" />
               <span>{DESK.name}</span>
-              <span>
-                {panel === "resume"
-                  ? "001 / RÉSUMÉ"
-                  : `${DESK.nav.find((n) => n.id === section)?.number} / ${DESK.nav.find((n) => n.id === section)?.label.toUpperCase()}`}
-              </span>
+              <span>{DESK.resume.eyebrow}</span>
             </div>
           </Dialog.Content>
         </Dialog.Portal>

@@ -123,7 +123,11 @@ function MangaVolume({ p, index }: { p: Palette; index: number }) {
 
 export function MangaStack({ p }: { p: Palette }) {
   return (
-    <group position={[-4.65, 0.14, 1.05]} scale={0.88} rotation={[0, 0.12, 0]}>
+    <group
+      position={[-6.65, 3.47, -3.15]}
+      scale={[0.78, 1, 0.48]}
+      rotation={[0, 0, Math.PI / 2]}
+    >
       {DESK.details.manga.map((_, i) => (
         <MangaVolume p={p} index={i} key={i} />
       ))}
@@ -150,49 +154,35 @@ type Brick = {
 export function BrickDisplay({ p }: { p: Palette }) {
   const parts = useMemo(() => {
     const bricks: Brick[] = [
-      { x: 0, y: 0.035, z: 0, w: 8, d: 6, h: 0.07, color: "ink" },
-      ...[-0.22, 0.22].map((x) => ({
+      { x: 0, y: 0.04, z: 0, w: 7, d: 6, h: 0.08, color: "shadow" },
+      { x: 0, y: 0.36, z: 0, w: 4, d: 4, h: 0.52, color: "paper" },
+      { x: 0, y: 0.73, z: -0.08, w: 4, d: 3, h: 0.25, color: "paper" },
+      { x: 0, y: 1.03, z: 0.04, w: 5, d: 4, h: 0.35, color: "paper" },
+      { x: 0, y: 1.26, z: 0.04, w: 5, d: 4, h: 0.1, color: "paper" },
+      ...[-0.3, 0.3].map((x) => ({
         x,
-        y: 0.15,
-        z: 0.15,
-        w: 2,
+        y: 1.43,
+        z: 0.01,
+        w: 1,
         d: 3,
-        h: 0.15,
-        color: "red" as const,
+        h: 0.23,
+        color: "ink" as const,
       })),
-      ...[-0.22, 0.22].map((x) => ({
+      ...[-0.24, 0.24].map((x) => ({
         x,
-        y: 0.36,
-        z: 0.07,
+        y: 0.18,
+        z: 0.42,
         w: 2,
         d: 2,
-        h: 0.24,
+        h: 0.2,
         color: "paper" as const,
       })),
-      { x: 0, y: 0.65, z: 0.02, w: 5, d: 3, h: 0.3, color: "blue" },
-      { x: 0, y: 0.89, z: 0.02, w: 4, d: 3, h: 0.16, color: "paper" },
-      { x: 0, y: 1.13, z: 0.02, w: 4, d: 3, h: 0.28, color: "paper" },
-      { x: 0, y: 1.32, z: 0.02, w: 4, d: 3, h: 0.08, color: "red" },
-      ...[-0.54, 0.54].map((x) => ({
-        x,
-        y: 0.68,
-        z: 0.04,
-        w: 1,
-        d: 2,
-        h: 0.28,
-        color: "red" as const,
-      })),
-      ...[-0.54, 0.54].map((x) => ({
-        x,
-        y: 0.44,
-        z: 0.12,
-        w: 1,
-        d: 2,
-        h: 0.15,
-        color: "paper" as const,
-      })),
-      { x: 0.77, y: 0.14, z: 0.28, w: 2, d: 2, h: 0.15, color: "accent" },
-      { x: -0.73, y: 0.1, z: 0.38, w: 2, d: 1, h: 0.09, color: "blue" },
+      { x: 0.42, y: 0.22, z: -0.1, w: 2, d: 2, h: 0.24, color: "ink" },
+      { x: 0.63, y: 0.34, z: -0.15, w: 1, d: 2, h: 0.15, color: "ink" },
+      { x: 0.78, y: 0.53, z: -0.15, w: 1, d: 2, h: 0.28, color: "ink" },
+      { x: 0.78, y: 0.78, z: -0.15, w: 1, d: 2, h: 0.15, color: "paper" },
+      { x: 0.63, y: 0.9, z: -0.15, w: 1, d: 2, h: 0.1, color: "paper" },
+      { x: 0, y: 0.4, z: 0.343, w: 2, d: 1, h: 0.26, color: "ivory" },
     ];
     const byColor = new Map<keyof Palette, THREE.BufferGeometry[]>();
     for (const b of bricks) {
@@ -234,7 +224,7 @@ export function BrickDisplay({ p }: { p: Palette }) {
     [parts],
   );
   return (
-    <group position={[-3.85, 0.14, -0.65]} rotation={[0, 0.16, 0]}>
+    <group position={[-3.8, 0.14, 0.45]} rotation={[0, 0.16, 0]}>
       {parts.map(({ color, geometry }) => (
         <mesh key={color} geometry={geometry} castShadow receiveShadow>
           <meshPhysicalMaterial
@@ -244,27 +234,52 @@ export function BrickDisplay({ p }: { p: Palette }) {
           />
         </mesh>
       ))}
-      <Box
-        pos={[0, 1.16, 0.285]}
-        size={[0.55, 0.12, 0.025]}
-        color={p.ink}
-        radius={0.009}
-      />
-      {[-0.16, 0.16].map((x) => (
-        <Box
-          key={x}
-          pos={[x, 1.16, 0.304]}
-          size={[0.08, 0.065, 0.02]}
-          color={p.light}
-          radius={0.005}
-        />
+      {[-0.24, 0.24].map((x) => (
+        <group key={x} position={[x, 1.09, 0.39]}>
+          <Box
+            pos={[0, 0, 0]}
+            size={[0.12, 0.12, 0.025]}
+            color={p.ink}
+            radius={0.012}
+          />
+          <Box
+            pos={[-0.02, 0.02, 0.018]}
+            size={[0.035, 0.035, 0.012]}
+            color={p.paper}
+            radius={0.004}
+          />
+        </group>
       ))}
       <Box
-        pos={[0, 0.69, 0.285]}
-        size={[0.25, 0.17, 0.025]}
-        color={p.accentLight}
-        radius={0.007}
+        pos={[0, 0.97, 0.407]}
+        size={[0.1, 0.06, 0.06]}
+        color={p.posterRose}
+        radius={0.012}
       />
+      {[-1, 1].map((side) => (
+        <group key={side}>
+          <Cable
+            p={p}
+            color={p.muted}
+            radius={0.006}
+            points={[
+              [side * 0.12, 0.94, 0.411],
+              [side * 0.27, 0.95, 0.411],
+              [side * 0.43, 1.0, 0.4],
+            ]}
+          />
+          <Cable
+            p={p}
+            color={p.muted}
+            radius={0.006}
+            points={[
+              [side * 0.12, 0.91, 0.411],
+              [side * 0.28, 0.88, 0.411],
+              [side * 0.43, 0.87, 0.4],
+            ]}
+          />
+        </group>
+      ))}
       <Label
         text={DESK.details.bricks}
         p={p}

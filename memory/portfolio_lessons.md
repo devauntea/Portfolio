@@ -243,3 +243,11 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Demand-rendered blinds clamp delta, stop invalidating after convergence, and snap for reduced motion. The sewing needle and wheel animate only for a bounded interaction; its timeout is cleared on unmount.
 - Manga uses generated page-edge/spine textures and original abstract cover art. Brick geometry is merged by color. RoundedBoxGeometry is non-indexed, so convert cylinder studs with `toNonIndexed()` before merging; mixed indices return null and break rendering.
 - Recheck the entire desktop composition after adding props: book stacks can cover the intro copy, and large windows can collide with the header. Check both desktop aspect ratios and mobile reading mode.
+
+
+## v4.3: the computer becomes the screen
+- Computer content is a 960×680 DOM surface inside a transformed drei Html at the CRT glass, distanceFactor 1.1583. It is physically aligned with the 2.78-unit glass width, and the camera zoom retains the bezel. Only the résumé remains a Radix dialog.
+- Stop pointer/click propagation at the screen root and gate the 3D monitor click to desk focus. Otherwise a game click can reopen the Work app behind it. Restore focus on the next animation frame, after inert is removed.
+- The original shooter and pixel room accept an optional embedded prop. The shooter pauses on blur; cartridge memories use an inline overlay. Default /desktop behavior remains intact. Keep CSS game canvas aspect ratios intact: object-fit letterboxing breaks pointer coordinate mapping.
+- Music reuses /api/spotify and shows truthful offline/paused/live states plus the existing top tracks. Opening it plays a bounded disc-tray sequence, then approaches the screen; speaker notes also stop after a bounded period. Reduced motion skips these. No audio autoplays.
+- The shelf replaces the desk stack, a merged brick cat replaces the robot, and two generated poster textures replace the plant. No additional external model or art requests. Use independent muted object colors and neutral interface tokens.

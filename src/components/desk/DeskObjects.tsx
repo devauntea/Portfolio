@@ -14,6 +14,7 @@ import {
   makeTexture,
   type Palette,
 } from "./DeskMaterials";
+import { DiscDrive } from "./DeskMedia";
 import { DESK } from "@/data/profile";
 
 type Surfaces = {
@@ -213,7 +214,15 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
   );
 }
 
-export function DetailedTower({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
+export function DetailedTower({
+  p,
+  ceramic,
+  musicRequest,
+  reduced,
+}: Pick<Surfaces, "p" | "ceramic"> & {
+  musicRequest: number;
+  reduced: boolean;
+}) {
   const grille = useMemo(
     () =>
       makeTexture(256, 256, (ctx) => {
@@ -258,7 +267,8 @@ export function DetailedTower({ p, ceramic }: Pick<Surfaces, "p" | "ceramic">) {
         color={p.ivory}
         radius={0.07}
       />
-      {[0.62, 0.3, -0.02].map((y, i) => (
+      <DiscDrive p={p} request={musicRequest} reduced={reduced} />
+      {[0.3, -0.02].map((y, i) => (
         <group key={y} position={[0, y, 0.974]}>
           <Box
             pos={[0, 0, 0]}

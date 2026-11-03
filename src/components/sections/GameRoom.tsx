@@ -7,7 +7,7 @@
    path). Inspecting flashes the TV and opens a memory card. */
 
 import { useEffect, useRef, useState } from "react";
-import { GAMES, type GameCartridge } from "@/data/profile";
+import { DESK, GAMES, type GameCartridge } from "@/data/profile";
 import { GameModal } from "@/components/ui/GameModal";
 import { chime } from "@/lib/sound";
 
@@ -19,7 +19,14 @@ const SHELF_Y = 18;
 const CART_XS = [34, 56, 78, 100]; // cartridge centers on the shelf
 const TV_X = 12;
 
-function cell(ctx: CanvasRenderingContext2D, x: number, y: number, c: string, w = 1, h = 1) {
+function cell(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  c: string,
+  w = 1,
+  h = 1,
+) {
   ctx.fillStyle = c;
   ctx.fillRect(Math.round(x) * PX, Math.round(y) * PX, w * PX, h * PX);
 }
@@ -44,14 +51,22 @@ function drawRoom(
   cell(ctx, 48, FLOOR_Y, "#4a3d78", 32, 1);
   // string lights
   for (let x = 4; x < GW - 4; x += 6) {
-    cell(ctx, x, 3 + ((x / 6) % 2), (x / 6 + frame) % 3 === 0 ? "#ffd45e" : "#2c2350", 1, 1);
+    cell(
+      ctx,
+      x,
+      3 + ((x / 6) % 2),
+      (x / 6 + frame) % 3 === 0 ? "#ffd45e" : "#2c2350",
+      1,
+      1,
+    );
   }
   // window with stars
   cell(ctx, 108, 8, "#0b1024", 14, 12);
   cell(ctx, 107, 7, "#3a4066", 16, 1);
   cell(ctx, 107, 20, "#3a4066", 16, 1);
   for (let i = 0; i < 6; i++) {
-    if ((i + frame) % 4 !== 0) cell(ctx, 110 + ((i * 5) % 11), 10 + ((i * 3) % 8), "#f0f2ff");
+    if ((i + frame) % 4 !== 0)
+      cell(ctx, 110 + ((i * 5) % 11), 10 + ((i * 3) % 8), "#f0f2ff");
   }
   // shelf
   cell(ctx, 26, SHELF_Y + 6, "#5c4433", 84, 2);
@@ -73,7 +88,12 @@ function drawRoom(
   cell(ctx, TV_X - 4, FLOOR_Y - 14, flash ? "#f0f2ff" : "#0b1024", 12, 8);
   if (!flash) {
     for (let i = 0; i < 5; i++) {
-      cell(ctx, TV_X - 3 + ((i * 3 + frame) % 10), FLOOR_Y - 13 + ((i * 2 + frame) % 6), "#263052");
+      cell(
+        ctx,
+        TV_X - 3 + ((i * 3 + frame) % 10),
+        FLOOR_Y - 13 + ((i * 2 + frame) % 6),
+        "#263052",
+      );
     }
   } else {
     cell(ctx, TV_X - 2 + (frame % 3), FLOOR_Y - 12, "#7ee0ff", 3, 3);
@@ -98,7 +118,7 @@ function drawRoom(
   cell(ctx, ax, FLOOR_Y - 5 + (walking ? (frame + 1) % 2 : 0), "#3a4358", 2, 3);
 }
 
-export function GameRoom() {
+export function GameRoom({ embedded = false }: { embedded?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const avatar = useRef({ x: 64, facing: 1 as 1 | -1, walking: false });
@@ -111,7 +131,9 @@ export function GameRoom() {
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 });
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), {
+      threshold: 0.2,
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -119,13 +141,33 @@ export function GameRoom() {
   useEffect(() => {
     if (!inView) return;
     const pressed = keys.current; // stable Set instance for cleanup
+    const canvas = canvasRef.current;
+    const clearPressed = () => pressed.clear();
     const down = (e: KeyboardEvent) => {
+      if (
+        embedded &&
+        (document.activeElement !== canvasRef.current || selected)
+      )
+        return;
       const k = e.key.toLowerCase();
-      if (["arrowleft", "arrowright", "a", "d", "arrowup", " ", "enter", "w"].includes(k)) {
+      if (
+        [
+          "arrowleft",
+          "arrowright",
+          "a",
+          "d",
+          "arrowup",
+          " ",
+          "enter",
+          "w",
+        ].includes(k)
+      ) {
         if (k !== "enter") e.preventDefault();
         keys.current.add(k);
         if (["arrowup", " ", "enter", "w"].includes(k)) {
-          const near = CART_XS.findIndex((cx) => Math.abs(avatar.current.x - cx) < 6);
+          const near = CART_XS.findIndex(
+            (cx) => Math.abs(avatar.current.x - cx) < 6,
+          );
           if (near >= 0) {
             tvFlash.current = 8;
             setSelected(GAMES[near]);
@@ -137,12 +179,16 @@ export function GameRoom() {
     const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", clearPressed);
+    canvas?.addEventListener("blur", clearPressed);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", clearPressed);
+      canvas?.removeEventListener("blur", clearPressed);
       pressed.clear();
     };
-  }, [inView]);
+  }, [inView, embedded, selected]);
 
   // render + movement loop
   useEffect(() => {
@@ -174,7 +220,9 @@ export function GameRoom() {
       // draw at retro cadence
       if (t - last > 140) {
         if (tvFlash.current > 0) tvFlash.current--;
-        const near = CART_XS.findIndex((cx) => Math.abs(avatar.current.x - cx) < 6);
+        const near = CART_XS.findIndex(
+          (cx) => Math.abs(avatar.current.x - cx) < 6,
+        );
         drawRoom(
           ctx,
           frame,
@@ -196,10 +244,13 @@ export function GameRoom() {
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    canvas.focus();
     const rect = canvas.getBoundingClientRect();
     const gx = ((e.clientX - rect.left) / rect.width) * GW;
     const gy = ((e.clientY - rect.top) / rect.height) * GH;
-    const i = CART_XS.findIndex((cx) => Math.abs(gx - cx) <= 5 && Math.abs(gy - (SHELF_Y + 2)) <= 6);
+    const i = CART_XS.findIndex(
+      (cx) => Math.abs(gx - cx) <= 5 && Math.abs(gy - (SHELF_Y + 2)) <= 6,
+    );
     if (i >= 0) {
       tvFlash.current = 8;
       setSelected(GAMES[i]);
@@ -208,7 +259,10 @@ export function GameRoom() {
   }
 
   return (
-    <div ref={wrapRef} className="glass rounded-2xl p-5">
+    <div
+      ref={wrapRef}
+      className={`glass rounded-2xl p-5 ${embedded ? "pixel-room-embedded" : ""}`}
+    >
       <h2 className="text-lg font-bold text-starlight">The Game Room</h2>
       <p className="mt-1 text-xs text-faint">
         Walk with ← → (A/D), inspect a cartridge with ↑ / Space — or just click
@@ -225,15 +279,57 @@ export function GameRoom() {
         className="mt-3 w-full rounded-lg border border-seam focus-visible:ring-2 focus-visible:ring-lumen/50"
         style={{ imageRendering: "pixelated" }}
       />
-      <GameModal open={!!selected} onClose={() => setSelected(null)} variant="pixel" label={selected?.name}>
-        {selected && (
-          <div>
-            <div className="mb-2 h-3 w-10" style={{ background: selected.color }} aria-hidden />
-            <h3 className="font-mono text-sm font-bold text-starlight">{selected.name}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-faint">{selected.memory}</p>
-          </div>
-        )}
-      </GameModal>
+      {embedded ? (
+        selected && (
+          <aside
+            className="game-memory"
+            data-game-memory
+            tabIndex={-1}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.stopPropagation();
+                setSelected(null);
+                canvasRef.current?.focus();
+              }
+            }}
+          >
+            <h3>{selected.name}</h3>
+            <p>{selected.memory}</p>
+            <button
+              autoFocus
+              onClick={() => {
+                setSelected(null);
+                canvasRef.current?.focus();
+              }}
+            >
+              {DESK.games.closeMemory} ↩
+            </button>
+          </aside>
+        )
+      ) : (
+        <GameModal
+          open={!!selected}
+          onClose={() => setSelected(null)}
+          variant="pixel"
+          label={selected?.name}
+        >
+          {selected && (
+            <div>
+              <div
+                className="mb-2 h-3 w-10"
+                style={{ background: selected.color }}
+                aria-hidden
+              />
+              <h3 className="font-mono text-sm font-bold text-starlight">
+                {selected.name}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-faint">
+                {selected.memory}
+              </p>
+            </div>
+          )}
+        </GameModal>
+      )}
     </div>
   );
 }

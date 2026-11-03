@@ -26,7 +26,10 @@ export type Palette = Record<
   | "sky"
   | "skyNight"
   | "horizon"
-  | "city",
+  | "city"
+  | "posterRose"
+  | "posterMint"
+  | "posterSand",
   string
 >;
 export function makeTexture(
