@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -30,7 +30,12 @@ export function DeskWindow({
     handle = useRef<THREE.Group>(null);
   const straps = useRef<(THREE.Mesh | null)[]>([]),
     pull = useRef<THREE.Mesh>(null);
-  const light = useRef<THREE.PointLight>(null);
+  const light = useRef<THREE.SpotLight>(null);
+  const lightTarget = useMemo(() => {
+    const target = new THREE.Object3D();
+    target.position.set(-WINDOW.x, 0.15 - WINDOW.y, 1 - WINDOW.z);
+    return target;
+  }, []);
   const cleanDrag = useRef<() => void>(() => {});
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => () => cleanDrag.current(), []);
@@ -129,7 +134,7 @@ export function DeskWindow({
       pull.current.position.y = 1.075 - extension / 2;
       pull.current.scale.y = 0.95 + extension;
     }
-    if (light.current) light.current.intensity = (night ? 1.5 : 6) * t;
+    if (light.current) light.current.intensity = (night ? 6 : 38) * (0.12 + 0.88 * t);
     if (Math.abs(t - target.current) > 0.0001) invalidate();
   });
   const begin = (event: ThreeEvent<PointerEvent>) => {
@@ -193,6 +198,7 @@ export function DeskWindow({
           <Box
             pos={[0, 0, 0]}
             size={[3.3, 0.028, 0.29]}
+            castShadow
             color={p.paper}
             radius={0.01}
           />
@@ -247,13 +253,24 @@ export function DeskWindow({
           </mesh>
         </group>
       </group>
-      <pointLight
+      <primitive object={lightTarget} />
+      <spotLight
         ref={light}
-        position={[0, 0.4, 1.4]}
+        position={[0, 1.05, -0.08]}
+        target={lightTarget}
         color={night ? p.sky : p.light}
         intensity={0}
-        distance={7}
+        angle={1.18}
+        penumbra={0.8}
+        distance={16}
         decay={2}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-near={0.06}
+        shadow-camera-far={16}
+        shadow-normalBias={0.002}
+        shadow-bias={-0.00002}
+        shadow-radius={3}
       />
       {active && (
         <Html

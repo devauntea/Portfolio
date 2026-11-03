@@ -81,6 +81,7 @@ export function Box({
   bumpMap,
   bumpScale = 0.012,
   clearcoat = 0,
+  castShadow,
   children,
 }: {
   pos: [number, number, number];
@@ -93,6 +94,7 @@ export function Box({
   bumpMap?: THREE.Texture;
   bumpScale?: number;
   clearcoat?: number;
+  castShadow?: boolean;
   children?: React.ReactNode;
 }) {
   const [width, height, depth] = size;
@@ -112,7 +114,7 @@ export function Box({
     <mesh
       position={pos}
       geometry={geometry}
-      castShadow={Math.min(...size) > 0.03}
+      castShadow={castShadow ?? Math.min(...size) > 0.03}
       receiveShadow
     >
       <meshPhysicalMaterial

@@ -8,7 +8,6 @@ import {
   type ThreeEvent,
 } from "@react-three/fiber";
 import {
-  ContactShadows,
   Environment,
   Lightformer,
   Html,
@@ -659,6 +658,11 @@ function Lamp({
   night: boolean;
   onClick: (e: ThreeEvent<MouseEvent>) => void;
 }) {
+  const lightTarget = useMemo(() => {
+    const target = new THREE.Object3D();
+    target.position.set(0, -3, 0);
+    return target;
+  }, []);
   return (
     <group
       position={[4.95, 0.1, -1.85]}
@@ -744,12 +748,23 @@ function Lamp({
           <circleGeometry args={[0.65, 48]} />
           <meshBasicMaterial color={night ? p.light : p.paper} />
         </mesh>
-        <pointLight
+        <primitive object={lightTarget} />
+        <spotLight
           position={[0, -0.35, 0]}
+          target={lightTarget}
           color={p.light}
-          intensity={night ? 24 : 5}
-          distance={7}
+          intensity={night ? 30 : 5}
+          angle={1.12}
+          penumbra={0.65}
+          distance={10}
           decay={2}
+          castShadow={night}
+          shadow-mapSize={[1024, 1024]}
+          shadow-camera-near={0.1}
+          shadow-camera-far={10}
+          shadow-normalBias={0.003}
+          shadow-bias={-0.00005}
+          shadow-radius={3}
         />
       </group>
     </group>
@@ -799,23 +814,23 @@ function World(props: SceneProps) {
     <>
       <color attach="background" args={[props.night ? p.shadow : p.paper]} />
       <fog attach="fog" args={[props.night ? p.shadow : p.paper, 18, 40]} />
-      <ambientLight intensity={props.night ? 0.3 : 0.35} color={p.paper} />
+      <ambientLight intensity={props.night ? 0.3 : 0.45} color={p.paper} />
       <hemisphereLight args={[p.paper, p.woodDark, props.night ? 0.5 : 0.8]} />
       <directionalLight
-        position={[-3, 7, 4]}
-        intensity={props.night ? 0.35 : 3.1}
+        position={[0, 8, 12]}
+        intensity={props.night ? 0.25 : 1.8}
         color={p.light}
-        castShadow
+        castShadow={!props.night}
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-8.5}
         shadow-camera-right={7}
         shadow-camera-top={7}
         shadow-camera-bottom={-6.5}
         shadow-camera-near={0.5}
-        shadow-camera-far={24}
-        shadow-normalBias={0.008}
-        shadow-bias={-0.0001}
-        shadow-radius={3}
+        shadow-camera-far={32}
+        shadow-normalBias={0.003}
+        shadow-bias={-0.00005}
+        shadow-radius={8}
       />
       <directionalLight
         position={[4.3, 3.4, -3.4]}
@@ -1061,26 +1076,8 @@ function World(props: SceneProps) {
         reduced={props.reduced}
         active={active}
       />
-      <ContactShadows
-        position={[0, 0.128, 0]}
-        opacity={0.42}
-        scale={[11.2, 5.65]}
-        blur={1.15}
-        far={3.8}
-        resolution={1024}
-        frames={1}
-        color={p.woodDark}
-      />
-      <ContactShadows
-        position={[0, -2.99, 0]}
-        opacity={0.45}
-        scale={18}
-        blur={2.7}
-        far={7}
-        resolution={512}
-        frames={1}
-        color={p.woodDark}
-      />
+      {/* Real light shadow maps update on demand with the camera, drawer and
+          blinds. No baked overhead layer that leaves shadows behind. */}
       {active && (
         <>
           <Html position={[-2.5, 2.45, -0.5]} center zIndexRange={[5, 0]}>

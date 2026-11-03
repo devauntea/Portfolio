@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOs } from "@/lib/os-store";
 import { useUi } from "@/lib/ui-store";
@@ -96,7 +97,7 @@ export default function Home() {
   return (
     <main>
       <MouseTrail />
-      <a className="legacy-desk-return" href="/">← Back to the desk</a>
+      <Link className="legacy-desk-return" href="/">← Back to the desk</Link>
       <ThemeApplier />
       <OwnerSync />
 

@@ -419,75 +419,59 @@ export function Pottery({
   ceramic,
   grain,
 }: Pick<Surfaces, "p" | "ceramic" | "grain">) {
+  // One closed cross-section forms the foot, outside, rounded lip and inside.
+  // The mug starts exactly on the coaster; the coffee sits below the lip.
   const profile = useMemo(
-    () =>
-      [
-        [0.01, 0.035],
-        [0.18, 0.035],
-        [0.215, 0.05],
-        [0.232, 0.1],
-        [0.25, 0.3],
-        [0.259, 0.45],
-        [0.255, 0.49],
-        [0.241, 0.505],
-        [0.224, 0.492],
-        [0.225, 0.46],
-        [0.22, 0.3],
-        [0.193, 0.09],
-        [0.01, 0.09],
-      ].map(([x, y]) => new THREE.Vector2(x, y)),
+    () => [
+      [0, 0.014], [0.165, 0.014], [0.178, 0.004], [0.194, 0.004],
+      [0.205, 0.014], [0.214, 0.031], [0.224, 0.058], [0.234, 0.105],
+      [0.244, 0.19], [0.253, 0.30], [0.26, 0.42], [0.263, 0.503],
+      [0.261, 0.519], [0.255, 0.529], [0.246, 0.533], [0.236, 0.53],
+      [0.229, 0.522], [0.227, 0.507], [0.225, 0.42], [0.218, 0.30],
+      [0.209, 0.19], [0.2, 0.12], [0.189, 0.084], [0.17, 0.071], [0, 0.071],
+    ].map(([x, y]) => new THREE.Vector2(x, y)),
     [],
   );
+  const handle = useMemo(() => new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.244, 0.426, 0),
+    new THREE.Vector3(-0.338, 0.444, 0),
+    new THREE.Vector3(-0.448, 0.395, 0),
+    new THREE.Vector3(-0.472, 0.292, 0),
+    new THREE.Vector3(-0.433, 0.185, 0),
+    new THREE.Vector3(-0.326, 0.126, 0),
+    new THREE.Vector3(-0.227, 0.151, 0),
+  ]), []);
+  const glaze = {
+    color: p.ivory, bumpMap: ceramic, bumpScale: 0.0007,
+    roughness: 0.26, clearcoat: 0.65, clearcoatRoughness: 0.2,
+  };
   return (
-    <group position={[-2.5, 0.145, 1.45]}>
-      <mesh position={[0, 0.02, 0]} receiveShadow>
-        <cylinderGeometry args={[0.39, 0.39, 0.045, 64]} />
-        <meshStandardMaterial
-          color={p.wood}
-          bumpMap={grain}
-          bumpScale={0.015}
-          roughness={0.9}
-        />
+    <group position={[-2.5, 0.125, 1.45]} rotation={[0, -0.2, 0]}>
+      <mesh position={[0, 0.022, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.385, 0.37, 0.044, 80]} />
+        <meshStandardMaterial color={p.wood} bumpMap={grain} bumpScale={0.002} roughness={0.82} />
       </mesh>
-      <mesh position={[0, 0.04, 0]} castShadow receiveShadow>
-        <latheGeometry args={[profile, 64]} />
-        <meshPhysicalMaterial
-          color={p.clay}
-          bumpMap={ceramic}
-          bumpScale={0.001}
-          roughness={0.31}
-          clearcoat={0.6}
-          clearcoatRoughness={0.24}
-        />
-      </mesh>
-      <Ring pos={[0, 0.54, 0]} radius={0.242} tube={0.012} color={p.ivory} />
-      {[0.11, 0.14, 0.17].map((y) => (
-        <Ring
-          key={y}
-          pos={[0, y, 0]}
-          radius={0.22 + (y - 0.1) * 0.12}
-          tube={0.003}
-          color={p.wood}
-        />
-      ))}
-      <mesh position={[0, 0.48, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.224, 48]} />
-        <meshPhysicalMaterial
-          color={p.woodDark}
-          roughness={0.13}
-          clearcoat={1}
-        />
-      </mesh>
-      <mesh position={[-0.255, 0.32, 0]} scale={[1, 1.12, 1]} castShadow>
-        <torusGeometry args={[0.16, 0.045, 12, 40]} />
-        <meshPhysicalMaterial
-          color={p.clay}
-          bumpMap={ceramic}
-          bumpScale={0.0012}
-          roughness={0.3}
-          clearcoat={0.5}
-        />
-      </mesh>
+      <Ring pos={[0, 0.043, 0]} radius={0.355} tube={0.003} color={p.woodDark} />
+      <group position={[0, 0.04, 0]}>
+        <mesh castShadow receiveShadow>
+          <latheGeometry args={[profile, 96]} />
+          <meshPhysicalMaterial {...glaze} />
+        </mesh>
+        <mesh castShadow receiveShadow>
+          <tubeGeometry args={[handle, 48, 0.038, 16, false]} />
+          <meshPhysicalMaterial {...glaze} />
+        </mesh>
+        {/* Concave meniscus meets the inner wall, with no floating disk/rim. */}
+        <mesh receiveShadow>
+          <latheGeometry args={[[
+            new THREE.Vector2(0.226, 0.461),
+            new THREE.Vector2(0.218, 0.457),
+            new THREE.Vector2(0.195, 0.456),
+            new THREE.Vector2(0, 0.456),
+          ], 96]} />
+          <meshPhysicalMaterial color={p.woodDark} roughness={0.18} clearcoat={1} clearcoatRoughness={0.08} />
+        </mesh>
+      </group>
     </group>
   );
 }

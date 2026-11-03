@@ -41,6 +41,10 @@ export const PROJECTS: Project[] = [
       'Obsidian-style interactive graph for hobby discovery — pan/zoom node clusters, an AI "Rabbit Hole" that invents personalized niches (Groq), and location-aware "Find Nearby" via Google Places.',
     tech: ["React/Next.js", "Groq API", "Google Places"],
     link: "https://aspectniche.com",
+    image: {
+      src: "/images/projects/aspect-niche.webp",
+      alt: "Aspect Niche website: Find your spark, with an interactive hobby map in the iPhone app",
+    },
   },
   {
     id: "swale",

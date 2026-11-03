@@ -181,10 +181,11 @@ a server component and only does the code→token exchange. Verified a bogus
 code now renders the graceful "couldn't finish" state (200), not 500.
 
 ## v3.6: the résumé became data
-- Blob auth on this project is OIDC (`VERCEL_OIDC_TOKEN` + `BLOB_STORE_ID`),
-  NOT `BLOB_READ_WRITE_TOKEN` — the SDK ignores the static token whenever OIDC
-  and a store id are both present. Connecting a store in the dashboard sets the
-  store id on Production+Preview only.
+- Blob auth on this project uses OIDC with `BLOB_STORE_ID`. Deployed functions
+  receive the token in request context (`x-vercel-oidc-token`); an environment
+  `VERCEL_OIDC_TOKEN` is not required. The Blob SDK resolves it. Only check for
+  the connected store ID (or a static read/write token) before calling the SDK.
+  Connecting a store sets the store ID on Production+Preview only.
 - **OIDC blob auth does not work from localhost**: "OIDC is enabled for this
   project, but not for the development environment." Local uploads need a
   `BLOB_READ_WRITE_TOKEN` from the store's `.env.local` tab; `resume-store.ts`
@@ -267,3 +268,11 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Walnut uses a 2048×1024 deterministic map with broad board variation beneath fine grain; texture filtering uses 8× anisotropy. Bevelled poster rails, plastic microstructure, and merged camera dial ridges provide close-up detail.
 - Swale’s description and stack come from its public repository README. The tour-poster asset is locally optimized (~45 KB). The README’s CloudFront address did not resolve during verification, so the portfolio links to the repository. No deployment or impact claims were invented.
 - Work counters derive from PROJECTS.length. Project images remain uncropped; the monitor uses a wider letterboxed image area so the project title stays visible on smaller desktop screens.
+
+
+## v4.6: résumé storage repair and grounded lighting
+- Never gate Blob calls on an environment OIDC token. That rejected real production uploads before SDK authentication. Configuration checks are covered by a regression test for a store ID without an env token; owner authentication remains mandatory for writes.
+- Aspect Niche uses the user's website screenshot as an optimized 1600px WebP (~49 KB), with the same uncropped project-preview treatment as Swale.
+- Removed one-frame ContactShadows: those captured moving objects at their initial locations and even projected objects that do not cast shadows. Real light shadow maps now update only when the demand-rendered scene changes. The window's shadow-casting spotlight sits behind the blinds; thin slats explicitly cast shadows. At night the lamp's spotlight follows its tilted shade, with a bounded shadow camera.
+- The cup is a closed lathe profile with a rounded lip, inner wall, and foot. Its curved handle meets the body at both ends. The coffee meniscus winds from outside to center so its normals face up. The foot sits on the coaster's actual top face, rather than floating above it.
+- Three r185 uses sampler2DShadow for PCF and already has Vogel filtering. Do not use this installed drei SoftShadows shader patch: it expects the old RGBA-depth shader layout and would inject invalid GLSL.

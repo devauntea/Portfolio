@@ -2178,7 +2178,8 @@ body {
 .art-project-image img {
   object-fit: contain;
 }
-.project-feature--swale .project-feature-number {
+.project-feature--swale .project-feature-number,
+.project-feature--aspect-niche .project-feature-number {
   background: var(--desk-white);
   color: var(--desk-ink);
 }
