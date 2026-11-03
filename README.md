@@ -22,12 +22,14 @@ Every desk destination has a normal keyboard-accessible control. Dialogs trap an
 ## Implementation
 
 - `src/components/desk/DeskExperience.tsx` — responsive entry point, scene navigation, focus management, and dialogs.
-- `src/components/desk/DeskScene.tsx` — custom geometry, procedural walnut grain and screen textures, camera, and drawer animation.
+- `src/components/desk/DeskScene.tsx` — curved CRT, lighting, procedural walnut and screen textures, camera, and working file drawer.
+- `src/components/desk/DeskObjects.tsx` — batched keyboard and legends, vented tower, stitched mat, glazed pottery, spiral notebook, and shaped foliage.
+- `src/components/desk/DeskMaterials.tsx` — rounded geometry with normalized texture coordinates, shared surface maps, hardware, and merged ventilation slots.
 - `src/components/desk/PortfolioContent.tsx` — projects, about, capabilities, contact, and résumé.
 - `src/data/profile.ts` — content, sourced from the existing profile and résumé.
 - `src/app/globals.css` — material colors and visual system.
 
-The desktop scene renders on demand, caps pixel ratio at 1.5, and loads separately from the content. Mobile does not create a canvas. There are no downloaded 3D models, environment maps, or video backgrounds. Photography uses Next.js image optimization.
+The desktop scene renders on demand, caps pixel ratio at 1.5, and loads separately from the content. Mobile does not create a canvas. There are no downloaded 3D models, environment maps, or video backgrounds. Photography uses Next.js image optimization. Softbox reflections are generated locally once at 128px; contact shadows also render once. Keycaps and legends use three batched meshes, and tiny recessed details do not cast expensive shadows.
 
 The existing résumé upload/authentication pipeline is unchanged. Downloads use `/api/resume/file?download=1`: the latest private Vercel Blob if configured, then the bundled PDF. The readable experience summary uses `RESUME` in `profile.ts`; the downloadable PDF remains the authoritative document.
 

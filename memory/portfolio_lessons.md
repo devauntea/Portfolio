@@ -229,3 +229,10 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - All materials read `--desk-*` tokens; generated textures are disposed on scene teardown. No external models or HDRIs are required.
 - The readable résumé summary is profile data; downloads still use the original private Blob proxy with the bundled-PDF fallback. Keep the distinction clear when updating either source.
 - Clamp the frame delta when resuming demand rendering. Otherwise the idle time makes the first camera/drawer interpolation jump straight to its target.
+
+## v4.1: detailed desk materials and construction
+- Use Three's `RoundedBoxGeometry` for textured solids. The extruded drei `RoundedBox` UVs stretch or clamp procedural wood on large surfaces; normalized per-face UVs preserve the grain. Clamp rounding to the smallest dimension.
+- Keyboard caps and their legend atlas are merged into three meshes. Vent slots are merged per surface; tiny grooves and rings do not need to cast shadows. In local Chromium QA, the detail pass was reduced from ~307k to ~90k rendered triangles; demand rendering's frame counter stayed unchanged at rest. These are scene measurements, not device frame-rate guarantees.
+- Environment reflections are generated locally with Lightformers at 128px, once. Surface grain, fabric, pottery, and plaster maps are deterministic and explicitly disposed. Keep micro-bump strengths small to avoid harsh faceting.
+- The résumé drawer is hollow, with rails and suspended labeled folders; its longer travel reveals the contents beyond the desktop edge. Directly printed hardware labels use transparency so they do not create floating rectangular patches.
+- Evening readability uses a subtle left vignette and light foreground copy. Scope the light brand color to immersive mode so reading/mobile mode retains contrast.

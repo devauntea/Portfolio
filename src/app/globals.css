@@ -516,10 +516,38 @@ body {
     serif;
   letter-spacing: -10px;
 }
-.is-evening .desk-header,
-.is-evening .desk-intro,
 .is-evening .desk-scene-note {
   color: var(--desk-ink);
+}
+.desk-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--desk-ink) 78%, transparent),
+    transparent 48%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.is-evening .desk-stage::after {
+  opacity: 1;
+}
+.is-evening .desk-intro,
+.is-evening .desk-intro-copy,
+.is-evening.is-immersive .desk-brand,
+.is-evening.is-immersive .desk-brand small {
+  color: var(--desk-paper);
+}
+.is-evening .desk-intro h1 em {
+  color: var(--desk-screen);
+}
+.is-evening .desk-intro .desk-button {
+  color: var(--desk-ink);
+  background: var(--desk-paper);
+  border-color: var(--desk-paper);
 }
 
 /* A tactile computer shell surrounds normal, accessible HTML content. */
@@ -1670,6 +1698,8 @@ body {
     animation: none;
   }
   .working-desk *,
+  .working-desk *::before,
+  .working-desk *::after,
   .desk-dialog * {
     scroll-behavior: auto !important;
     transition: none !important;
