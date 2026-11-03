@@ -29,6 +29,18 @@ export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
 }
 
 function ProjectArt({ id }: { id: string }) {
+  const image = PROJECTS.find((project) => project.id === id)?.image;
+  if (image)
+    return (
+      <div className="project-art art-project-image">
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes="(max-width: 760px) 90vw, 720px"
+        />
+      </div>
+    );
   if (id === "aspect-niche")
     return (
       <div className="project-art art-niche" aria-hidden="true">

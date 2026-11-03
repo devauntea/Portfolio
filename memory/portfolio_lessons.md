@@ -260,3 +260,10 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - The desk camera itself translates, turns, and scales toward the visitor; its rear LCD hosts a 640×420 DOM photo surface at distanceFactor 0.4. It reuses the existing gallery, with wheel throttling, keyboard navigation, thumbnails, and a non-WebGL mobile alternative. Reduced motion snaps the movement; Escape cancels pickup and restores persistent focus.
 - User-supplied wall photos are locally optimized WebP assets (~131 KB combined), framed without stretching or cropping. Dispose the Three textures when the scene unmounts.
 - Exterior detail combines deterministic skyline/facade canvas textures with real buildings, roof tanks, and merged fire escapes. No continuous animation is needed. Move the open-blind control beside the cord to avoid covering the view.
+
+
+## v4.5: final material pass and Swale
+- Retina rendering now uses up to 2× DPR, constrained by a five-million-pixel framebuffer budget. Resize updates the Canvas dpr prop; the scene still renders on demand. Do not imperatively setDpr while leaving a different Canvas dpr prop: R3F re-applies that prop on navigation renders. Keep the cap when tuning visual sharpness.
+- Walnut uses a 2048×1024 deterministic map with broad board variation beneath fine grain; texture filtering uses 8× anisotropy. Bevelled poster rails, plastic microstructure, and merged camera dial ridges provide close-up detail.
+- Swale’s description and stack come from its public repository README. The tour-poster asset is locally optimized (~45 KB). The README’s CloudFront address did not resolve during verification, so the portfolio links to the repository. No deployment or impact claims were invented.
+- Work counters derive from PROJECTS.length. Project images remain uncropped; the monitor uses a wider letterboxed image area so the project title stays visible on smaller desktop screens.

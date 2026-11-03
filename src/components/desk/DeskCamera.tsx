@@ -1,9 +1,18 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { Box, Ring, Label, Screw, Cable, type Palette } from "./DeskMaterials";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import {
+  Box,
+  Ring,
+  Label,
+  Screw,
+  Cable,
+  surfaceTexture,
+  type Palette,
+} from "./DeskMaterials";
 import { CameraRoll } from "./CameraRoll";
 import { DESK } from "@/data/profile";
 
@@ -24,6 +33,25 @@ export function DeskCamera({
 }) {
   const group = useRef<THREE.Group>(null);
   const progress = useRef(0);
+  const leather = useMemo(() => surfaceTexture("leather"), []);
+  const dial = useMemo(() => {
+    const parts = Array.from({ length: 40 }, (_, i) => {
+      const angle = (i / 40) * Math.PI * 2;
+      return new THREE.BoxGeometry(0.004, 0.012, 0.012)
+        .translate(0, 0.065, 0)
+        .rotateZ(angle);
+    });
+    const merged = mergeGeometries(parts)!;
+    parts.forEach((part) => part.dispose());
+    return merged;
+  }, []);
+  useEffect(
+    () => () => {
+      leather.dispose();
+      dial.dispose();
+    },
+    [leather, dial],
+  );
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     invalidate();
@@ -79,6 +107,8 @@ export function DeskCamera({
         size={[0.88, 0.28, 0.015]}
         color={p.ink}
         radius={0.01}
+        bumpMap={leather}
+        bumpScale={0.0014}
       />
       <mesh
         position={[0.13, -0.025, 0.3]}
@@ -178,7 +208,9 @@ export function DeskCamera({
         size={[0.86, 0.48, 0.02]}
         color={p.ink}
         radius={0.03}
-        roughness={0.88}
+        roughness={0.72}
+        bumpMap={leather}
+        bumpScale={0.0012}
       />
       <Box
         pos={[0.09, -0.005, -0.216]}
@@ -208,11 +240,23 @@ export function DeskCamera({
           color={p.shadow}
           rotation={[0, 0, 0]}
         />
+        <mesh geometry={dial} position={[0, 0, 0.017]}>
+          <meshStandardMaterial
+            color={p.metal}
+            roughness={0.32}
+            metalness={0.75}
+          />
+        </mesh>
+        <mesh position={[0, 0, 0.027]}>
+          <circleGeometry args={[0.047, 32]} />
+          <meshStandardMaterial color={p.ink} roughness={0.55} />
+        </mesh>
         <Label
           p={p}
           text={DESK.camera.set}
-          pos={[0, 0, 0.025]}
-          width={0.062}
+          pos={[0, 0, 0.029]}
+          width={0.085}
+          color={p.paper}
           printOnly
         />
       </group>
@@ -228,7 +272,7 @@ export function DeskCamera({
       <Label
         text={DESK.camera.model}
         p={p}
-        pos={[0.07, 0.239, -0.221]}
+        pos={[0.07, 0.226, -0.224]}
         rotation={[0, Math.PI, 0]}
         width={0.26}
         color={p.paper}

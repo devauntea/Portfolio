@@ -16,7 +16,7 @@ function Poster({ p, index }: { p: Palette; index: number }) {
     const texture = new THREE.TextureLoader().load(art.src, (loaded) => {
       if (!alive) return;
       loaded.colorSpace = THREE.SRGBColorSpace;
-      loaded.anisotropy = 4;
+      loaded.anisotropy = 8;
       setMap(loaded);
       invalidate();
     });
@@ -42,6 +42,27 @@ function Poster({ p, index }: { p: Palette; index: number }) {
         color={p.paper}
         radius={0.005}
       />
+      {/* Narrow, bevelled rails leave the print recessed inside the frame. */}
+      {[-1, 1].map((side) => (
+        <group key={side}>
+          <Box
+            pos={[side * 0.801, 0, 0.025]}
+            size={[0.048, 1.9, 0.09]}
+            color={p.ink}
+            radius={0.009}
+            roughness={0.34}
+            metalness={0.25}
+          />
+          <Box
+            pos={[0, side * 0.926, 0.025]}
+            size={[1.57, 0.048, 0.09]}
+            color={p.ink}
+            radius={0.009}
+            roughness={0.34}
+            metalness={0.25}
+          />
+        </group>
+      ))}
       {map && (
         <mesh position={[0, 0, 0.024]}>
           <planeGeometry args={[1.42, 1.42 / art.ratio]} />
@@ -52,7 +73,7 @@ function Poster({ p, index }: { p: Palette; index: number }) {
   );
 }
 
-export function RoomDecor({ p }: { p: Palette }) {
+export function RoomDecor({ p, wood }: { p: Palette; wood: THREE.Texture }) {
   return (
     <>
       <group position={[-6.4, 2.75, -3.05]}>
@@ -61,6 +82,9 @@ export function RoomDecor({ p }: { p: Palette }) {
           size={[4.25, 0.15, 1.3]}
           color={p.wood}
           radius={0.025}
+          map={wood}
+          roughness={0.45}
+          clearcoat={0.2}
         />
         {[-1.6, 1.6].map((x) => (
           <group key={x}>

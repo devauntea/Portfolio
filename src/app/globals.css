@@ -2168,6 +2168,20 @@ body {
 .monitor-screen .project-feature .project-art {
   aspect-ratio: 2.8;
 }
+.project-feature .art-project-image {
+  aspect-ratio: 16 / 9;
+  background: var(--desk-ink);
+}
+.monitor-screen .project-feature .art-project-image {
+  aspect-ratio: 2.8;
+}
+.art-project-image img {
+  object-fit: contain;
+}
+.project-feature--swale .project-feature-number {
+  background: var(--desk-white);
+  color: var(--desk-ink);
+}
 .monitor-screen .project-index small {
   margin-top: 4px;
 }

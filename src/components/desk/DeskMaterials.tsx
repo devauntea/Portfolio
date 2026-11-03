@@ -47,7 +47,7 @@ export function makeTexture(
   if (ctx) draw(ctx);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = 8;
   return texture;
 }
 
@@ -102,7 +102,7 @@ export function Box({
         width,
         height,
         depth,
-        radius >= 0.1 ? 3 : radius >= 0.025 ? 2 : 1,
+        radius >= 0.1 ? 4 : radius >= 0.025 ? 2 : 1,
         Math.min(radius, width * 0.45, height * 0.45, depth * 0.45),
       ),
     [width, height, depth, radius],
@@ -193,7 +193,7 @@ export function Cable({
 
 /** Shared, deterministic microstructure. No image downloads or animation loop. */
 export function surfaceTexture(
-  kind: "grain" | "woven" | "ceramic" | "plaster",
+  kind: "grain" | "woven" | "ceramic" | "plaster" | "leather",
 ) {
   const size = kind === "grain" ? 1024 : 256;
   const texture = makeTexture(size, size, (ctx) => {
@@ -215,6 +215,10 @@ export function surfaceTexture(
             Math.sin((y + warp) * 0.7) * 30 +
             Math.sin((y + warp) * 3) * 10 +
             noise * 12;
+        } else if (kind === "leather") {
+          const pore =
+            Math.sin(x * 1.7 + Math.sin(y * 0.9)) * Math.cos(y * 1.4);
+          value += pore * 42 + (noise - 0.5) * 32;
         } else {
           value += (noise - 0.5) * (kind === "ceramic" ? 100 : 65);
         }
@@ -229,6 +233,7 @@ export function surfaceTexture(
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   if (kind === "woven") texture.repeat.set(5, 3);
   if (kind === "plaster") texture.repeat.set(8, 6);
+  if (kind === "leather") texture.repeat.set(3, 2);
   return texture;
 }
 

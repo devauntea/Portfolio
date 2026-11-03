@@ -105,38 +105,55 @@ function palette(): Palette {
 }
 
 function woodTexture(p: Palette) {
-  return makeTexture(1024, 512, (ctx) => {
+  return makeTexture(2048, 1024, (ctx) => {
     ctx.fillStyle = p.wood;
-    ctx.fillRect(0, 0, 1024, 512);
-    // Seeded grain: stable across renders, with no external texture downloads.
+    ctx.fillRect(0, 0, 2048, 1024);
+    // Broad walnut ribbons under fine grain: varied boards, never ruled stripes.
     let seed = 57;
     const rand = () => {
       seed = (seed * 16807) % 2147483647;
       return (seed - 1) / 2147483646;
     };
-    for (let i = 0; i < 2400; i++) {
-      const y = rand() * 512;
-      ctx.strokeStyle = i % 3 ? p.woodDark : p.ivory;
-      ctx.globalAlpha = rand() * 0.075;
-      ctx.lineWidth = rand() * 1.8 + 0.2;
+    for (let board = 0; board < 5; board++) {
+      const top = board * 205;
+      ctx.save();
       ctx.beginPath();
-      for (let x = 0; x <= 1024; x += 8) {
-        const wave = Math.sin(x / 150 + y / 70) * 3;
-        const knot =
-          Math.exp(-(((x - 340) / 120) ** 2)) * Math.sin((y - 175) / 35) * 16;
-        if (x === 0) ctx.moveTo(x, y + wave + knot);
-        else ctx.lineTo(x, y + wave + knot);
+      ctx.rect(0, top, 2048, 205);
+      ctx.clip();
+      const wash = ctx.createLinearGradient(0, top, 0, top + 205);
+      wash.addColorStop(0, p.woodDark);
+      wash.addColorStop(0.4, p.clay);
+      wash.addColorStop(1, p.wood);
+      ctx.globalAlpha = 0.14 + board * 0.008;
+      ctx.fillStyle = wash;
+      ctx.fillRect(0, top, 2048, 205);
+      const knotX = 370 + (board % 3) * 530;
+      for (let i = 0; i < 680; i++) {
+        const y = top - 25 + rand() * 255;
+        ctx.strokeStyle = i % 4 ? p.woodDark : p.clay;
+        ctx.globalAlpha = 0.025 + rand() * 0.055;
+        ctx.lineWidth = 0.35 + rand() * 1.4;
+        ctx.beginPath();
+        for (let x = 0; x <= 2048; x += 12) {
+          const wave = Math.sin(x / 310 + y / 120) * 5;
+          const knot =
+            Math.exp(-(((x - knotX) / 270) ** 2)) *
+            Math.sin((y - top - 90) / 58) *
+            38;
+          const yy = y + wave + knot;
+          if (x === 0) ctx.moveTo(x, yy);
+          else ctx.lineTo(x, yy);
+        }
+        ctx.stroke();
       }
-      ctx.stroke();
+      ctx.restore();
+      if (board) {
+        ctx.globalAlpha = 0.16;
+        ctx.fillStyle = p.woodDark;
+        ctx.fillRect(0, top, 2048, 1);
+      }
     }
-    ctx.globalAlpha = 0.14;
-    ctx.strokeStyle = p.woodDark;
-    [128, 256, 384].forEach((y) => {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(1024, y);
-      ctx.stroke();
-    });
+    ctx.globalAlpha = 1;
   });
 }
 
@@ -233,10 +250,12 @@ function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
 
 function Monitor({
   p,
+  plastic,
   screen,
   onClick,
 }: {
   p: Palette;
+  plastic: THREE.Texture;
   screen: ReactNode;
   onClick: (event: ThreeEvent<MouseEvent>) => void;
 }) {
@@ -300,6 +319,8 @@ function Monitor({
         size={[3.48, 2.68, 1.72]}
         color={p.ivory}
         radius={0.24}
+        bumpMap={plastic}
+        bumpScale={0.0008}
       />
       <Box
         pos={[0, 1.91, 0.25]}
@@ -312,7 +333,9 @@ function Monitor({
         size={[3.46, 2.66, 0.16]}
         color={p.ivory}
         radius={0.07}
-        roughness={0.48}
+        roughness={0.54}
+        bumpMap={plastic}
+        bumpScale={0.0006}
       />
       <Box
         pos={[0, 2.01, 0.34]}
@@ -335,7 +358,7 @@ function Monitor({
         <meshPhysicalMaterial
           color={p.paper}
           transparent
-          opacity={0.15}
+          opacity={0.085}
           roughness={0.09}
           metalness={0.08}
           clearcoat={1}
@@ -784,15 +807,21 @@ function World(props: SceneProps) {
         color={p.light}
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-9}
-        shadow-camera-right={9}
-        shadow-camera-top={8}
-        shadow-camera-bottom={-8}
-        shadow-normalBias={0.015}
+        shadow-camera-left={-8.5}
+        shadow-camera-right={7}
+        shadow-camera-top={7}
+        shadow-camera-bottom={-6.5}
+        shadow-camera-near={0.5}
+        shadow-camera-far={24}
+        shadow-normalBias={0.008}
         shadow-bias={-0.0001}
         shadow-radius={3}
       />
-      <directionalLight position={[5, 4, -2]} intensity={0.7} color={p.paper} />
+      <directionalLight
+        position={[4.3, 3.4, -3.4]}
+        intensity={props.night ? 0.45 : 1.1}
+        color={props.night ? p.paper : p.sky}
+      />
       <Environment
         resolution={128}
         frames={1}
@@ -881,8 +910,8 @@ function World(props: SceneProps) {
         size={[11.2, 0.25, 5.65]}
         bumpMap={grain}
         bumpScale={0.004}
-        roughness={0.5}
-        clearcoat={0.22}
+        roughness={0.43}
+        clearcoat={0.28}
         color={p.wood}
         map={wood}
         radius={0.065}
@@ -929,6 +958,7 @@ function World(props: SceneProps) {
       <DeskMat p={p} woven={woven} />
       <Monitor
         p={p}
+        plastic={ceramic}
         onClick={click(() => {
           if (props.focus === "desk") props.onMonitor();
         })}
@@ -1005,7 +1035,7 @@ function World(props: SceneProps) {
         musicRequest={props.musicRequest}
         reduced={props.reduced}
       />
-      <RoomDecor p={p} />
+      <RoomDecor p={p} wood={wood} />
       <DeskSpeakers
         p={p}
         request={props.musicRequest}
@@ -1033,11 +1063,11 @@ function World(props: SceneProps) {
       />
       <ContactShadows
         position={[0, 0.128, 0]}
-        opacity={0.38}
+        opacity={0.42}
         scale={[11.2, 5.65]}
-        blur={1.6}
+        blur={1.15}
         far={3.8}
-        resolution={512}
+        resolution={1024}
         frames={1}
         color={p.woodDark}
       />
@@ -1099,10 +1129,11 @@ function World(props: SceneProps) {
 }
 
 export default function DeskScene(props: SceneProps) {
+  const [dpr, setDpr] = useState(1);
   return (
     <Canvas
       shadows="percentage"
-      dpr={[1, 1.5]}
+      dpr={dpr}
       frameloop="demand"
       camera={{ position: [-1.1, 4.4, 10.8], fov: 43, near: 0.1, far: 60 }}
       gl={{
@@ -1115,7 +1146,25 @@ export default function DeskScene(props: SceneProps) {
         gl.toneMappingExposure = 1;
       }}
     >
+      <RenderQuality onChange={setDpr} />
       <World {...props} />
     </Canvas>
   );
+}
+
+/** Retina detail without multiplying ultrawide/4K fill cost indefinitely. */
+function RenderQuality({ onChange }: { onChange: (dpr: number) => void }) {
+  const width = useThree((state) => state.size.width);
+  const height = useThree((state) => state.size.height);
+  useEffect(() => {
+    if (!width || !height) return;
+    onChange(
+      Math.min(
+        window.devicePixelRatio || 1,
+        2,
+        Math.sqrt(5_000_000 / (width * height)),
+      ),
+    );
+  }, [width, height, onChange]);
+  return null;
 }

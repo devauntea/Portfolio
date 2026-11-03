@@ -28,6 +28,7 @@ export interface Project {
   blurb: string;
   tech: string[];
   link?: string;
+  image?: { src: string; alt: string };
 }
 
 export const PROJECTS: Project[] = [
@@ -40,6 +41,26 @@ export const PROJECTS: Project[] = [
       'Obsidian-style interactive graph for hobby discovery — pan/zoom node clusters, an AI "Rabbit Hole" that invents personalized niches (Groq), and location-aware "Find Nearby" via Google Places.',
     tech: ["React/Next.js", "Groq API", "Google Places"],
     link: "https://aspectniche.com",
+  },
+  {
+    id: "swale",
+    hue: "var(--lumen)",
+    art: "🌧️",
+    name: "Swale",
+    blurb:
+      "A Brooklyn flood-readiness prototype connecting NYC catch basins, 311 reports, weather, and transit data on a 3D map. Storm scenarios, drain-priority rankings, and multilingual voice briefings help make the evidence easier to explore.",
+    tech: [
+      "React / TypeScript",
+      "MapLibre / deck.gl",
+      "Python / FastAPI",
+      "SurrealDB",
+      "Amazon Bedrock",
+    ],
+    link: "https://github.com/devauntea/Swale",
+    image: {
+      src: "/images/projects/swale.webp",
+      alt: "Swale project tour showing its Brooklyn 3D flood-readiness map",
+    },
   },
   {
     id: "personaforge",
@@ -525,9 +546,9 @@ export const DESK = {
     select: "Explore project",
     overview: "THE IDEA",
     collection: "A FEW THINGS I’VE PUT INTO THE WORLD",
-    count: "PROJECTS / 01—07",
+    count: `PROJECTS / 01—${String(PROJECTS.length).padStart(2, "0")}`,
     deskTitle: "The Working Desk",
-    eyebrow: "SELECTED WORK / 01—07",
+    eyebrow: `SELECTED WORK / 01—${String(PROJECTS.length).padStart(2, "0")}`,
     title: "From what if, to what’s next.",
     intro:
       "AI systems, useful tools, and the occasional world to get lost in. A selection of things I’ve built and helped bring to life.",
@@ -632,6 +653,12 @@ export const PROJECT_NOTES: Record<
   string,
   { category: string; summary: string; detail: string }
 > = {
+  swale: {
+    category: "CIVIC TECH / GEOSPATIAL AI",
+    summary: "Before the next downpour.",
+    detail:
+      "A project I worked on to bring Brooklyn’s flood evidence into one place: a 3D map combining catch basins, 311 complaints, FloodNet, weather, and transit data. It explores storm scenarios, ranks drains for inspection, and generates cited briefings with multilingual audio. Observations, reports, predictions, and inferences stay distinct; the storm simulation is an uncalibrated prototype.",
+  },
   "aspect-niche": {
     category: "PRODUCT / DISCOVERY",
     summary: "Follow your curiosity.",
