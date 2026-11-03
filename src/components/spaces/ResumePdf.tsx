@@ -2,7 +2,8 @@
 
 /* Renders the current résumé PDF into the paper sheet, one canvas per page.
 
-   pdf.js is imported lazily so its bulk never touches the desktop bundle.
+   The compatible pdf.js build and its matching worker are imported lazily.
+   The modern build requires new JS APIs missing in supported Safari releases.
    Canvases are sized to the container width and scaled by devicePixelRatio,
    because a résumé rendered at CSS pixels looks soft on retina displays.
 
@@ -35,7 +36,7 @@ export function ResumePdf({ src, onFail }: Props) {
     (async () => {
       try {
         const [pdfjs, response] = await Promise.all([
-          import("pdfjs-dist"),
+          import("pdfjs-dist/legacy/build/pdf.mjs"),
           fetch(src, { cache: "no-store", signal: request.signal }),
         ]);
         if (cancelled) return;
@@ -43,7 +44,7 @@ export function ResumePdf({ src, onFail }: Props) {
         const data = new Uint8Array(await response.arrayBuffer());
         if (cancelled) return;
         pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-          "pdfjs-dist/build/pdf.worker.min.mjs",
+          "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
           import.meta.url,
         ).toString();
 
@@ -82,19 +83,32 @@ export function ResumePdf({ src, onFail }: Props) {
           await renderTask.promise;
           if (cancelled) return;
           // Readable text comes from this PDF, never a separate static résumé.
-          const text = await page.getTextContent();
-          if (cancelled) return;
-          const accessibleText = document.createElement("p");
-          accessibleText.className = "sr-only";
-          accessibleText.textContent = text.items.map((item) =>
-            "str" in item ? item.str + (item.hasEOL ? "\n" : " ") : "",
-          ).join("");
-          sheet.appendChild(accessibleText);
+          try {
+            const text = await page.getTextContent();
+            if (cancelled) return;
+            const accessibleText = document.createElement("p");
+            accessibleText.className = "sr-only";
+            accessibleText.textContent = text.items.map((item) =>
+              "str" in item ? item.str + (item.hasEOL ? "\n" : " ") : "",
+            ).join("");
+            sheet.appendChild(accessibleText);
+          } catch (error) {
+            // A scanned PDF may render even when its text cannot be extracted.
+            if (!cancelled) {
+              canvas.removeAttribute("aria-hidden");
+              canvas.setAttribute("role", "img");
+              canvas.setAttribute("aria-label", DESK.resume.pageLabel(n, doc.numPages));
+              console.warn("Résumé text extraction failed", error);
+            }
+          }
         }
 
         if (!cancelled) setReady(true);
-      } catch {
-        if (!cancelled) onFail();
+      } catch (error) {
+        if (!cancelled) {
+          console.warn("Résumé preview failed", error);
+          onFail();
+        }
       }
     })();
 
