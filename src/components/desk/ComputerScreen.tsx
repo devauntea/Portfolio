@@ -77,7 +77,7 @@ export function MusicContent() {
             <i />
           </div>
           {now?.art ? (
-            <Image src={now.art} alt="" width={320} height={320} unoptimized />
+            <Image src={now.art} alt="" width={320} height={320} loading="eager" unoptimized />
           ) : (
             <div className="record-placeholder">
               <span>dn.</span>
@@ -153,7 +153,7 @@ export function MusicContent() {
                 className="rotation-track"
               >
                 <div>
-                  {track.art && <Image src={track.art} alt="" width={160} height={160} unoptimized />}
+                  {track.art && <Image src={track.art} alt="" width={160} height={160} loading="eager" unoptimized />}
                   <span>{String(index + 1).padStart(2, "0")}</span>
                 </div>
                 <strong>{track.name}</strong>

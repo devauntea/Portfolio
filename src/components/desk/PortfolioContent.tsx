@@ -12,6 +12,8 @@ import {
 } from "@/data/profile";
 
 export type Section = (typeof DESK.nav)[number]["id"];
+type ImageLoading = "eager" | "lazy";
+type ContentProps = { idPrefix?: string; imageLoading?: ImageLoading };
 
 export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return (
@@ -28,7 +30,7 @@ export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   );
 }
 
-function ProjectArt({ id }: { id: string }) {
+function ProjectArt({ id, imageLoading }: { id: string; imageLoading: ImageLoading }) {
   const image = PROJECTS.find((project) => project.id === id)?.image;
   if (image)
     return (
@@ -37,6 +39,7 @@ function ProjectArt({ id }: { id: string }) {
           src={image.src}
           alt={image.alt}
           fill
+          loading={imageLoading}
           sizes="(max-width: 760px) 90vw, 720px"
         />
       </div>
@@ -147,7 +150,7 @@ function ProjectArt({ id }: { id: string }) {
   );
 }
 
-export function WorkContent({ idPrefix = "" }: { idPrefix?: string }) {
+export function WorkContent({ idPrefix = "", imageLoading = "lazy" }: ContentProps) {
   const [selected, setSelected] = useState(PROJECTS[0].id);
   const project = PROJECTS.find((item) => item.id === selected) ?? PROJECTS[0];
   const notes = PROJECT_NOTES[project.id];
@@ -191,7 +194,7 @@ export function WorkContent({ idPrefix = "" }: { idPrefix?: string }) {
           aria-atomic="true"
         >
           <div className="project-feature-art">
-            <ProjectArt id={project.id} />
+            <ProjectArt id={project.id} imageLoading={imageLoading} />
             <span className="project-feature-number">
               {String(PROJECTS.indexOf(project) + 1).padStart(2, "0")}
             </span>
@@ -228,7 +231,7 @@ export function WorkContent({ idPrefix = "" }: { idPrefix?: string }) {
   );
 }
 
-export function AboutContent({ idPrefix = "" }: { idPrefix?: string }) {
+export function AboutContent({ idPrefix = "", imageLoading = "lazy" }: ContentProps) {
   return (
     <section
       className="portfolio-section"
@@ -250,6 +253,7 @@ export function AboutContent({ idPrefix = "" }: { idPrefix?: string }) {
             alt={DESK.about.photoAlt}
             width={600}
             height={720}
+            loading={imageLoading}
             sizes="(max-width: 700px) 85vw, 350px"
           />
           <figcaption>{DESK.about.caption}</figcaption>
@@ -263,6 +267,7 @@ export function AboutContent({ idPrefix = "" }: { idPrefix?: string }) {
               alt={photo.alt}
               width={400}
               height={320}
+              loading={imageLoading}
               sizes="(max-width: 700px) 85vw, 260px"
             />
             <figcaption>{photo.caption}</figcaption>
@@ -415,13 +420,16 @@ export function ResumeContent() {
 }
 
 export function SectionContent({ section }: { section: Section }) {
+  // Browser viewport-based lazy loading is unreliable inside the monitor's
+  // CSS 3D transform and clipped scroller. These sections only mount when
+  // opened; load their small image sets immediately. Reading view stays lazy.
   return section === "about" ? (
-    <AboutContent idPrefix="computer-" />
+    <AboutContent idPrefix="computer-" imageLoading="eager" />
   ) : section === "skills" ? (
     <SkillsContent idPrefix="computer-" />
   ) : section === "contact" ? (
     <ContactContent idPrefix="computer-" />
   ) : (
-    <WorkContent idPrefix="computer-" />
+    <WorkContent idPrefix="computer-" imageLoading="eager" />
   );
 }

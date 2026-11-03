@@ -125,6 +125,7 @@ export function CameraRoll({
               width={68}
               height={44}
               sizes="68px"
+              loading={pocket ? "lazy" : "eager"}
             />
             <span>{String(i + 1).padStart(2, "0")}</span>
           </button>
