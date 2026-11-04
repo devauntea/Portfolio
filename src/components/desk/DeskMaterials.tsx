@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { useThree } from "@react-three/fiber";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import * as THREE from "three";
+import type { Surfaces } from "./DeskSurfaces";
 
 export type Palette = Record<
   | "paper"
@@ -32,9 +40,32 @@ export type Palette = Record<
   | "windowGlass"
   | "posterRose"
   | "posterMint"
-  | "posterSand",
+  | "posterSand"
+  | "limewash"
+  | "dusk"
+  | "sun",
   string
 >;
+
+/**
+ * Shadow maps are rendered only when a shadow caster moves (see DeskScene),
+ * so mouse-look parallax never pays for them. Animations call this while
+ * their objects are in motion.
+ */
+export function useShadowRefresh() {
+  const get = useThree((state) => state.get);
+  return useCallback(() => {
+    get().gl.shadowMap.needsUpdate = true;
+  }, [get]);
+}
+
+/** Procedural maps shared by every object; provided once by the scene. */
+export const SurfacesContext = createContext<Surfaces | null>(null);
+export function useSurfaces() {
+  const surfaces = useContext(SurfacesContext);
+  if (!surfaces) throw new Error("Desk surfaces are not available");
+  return surfaces;
+}
 export function makeTexture(
   width: number,
   height: number,
@@ -76,11 +107,17 @@ export function Box({
   color,
   radius = 0.035,
   map,
+  tint = false,
   roughness = 0.65,
+  roughnessMap,
   metalness = 0,
   bumpMap,
   bumpScale = 0.012,
   clearcoat = 0,
+  clearcoatRoughness = 0.35,
+  emissive,
+  emissiveIntensity = 1,
+  envMapIntensity = 1,
   castShadow,
   children,
 }: {
@@ -89,11 +126,18 @@ export function Box({
   color: string;
   radius?: number;
   map?: THREE.Texture;
+  /** Multiply `map` by `color` instead of using the map's own colour. */
+  tint?: boolean;
   roughness?: number;
+  roughnessMap?: THREE.Texture;
   metalness?: number;
   bumpMap?: THREE.Texture;
   bumpScale?: number;
   clearcoat?: number;
+  clearcoatRoughness?: number;
+  emissive?: string;
+  emissiveIntensity?: number;
+  envMapIntensity?: number;
   castShadow?: boolean;
   children?: React.ReactNode;
 }) {
@@ -118,14 +162,18 @@ export function Box({
       receiveShadow
     >
       <meshPhysicalMaterial
-        color={map ? undefined : color}
+        color={map && !tint ? undefined : color}
         map={map}
         roughness={roughness}
+        roughnessMap={roughnessMap}
         metalness={metalness}
         bumpMap={bumpMap}
         bumpScale={bumpScale}
         clearcoat={clearcoat}
-        clearcoatRoughness={0.35}
+        clearcoatRoughness={clearcoatRoughness}
+        emissive={emissive}
+        emissiveIntensity={emissiveIntensity}
+        envMapIntensity={envMapIntensity}
       />
       {children}
     </mesh>
@@ -315,6 +363,44 @@ export function Slots({
   return (
     <mesh geometry={geometry}>
       <meshStandardMaterial color={color} roughness={0.8} />
+    </mesh>
+  );
+}
+
+/**
+ * Soft occlusion where an object meets a surface. Static objects only: these
+ * never move, so nothing is left behind when the scene animates.
+ */
+export function ContactShadow({
+  pos,
+  size,
+  rotation = 0,
+  opacity = 0.5,
+  round = false,
+  color,
+}: {
+  pos: [number, number, number];
+  size: [number, number];
+  rotation?: number;
+  opacity?: number;
+  round?: boolean;
+  color: string;
+}) {
+  const { contact, contactRound } = useSurfaces();
+  return (
+    <mesh position={pos} rotation={[-Math.PI / 2, 0, rotation]} renderOrder={1}>
+      <planeGeometry args={size} />
+      <meshBasicMaterial
+        color={color}
+        map={round ? contactRound : contact}
+        transparent
+        opacity={opacity}
+        depthWrite={false}
+        polygonOffset
+        polygonOffsetFactor={-2}
+        polygonOffsetUnits={-2}
+        toneMapped={false}
+      />
     </mesh>
   );
 }

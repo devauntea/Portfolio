@@ -3,7 +3,15 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { Box, Ring, Cable, Label, type Palette } from "./DeskMaterials";
+import {
+  Box,
+  Ring,
+  Cable,
+  Label,
+  useShadowRefresh,
+  useSurfaces,
+  type Palette,
+} from "./DeskMaterials";
 import { DESK } from "@/data/profile";
 
 const ease = (t: number) => {
@@ -24,6 +32,7 @@ export function DiscDrive({
     disc = useRef<THREE.Group>(null);
   const time = useRef(4);
   const invalidate = useThree((s) => s.invalidate);
+  const refreshShadows = useShadowRefresh();
   useEffect(() => {
     time.current = request > 0 && !reduced ? 0 : 4;
     invalidate();
@@ -46,6 +55,7 @@ export function DiscDrive({
     if (t < 3.2) {
       time.current += Math.min(delta, 1 / 30);
       invalidate();
+      refreshShadows();
     }
   });
   return (
@@ -122,6 +132,7 @@ export function DiscDrive({
 }
 
 function Speaker({ p, x, z }: { p: Palette; x: number; z: number }) {
+  const s = useSurfaces();
   return (
     <group position={[x, 0.15, z]}>
       <Box
@@ -129,13 +140,23 @@ function Speaker({ p, x, z }: { p: Palette; x: number; z: number }) {
         size={[0.47, 1.06, 0.47]}
         color={p.ivory}
         radius={0.06}
-        roughness={0.45}
+        map={s.plasticTint}
+        tint
+        roughness={1}
+        roughnessMap={s.plasticSurface}
+        bumpMap={s.plasticSurface}
+        bumpScale={0.12}
+        envMapIntensity={0.7}
       />
       <Box
         pos={[0, 0.55, 0.23]}
         size={[0.37, 0.86, 0.025]}
         color={p.ink}
         radius={0.035}
+        roughness={1}
+        roughnessMap={s.tooth}
+        bumpMap={s.tooth}
+        bumpScale={0.08}
       />
       {[
         { y: 0.42, r: 0.14 },

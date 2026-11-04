@@ -291,3 +291,35 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - The modern `pdfjs-dist` entry point rendered in Chromium but failed in the user's Safari. Use `pdfjs-dist/legacy/build/pdf.mjs` with its matching legacy worker; PDF.js 6 uses newer built-ins such as `Math.sumPrecise`, `Promise.try`, `Promise.withResolvers`, and `URL.parse`, and only the compatibility build supplies the polyfills. Both are still lazy-loaded. A compatibility smoke check rendered the uploaded PDF with those built-ins removed before import.
 - PDF text extraction is optional after visual rendering. An extraction error now leaves the drawn page in place, gives its canvas an accessible label, and logs a diagnostic; it must not replace a valid visible résumé with a preview error.
 - The favicon now uses filled, forward-slanted dn letterforms on white, following the user's monogram reference.
+
+## v4: crafted materials and golden-hour light
+- **`bumpScale` is per screen pixel, not per metre.** three's bump map
+  normalises the surface derivatives, so tilt ≈ bumpScale × Δheight per
+  pixel. The old 0.0008–0.003 values were invisible; 0.05–0.9 is the useful
+  range (fine tooth low, brick mortar high). Tune by eye at the real camera.
+- **Pack height + roughness in one texture.** bumpMap reads `.r`,
+  roughnessMap reads `.g` (material roughness = 1). One upload, two maps.
+- **Spotlight cookies need `castShadow`.** `SpotLight.map` is ignored
+  without it. Keep the sash inside the cone's inscribed circle and draw the
+  cookie small (160px) so linear filtering makes the penumbra.
+- **Shadow maps on demand:** `gl.shadowMap.autoUpdate = false`; World marks
+  `needsUpdate` after every React render, and anything that moves a caster
+  calls `useShadowRefresh()` from its `useFrame`. New animated casters MUST
+  do the same or they leave a stale shadow behind.
+- **React Compiler immutability lint** rejects mutating a `useThree()` value
+  or anything passed to a hook. Mutate through `useThree(s => s.get)().gl`,
+  or through a ref inside `useFrame` (the Grade uniforms do this).
+- **Full-screen grade mesh:** clip-space triangle, `raycast={() => null}`,
+  on layer 1 (camera enables it) so the env cube camera and shadow passes
+  skip it. Multiply via CustomBlending (Zero, SrcColor).
+- **The wall sits behind the headline.** Anything on the left third of the
+  wall must keep small type ≥ 4.5:1; the day scrims under `.desk-header`
+  and `.desk-intro` (z-index −1 inside their own stacking contexts) do this
+  without covering any hotspot. Night switches the header to paper.
+- **Turbopack dev served stale `globals.css`** after edits in this container
+  (TS hot-reloaded fine). `rm -rf .next` + restart, or verify with
+  `next build && next start`.
+- Texture generation budget: ~0.3s on a slow CPU, behind the loader. Use
+  small fbm fields upsampled with drawImage, and per-pixel loops only where
+  edges need to be crisp (brick).
+

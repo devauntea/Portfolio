@@ -13,6 +13,8 @@ import {
   Ring,
   Screw,
   makeTexture,
+  useShadowRefresh,
+  useSurfaces,
   type Palette,
 } from "./DeskMaterials";
 import { DESK } from "@/data/profile";
@@ -229,8 +231,10 @@ export function BrickDisplay({ p }: { p: Palette }) {
         <mesh key={color} geometry={geometry} castShadow receiveShadow>
           <meshPhysicalMaterial
             color={p[color]}
-            roughness={0.3}
-            clearcoat={0.6}
+            roughness={0.36}
+            clearcoat={0.3}
+            clearcoatRoughness={0.3}
+            envMapIntensity={0.8}
           />
         </mesh>
       ))}
@@ -308,6 +312,19 @@ export function SewingMachine({
   const elapsed = useRef(0),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const invalidate = useThree((s) => s.invalidate);
+  const refreshShadows = useShadowRefresh();
+  const s = useSurfaces();
+  // Baked enamel, decades old: soft gloss rather than a fresh clear coat.
+  const enamel = {
+    map: s.plasticTint,
+    tint: true,
+    roughness: 1,
+    roughnessMap: s.plasticSurface,
+    bumpMap: s.plasticSurface,
+    bumpScale: 0.05,
+    clearcoat: 0.22,
+    clearcoatRoughness: 0.4,
+  };
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
@@ -328,6 +345,7 @@ export function SewingMachine({
     if (running && !reduced) {
       elapsed.current += Math.min(delta, 1 / 30);
       invalidate();
+      refreshShadows();
     }
     const turn = running && !reduced ? elapsed.current * 21 : 0;
     if (needle.current) needle.current.position.y = Math.sin(turn) * 0.065;
@@ -341,29 +359,28 @@ export function SewingMachine({
         size={[2.35, 0.15, 1.18]}
         color={p.paper}
         radius={0.07}
-        roughness={0.3}
-        clearcoat={0.4}
+        {...enamel}
       />
       <Box
         pos={[0.67, 0.68, -0.13]}
         size={[0.58, 1.16, 0.72]}
         color={p.ivory}
         radius={0.12}
-        clearcoat={0.45}
+        {...enamel}
       />
       <Box
         pos={[0.03, 1.22, -0.13]}
         size={[1.9, 0.51, 0.69]}
         color={p.paper}
         radius={0.12}
-        clearcoat={0.45}
+        {...enamel}
       />
       <Box
         pos={[-0.77, 0.97, -0.12]}
         size={[0.45, 0.76, 0.66]}
         color={p.paper}
         radius={0.08}
-        clearcoat={0.4}
+        {...enamel}
       />
       <Box
         pos={[-0.77, 0.91, 0.222]}
