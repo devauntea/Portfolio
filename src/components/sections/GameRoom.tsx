@@ -265,7 +265,7 @@ export function GameRoom({ embedded = false }: { embedded?: boolean }) {
     >
       <h2 className="text-lg font-bold text-starlight">The Game Room</h2>
       <p className="mt-1 text-xs text-faint">
-        Walk with ← → (A/D), inspect a cartridge with ↑ / Space — or just click
+        Walk with ← → (A/D), inspect a cartridge with ↑ / Space, or just click
         one. The TV approves of your choices.
       </p>
       <canvas
@@ -275,7 +275,7 @@ export function GameRoom({ embedded = false }: { embedded?: boolean }) {
         onClick={handleClick}
         data-cursor="hand"
         tabIndex={0}
-        aria-label="Pixel game room — move the avatar with arrow keys, click cartridges for memories"
+        aria-label="Pixel game room: move the avatar with arrow keys, click cartridges for memories"
         className="mt-3 w-full rounded-lg border border-seam focus-visible:ring-2 focus-visible:ring-lumen/50"
         style={{ imageRendering: "pixelated" }}
       />

@@ -9,7 +9,7 @@ import {
   passwordMatches,
 } from "@/lib/owner-auth";
 
-/* Owner auth. The password lives in OWNER_PASSWORD (server-only) — NOT
+/* Owner auth. The password lives in OWNER_PASSWORD (server-only), NOT
    NEXT_PUBLIC_*, which would ship the secret to every visitor's bundle.
    Success sets an httpOnly cookie holding a hash of the password; the UI
    never sees either value. Swap this file for real auth (magic link /

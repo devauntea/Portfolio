@@ -3,7 +3,7 @@
 /* DevauntaeOS window manager. Windows are draggable panels opened from
    desktop icons or the Start menu; spaces are fullscreen takeovers (the
    walkable gallery, the game room, the resume folder). Only ephemeral UI
-   state lives here — nothing persists except what the apps themselves
+   state lives here, nothing persists except what the apps themselves
    store (pins, theme, garden state, motes). */
 
 import { create } from "zustand";

@@ -1,9 +1,9 @@
 "use client";
 
-/* VOID PATROL — the Game Room's playable space shooter (canvas 2D, retro
+/* VOID PATROL, the Game Room's playable space shooter (canvas 2D, retro
    rects, palette-aware). Move with ←→/A·D or the mouse; hold Space or the
    pointer to fire; R restarts. Destroyed ships drop items: score gems,
-   rapid-fire, spread shot, shields — and rare 📼 cartridges that light up
+   rapid-fire, spread shot, shields, and rare 📼 cartridges that light up
    one of Devauntae's favorite games in the side panel (onCartridge). */
 
 import { useEffect, useRef, useState } from "react";
@@ -398,7 +398,7 @@ export function SpaceShooter({
         ctx.fillStyle = "#f0f2ff";
         ctx.font = `${PX * 2.8}px monospace`;
         ctx.fillText(
-          `score ${score} — press R or tap to fly again`,
+          `score ${score}. Press R or tap to fly again`,
           (W / 2) * PX,
           (H / 2 + 4) * PX,
         );
@@ -446,7 +446,7 @@ export function SpaceShooter({
         height={H * PX}
         tabIndex={0}
         data-cursor="hand"
-        aria-label="Void Patrol — space shooter. Arrow keys or mouse to move, Space or click to fire."
+        aria-label="Void Patrol, a space shooter. Arrow keys or mouse to move, Space or click to fire."
         className="w-full rounded-lg border border-seam touch-none"
         style={{ imageRendering: "pixelated" }}
       />

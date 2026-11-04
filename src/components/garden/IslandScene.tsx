@@ -4,7 +4,7 @@
    campfire, a tree, four care stations, and the four creatures roaming free.
 
    Visitors see a frozen diorama: living colors, gentle idle pose, no wander,
-   no HUD, plus a plaque ("unlock to interact"). Owners see the live game —
+   no HUD, plus a plaque ("unlock to interact"). Owners see the live game,
    dormant agents as stone statues on their pedestals, awake ones wandering
    at an energy-scaled pace, nappers curled at the mushrooms, hover stat
    bars, emote bubbles, and a campfire whose color tracks the garden's
@@ -35,7 +35,7 @@ const HUE_CSS: Record<string, string> = {
   toxic: "var(--sprout)",
 };
 
-/* island layout (x, z) — grass cap radius is 4.6 */
+/* island layout (x, z), grass cap radius is 4.6 */
 const HOME: [number, number][] = [
   [-2.1, 1.5], // paper-wing
   [2.1, 1.5], // echo-fox
@@ -51,7 +51,7 @@ const STATION_POS: Record<StationId, [number, number]> = {
 const FIRE_MIN_R = 1.2; // wanderers keep clear of the campfire
 const WANDER_R = 2.9;
 
-/* deterministic scatter (no Math.random in render — lint) */
+/* deterministic scatter (no Math.random in render, lint) */
 const TUFTS: [number, number, number][] = [
   [-3.4, 0, 1.2], [-1.2, 0, 3.4], [0.8, 0, 3.7], [2.9, 0, 1.9],
   [3.8, 0, -0.9], [1.9, 0, -3.1], [-0.6, 0, -3.7], [-3.6, 0, -1.8],
@@ -569,7 +569,7 @@ function CreatureActor({
       {owner && hover && stone && (
         <Html position={[0, 1.6, 0]} center distanceFactor={9} zIndexRange={[40, 0]}>
           <div className="pointer-events-none whitespace-nowrap rounded border border-seam bg-cosmos/90 px-2 py-1 font-mono text-[8px] text-faint">
-            DORMANT — activate below
+            DORMANT: activate below
           </div>
         </Html>
       )}

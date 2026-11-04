@@ -2,7 +2,7 @@
 
 /* Owner HUD card for one agent: live vitals, mood face, and the care
    actions (feed / play / train / nap). DORMANT agents show the Activate
-   flow instead — the same simulated sequence as before (progress bar +
+   flow instead, the same simulated sequence as before (progress bar +
    console logs + a durable server log line), after which the statue wakes
    into the pet-care game. All game actions route through Garden.tsx so
    toasts and the journal stay centralized. */
@@ -131,7 +131,7 @@ export function OwnerHud({
 
       {care.status === "asleep" && (
         <p className="mt-2 text-[10px] text-lumen">
-          💤 Napping — back in ~{napMins ?? "…"}m
+          💤 Napping, back in ~{napMins ?? "…"}m
         </p>
       )}
 

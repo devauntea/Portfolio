@@ -1,6 +1,6 @@
 "use client";
 
-/* DevauntaeOS icon set — hand-drawn 16×16 pixel art, no emoji.
+/* DevauntaeOS icon set, hand-drawn 16×16 pixel art, no emoji.
    Each icon is 16 strings of 16 characters; a character maps to a palette
    token, so every icon re-themes with the Display app's color scheme.
    Horizontal runs are merged into <rect>s at render time, and
@@ -22,7 +22,7 @@ const PALETTE: Record<string, string> = {
 /* ---------------------------------------------------------------- the art */
 
 const ART = {
-  /** ID badge — a lanyard card with a portrait */
+  /** ID badge, a lanyard card with a portrait */
   about: [
     "................",
     ".kkkkkkkkkkkkkk.",
@@ -82,7 +82,7 @@ const ART = {
     "................",
   ],
 
-  /** framed landscape — sun over a green ridge */
+  /** framed landscape, sun over a green ridge */
   gallery: [
     "................",
     ".kkkkkkkkkkkkkk.",
@@ -142,7 +142,7 @@ const ART = {
     "................",
   ],
 
-  /** sealed envelope — the way in */
+  /** sealed envelope, the way in */
   contact: [
     "................",
     "................",
@@ -222,7 +222,7 @@ const ART = {
     "................",
   ],
 
-  /** a potted seedling — the garden's door */
+  /** a potted seedling, the garden's door */
   garden: [
     "................",
     "................",
@@ -242,7 +242,7 @@ const ART = {
     "................",
   ],
 
-  /** the OS mark — a four-point star */
+  /** the OS mark, a four-point star */
   start: [
     "................",
     "................",

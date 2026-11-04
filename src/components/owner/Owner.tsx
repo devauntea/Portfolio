@@ -1,7 +1,7 @@
 "use client";
 
 /* Owner-only surface: the password gate (server-checked → httpOnly cookie,
-   same contract as the garden) and the dashboard — live agent statuses
+   same contract as the garden) and the dashboard, live agent statuses
    from the shared garden store, an Add Agent placeholder, and the manual
    activation steps so Devauntae can always find them on the site itself. */
 
@@ -56,7 +56,7 @@ export function OwnerGate({ open, onClose }: { open: boolean; onClose: () => voi
     <GameModal open={open} onClose={onClose} label="Owner login">
       <h2 className="font-mono text-sm font-bold text-lumen">THE ARCHIVIST&apos;S KEY</h2>
       <p className="mt-2 text-sm text-faint">
-        The Archive opens fully only for its keeper — the agent dashboard and
+        The Archive opens fully only for its keeper, with the agent dashboard and
         the garden behind the green door.
       </p>
       <form onSubmit={submit} className="mt-4 space-y-3">
@@ -155,7 +155,7 @@ export function OwnerDashboard({ open, onClose }: { open: boolean; onClose: () =
         </Link>
         <button
           disabled
-          title="Placeholder — wire a real registration flow later"
+          title="Placeholder: wire a real registration flow later"
           className="flex-1 rounded-xl border border-dashed border-seam py-2 font-mono text-[11px] text-faint opacity-60"
         >
           + add agent (soon)
@@ -163,7 +163,7 @@ export function OwnerDashboard({ open, onClose }: { open: boolean; onClose: () =
       </div>
 
       <h3 className="mt-5 font-mono text-[10px] uppercase tracking-widest text-faint">
-        Making them real — manual activation steps
+        Making them real: manual activation steps
       </h3>
       <div className="no-scrollbar mt-2 max-h-44 space-y-2 overflow-y-auto">
         {ACTIVATION_STEPS.map((s) => (
@@ -176,7 +176,7 @@ export function OwnerDashboard({ open, onClose }: { open: boolean; onClose: () =
         ))}
         <p className="text-[11px] leading-relaxed text-faint/80">
           Wire all endpoints into one Next.js API route (or a small aggregator).
-          The garden frontend already consumes one status shape — just update
+          The garden frontend already consumes one status shape, so you only need to update
           the API URLs when the real services exist.
         </p>
       </div>

@@ -40,7 +40,7 @@ export async function resumeMeta(): Promise<ResumeMeta> {
       filename: RESUME_FILENAME,
     };
   } catch {
-    /* not uploaded yet, or storage is unreachable — the bundled copy stands in */
+    /* not uploaded yet, or storage is unreachable, the bundled copy stands in */
     return bundled();
   }
 }
@@ -49,7 +49,7 @@ export async function resumeMeta(): Promise<ResumeMeta> {
 export async function readResumeStream(): Promise<ReadableStream<Uint8Array> | null> {
   if (!blobConfigured()) return null;
   try {
-    /* useCache:false — the pathname is overwritten in place, so a cached copy
+    /* useCache:false, the pathname is overwritten in place, so a cached copy
        would keep serving the previous résumé after an upload. */
     const res = await get(RESUME_BLOB_PATH, { access: "private", useCache: false });
     if (!res || res.statusCode !== 200) return null;

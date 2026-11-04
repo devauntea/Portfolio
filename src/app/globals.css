@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* The Archive — celestial library palette. Components reference tokens only. */
+/* The Archive, celestial library palette. Components reference tokens only. */
 :root {
   --cosmos: #070912; /* deep space background */
   --panel: #12172b; /* raised surfaces */
   --seam: #263052; /* borders / dividers */
   --starlight: #f0f2ff; /* primary text */
   --faint: #8e97c2; /* muted text */
-  --lumen: #7ee0ff; /* glowing ice-cyan — interactive */
+  --lumen: #7ee0ff; /* glowing ice-cyan, interactive */
   --ember: #ff8a4d; /* warm accent, campfire */
-  --gilt: #ffd45e; /* gold — primary action */
+  --gilt: #ffd45e; /* gold, primary action */
   --sprout: #97e87a; /* growth / online green */
   --rose: #ff6e9a; /* alerts / affection */
 }
@@ -156,7 +156,7 @@ body {
   }
 }
 
-/* The Working Desk — physical materials and interface share a single palette. */
+/* The Working Desk, physical materials and interface share a single palette. */
 :root {
   --desk-paper: #eee5d7;
   --desk-ivory: #d5c8b4;
@@ -529,6 +529,50 @@ body {
 }
 .is-evening .desk-intro h1 em {
   color: var(--desk-screen);
+}
+/* The textured wall stays calm behind words: soft limewash scrims lift the
+   header band and the intro column by day so small type keeps its contrast.
+   Each sits inside its own stacking context, under the text, over the scene. */
+.is-immersive .desk-header::before,
+.is-immersive .desk-intro::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.is-immersive .desk-header::before {
+  inset: 0 -3.7vw -36px;
+  background: linear-gradient(
+    color-mix(in srgb, var(--desk-paper) 68%, transparent),
+    color-mix(in srgb, var(--desk-paper) 40%, transparent) 62%,
+    transparent
+  );
+}
+.is-immersive .desk-intro::before {
+  inset: -22% -55% -18% -40%;
+  background: radial-gradient(
+    ellipse 56% 52% at 40% 50%,
+    color-mix(in srgb, var(--desk-paper) 70%, transparent),
+    color-mix(in srgb, var(--desk-paper) 40%, transparent) 58%,
+    transparent
+  );
+}
+.is-evening .desk-header::before,
+.is-evening .desk-intro::before {
+  opacity: 0;
+}
+.is-immersive:not(.is-evening) .desk-intro-copy,
+.is-immersive:not(.is-evening) .desk-brand small {
+  color: color-mix(in srgb, var(--desk-muted) 55%, var(--desk-ink));
+}
+.is-evening.is-immersive .desk-header-right,
+.is-evening.is-immersive .desk-header-right a,
+.is-evening.is-immersive .desk-header-right button {
+  color: var(--desk-paper);
+}
+.is-evening.is-immersive .desk-header {
+  border-bottom-color: color-mix(in srgb, var(--desk-paper) 18%, transparent);
 }
 .is-evening .desk-intro .desk-button {
   color: var(--desk-ink);
@@ -2895,6 +2939,13 @@ body {
   --desk-brick: #876454;
   --desk-limestone: #b8aca0;
   --desk-window-glass: #3a4b55;
+  /* Golden-hour studio: limewashed brick, a low amber sun, a lavender dusk. */
+  --desk-limewash: #e7dfd1;
+  --desk-dusk: #b9a5c2;
+  --desk-sun: #ffbd80;
+  /* The brick cat's printed eyes and nose. */
+  --desk-iris: #4f93bf;
+  --desk-blush: #d9929f;
 }
 
 .blind-control.is-open { width:36px; height:40px; padding:8px; justify-content:center; }

@@ -1,7 +1,7 @@
 "use client";
 
 /* Glassmorphism owner-login. Posts the password to the server route (which
-   checks OWNER_PASSWORD and sets an httpOnly cookie) — the secret never enters
+   checks OWNER_PASSWORD and sets an httpOnly cookie), the secret never enters
    the client bundle. Shows an error on a wrong password. */
 
 import { useState } from "react";
@@ -74,7 +74,7 @@ export function AgentLink({
           {busy ? "Linking…" : "Establish Link"}
         </button>
         <p className="text-center text-[11px] text-faint/60">
-          Auth is checked server-side (OWNER_PASSWORD in .env.local) — the secret
+          Auth is checked server-side (OWNER_PASSWORD in .env.local), so the secret
           never ships to the browser. Change it before you deploy.
         </p>
       </form>

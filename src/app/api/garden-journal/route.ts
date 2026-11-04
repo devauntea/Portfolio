@@ -8,12 +8,12 @@ import { OWNER_COOKIE, isOwner as isOwnerCookie } from "@/lib/owner-auth";
    same httpOnly cookie as the portal, so public visitors can neither write
    nor read it. POST appends one timestamped line under today's date
    heading; GET returns the tail for the in-game journal drawer. Writes
-   fail soft on a read-only filesystem (deployed hosts) — the game keeps
+   fail soft on a read-only filesystem (deployed hosts), the game keeps
    playing, only the durable log is skipped. */
 
 const FILE = path.join(process.cwd(), "memory", "garden_journal.md");
 const HEADER =
-  "# Agent Garden journal\n\nDaily care log — interactions, stat alerts, and mood shifts, written by the owner portal.\n";
+  "# Agent Garden journal\n\nDaily care log: interactions, stat alerts, and mood shifts, written by the owner portal.\n";
 
 async function isOwner(): Promise<boolean> {
   const jar = await cookies();
@@ -40,7 +40,7 @@ async function appendEntry(line: string): Promise<void> {
   if (!content?.includes(`## ${day}`)) {
     await fs.appendFile(FILE, `\n## ${day}\n\n`, "utf-8");
   }
-  await fs.appendFile(FILE, `- ${hm} — ${line}\n`, "utf-8");
+  await fs.appendFile(FILE, `- ${hm} | ${line}\n`, "utf-8");
 }
 
 export async function POST(req: Request) {

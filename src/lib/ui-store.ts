@@ -2,7 +2,7 @@
 
 /* Site-wide UI state: memory motes (20, persisted), pinned project orbs
    (persisted), the sound toggle (off by default, persisted), and the
-   server-confirmed owner flag (ephemeral — the httpOnly cookie is the
+   server-confirmed owner flag (ephemeral, the httpOnly cookie is the
    source of truth). */
 
 import { create } from "zustand";
@@ -27,10 +27,10 @@ export const MOTES: MoteDef[] = Array.from({ length: MOTE_COUNT }, (_, i) => ({
 
 /** Milestone messages that unlock as motes accumulate. */
 export const MOTE_MILESTONES: Record<number, string> = {
-  5: "✦ Five motes — the Archive stirs.",
-  10: "✦ Ten motes — shelves whisper your name.",
-  15: "✦ Fifteen motes — almost every memory found.",
-  20: "✦ All twenty. Look up — the sky remembers you.",
+  5: "✦ Five motes. The Archive stirs.",
+  10: "✦ Ten motes. Shelves whisper your name.",
+  15: "✦ Fifteen motes. Almost every memory found.",
+  20: "✦ All twenty. Look up. The sky remembers you.",
 };
 
 export type WallpaperId = "memes" | "dots";

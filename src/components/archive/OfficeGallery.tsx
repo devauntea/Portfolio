@@ -1,9 +1,9 @@
 "use client";
 
 /* Two rooms added in v2:
-   — Office: a warm little study for the Resume Folder (the interactive
+  , Office: a warm little study for the Resume Folder (the interactive
      folder itself is the DOM panel; this is its lamplit habitat).
-   — Gallery3D: a lit exhibition wall of six framed prints (drei
+  , Gallery3D: a lit exhibition wall of six framed prints (drei
      GradientTexture placeholders). The camera rides a rail past them
      (see CameraRig); clicking a frame sets `focus` in the scroll store
      and the camera glides in. Plaques are drei Html, shown on focus

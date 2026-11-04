@@ -11,6 +11,7 @@ import {
   Screw,
   Cable,
   surfaceTexture,
+  useShadowRefresh,
   type Palette,
 } from "./DeskMaterials";
 import { CameraRoll } from "./CameraRoll";
@@ -53,6 +54,7 @@ export function DeskCamera({
     [leather, dial],
   );
   const invalidate = useThree((state) => state.invalidate);
+  const refreshShadows = useShadowRefresh();
   useEffect(() => {
     invalidate();
   }, [active, reduced, invalidate]);
@@ -80,7 +82,10 @@ export function DeskCamera({
       );
       group.current.scale.setScalar(THREE.MathUtils.lerp(1, 2.4, t));
     }
-    if (Math.abs(t - target) > 0.0001) invalidate();
+    if (Math.abs(t - target) > 0.0001) {
+      invalidate();
+      refreshShadows();
+    }
   });
   return (
     <group

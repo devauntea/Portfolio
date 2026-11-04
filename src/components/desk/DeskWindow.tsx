@@ -4,7 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { Box, type Palette } from "./DeskMaterials";
+import {
+  Box,
+  useShadowRefresh,
+  useSurfaces,
+  type Palette,
+} from "./DeskMaterials";
+import { mix } from "./DeskSurfaces";
 import { CityView } from "./DeskOutside";
 import { DESK } from "@/data/profile";
 
@@ -38,6 +44,8 @@ export function DeskWindow({
   }, []);
   const cleanDrag = useRef<() => void>(() => {});
   const invalidate = useThree((s) => s.invalidate);
+  const refreshShadows = useShadowRefresh();
+  const surfaces = useSurfaces();
   useEffect(() => () => cleanDrag.current(), []);
   useEffect(() => {
     invalidate();
@@ -134,9 +142,30 @@ export function DeskWindow({
       pull.current.position.y = 1.075 - extension / 2;
       pull.current.scale.y = 0.95 + extension;
     }
-    if (light.current) light.current.intensity = (night ? 6 : 38) * (0.12 + 0.88 * t);
-    if (Math.abs(t - target.current) > 0.0001) invalidate();
+    // Closed slats still leak light; open, the whole sky pours in.
+    if (light.current) light.current.intensity = (night ? 6 : 30) * (0.26 + 0.74 * t);
+    if (Math.abs(t - target.current) > 0.0001) {
+      invalidate();
+      refreshShadows();
+    }
   });
+  const plaster = {
+    color: p.limewash,
+    roughness: 1,
+    roughnessMap: surfaces.tooth,
+    bumpMap: surfaces.tooth,
+    bumpScale: 0.08,
+    radius: 0.02,
+  };
+  const steel = {
+    color: p.ink,
+    roughness: 1,
+    roughnessMap: surfaces.tooth,
+    bumpMap: surfaces.tooth,
+    bumpScale: 0.04,
+    metalness: 0.35,
+    radius: 0.008,
+  };
   const begin = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
     start(event.nativeEvent);
@@ -144,14 +173,13 @@ export function DeskWindow({
   return (
     <group position={[WINDOW.x, WINDOW.y, WINDOW.z]}>
       <CityView p={p} night={night} />
-      {/* Deep reveals obscure the exterior beyond the actual opening. */}
+      {/* Deep limewashed reveals obscure the exterior beyond the opening. */}
       {[-1.72, 1.72].map((x) => (
         <Box
           key={x}
           pos={[x, 0, -0.08]}
           size={[0.16, 3.55, 0.5]}
-          color={p.ivory}
-          radius={0.02}
+          {...plaster}
         />
       ))}
       {[-1.7, 1.7].map((y) => (
@@ -159,34 +187,56 @@ export function DeskWindow({
           key={y}
           pos={[0, y, -0.08]}
           size={[3.6, 0.16, 0.5]}
-          color={p.ivory}
-          radius={0.02}
+          {...plaster}
         />
       ))}
+      {/* Oiled sill, worn pale along its front edge by years of elbows. */}
       <Box
         pos={[0, -1.72, 0.2]}
         size={[3.8, 0.16, 0.85]}
-        color={p.paper}
+        color={p.wood}
+        map={surfaces.wood}
+        roughness={1}
+        roughnessMap={surfaces.woodSurface}
+        bumpMap={surfaces.woodSurface}
+        bumpScale={0.25}
         radius={0.025}
       />
       <Box
         pos={[0, 1.68, 0.22]}
         size={[3.58, 0.2, 0.27]}
-        color={p.paper}
+        color={mix(p.paper, p.ivory, 0.5)}
+        roughness={0.55}
+        metalness={0.2}
         radius={0.025}
       />
-      <Box
-        pos={[0, 0, -0.22]}
-        size={[0.055, 3.3, 0.08]}
-        color={p.ivory}
-        radius={0.008}
-      />
-      <Box
-        pos={[0, -0.25, -0.21]}
-        size={[3.3, 0.055, 0.08]}
-        color={p.ivory}
-        radius={0.008}
-      />
+      {/* Steel sash: a perimeter frame and a 3 × 3 grid of lites. */}
+      {[-1.6, 1.6].map((x) => (
+        <Box key={`v${x}`} pos={[x, 0, -0.22]} size={[0.1, 3.3, 0.09]} {...steel} />
+      ))}
+      {[-1.55, 1.55].map((y) => (
+        <Box key={`h${y}`} pos={[0, y, -0.22]} size={[3.3, 0.1, 0.09]} {...steel} />
+      ))}
+      {[-0.55, 0.55].map((x) => (
+        <Box key={`m${x}`} pos={[x, 0, -0.21]} size={[0.045, 3.2, 0.07]} {...steel} />
+      ))}
+      {[-0.52, 0.52].map((y) => (
+        <Box key={`t${y}`} pos={[0, y, -0.21]} size={[3.2, 0.045, 0.07]} {...steel} />
+      ))}
+      {/* Old glass: faintly tinted, dusty toward the corners. */}
+      <mesh position={[0, 0, -0.245]}>
+        <planeGeometry args={[3.2, 3.1]} />
+        <meshPhysicalMaterial
+          color={night ? p.skyNight : mix(p.windowGlass, p.dusk, 0.5)}
+          transparent
+          opacity={night ? 0.22 : 0.16}
+          alphaMap={surfaces.grime}
+          roughness={0.12}
+          metalness={0}
+          envMapIntensity={1.6}
+          depthWrite={false}
+        />
+      </mesh>
       {Array.from({ length: 12 }, (_, i) => (
         <group
           key={i}
@@ -199,7 +249,11 @@ export function DeskWindow({
             pos={[0, 0, 0]}
             size={[3.3, 0.028, 0.29]}
             castShadow
-            color={p.paper}
+            color={mix(p.paper, p.limewash, 0.5)}
+            roughness={0.5}
+            metalness={0.15}
+            emissive={night ? p.skyNight : p.light}
+            emissiveIntensity={night ? 0.08 : 0.22}
             radius={0.01}
           />
         </group>
@@ -208,7 +262,9 @@ export function DeskWindow({
         <Box
           pos={[0, 0, 0]}
           size={[3.38, 0.08, 0.31]}
-          color={p.ivory}
+          color={mix(p.paper, p.ivory, 0.5)}
+          roughness={0.5}
+          metalness={0.2}
           radius={0.02}
         />
       </group>
@@ -258,7 +314,7 @@ export function DeskWindow({
         ref={light}
         position={[0, 1.05, -0.08]}
         target={lightTarget}
-        color={night ? p.sky : p.light}
+        color={night ? p.sky : mix(p.light, p.dusk, 0.45)}
         intensity={0}
         angle={1.18}
         penumbra={0.8}

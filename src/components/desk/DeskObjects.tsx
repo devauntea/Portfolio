@@ -12,9 +12,12 @@ import {
   Screw,
   Slots,
   makeTexture,
+  useSurfaces,
   type Palette,
 } from "./DeskMaterials";
+import { mix } from "./DeskSurfaces";
 import { DiscDrive } from "./DeskMedia";
+import { KeyboardWear, TowerWear } from "./DeskWear";
 import { DESK } from "@/data/profile";
 
 type Surfaces = {
@@ -25,7 +28,10 @@ type Surfaces = {
 };
 
 // Each legend is baked into one atlas, and all keycaps share three draw calls.
+// Alphas and modifiers are two plastics, and every cap has aged a little
+// differently (per-vertex colour, so it costs nothing extra to draw).
 export function DetailedKeyboard({ p }: { p: Palette }) {
+  const s = useSurfaces();
   const model = useMemo(() => {
     type Key = {
       label: string;
@@ -33,6 +39,7 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
       z: number;
       width: number;
       accent: boolean;
+      modifier: boolean;
     };
     const keys: Key[] = [];
     const rows = [
@@ -76,6 +83,7 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
           z: -0.51 + r * 0.177 + (r ? 0.035 : 0),
           width: width - 0.022,
           accent: label === "esc" || label === "enter",
+          modifier: label.length > 1 || (label !== "" && "↑←↓→".includes(label)),
         });
         x += width;
       });
@@ -95,13 +103,17 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
           z: -0.298 + r * 0.177,
           width: 0.155,
           accent: false,
+          modifier: ["num", "/", "*", "+"].includes(label),
         });
       }),
     );
+    // The most-typed legends have half worn away.
+    const worn = new Set(["A", "S", "E", "R", "T", "N", "back", "←", "→"]);
     const atlas = makeTexture(1024, 1024, (ctx) => {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       keys.forEach((key, i) => {
+        ctx.globalAlpha = worn.has(key.label) ? 0.38 : 1;
         ctx.fillStyle = key.accent ? p.paper : p.ink;
         ctx.font = `${key.label.length > 2 ? 22 : 34}px monospace`;
         ctx.fillText(
@@ -113,6 +125,11 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
     });
     const caps: THREE.BufferGeometry[][] = [[], []];
     const legends: THREE.BufferGeometry[] = [];
+    const alpha = new THREE.Color().setStyle(p.paper),
+      modifier = new THREE.Color().setStyle(mix(p.paper, p.shadow, 0.42)),
+      accent = new THREE.Color(1, 1, 1),
+      tone = new THREE.Color(),
+      aged = new THREE.Color().setStyle(mix(p.paper, p.clay, 0.5));
     keys.forEach((key, i) => {
       const cap = new RoundedBoxGeometry(1, 1, 1, 2, 0.1);
       const points = cap.attributes.position;
@@ -128,6 +145,21 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
       }
       cap.computeVertexNormals();
       cap.translate(key.x, 0.14, key.z);
+      // Deterministic per-key ageing: some caps yellowed more than others.
+      const wear = ((i * 7919) % 97) / 97;
+      tone
+        .copy(key.accent ? accent : key.modifier ? modifier : alpha)
+        .lerp(aged, key.accent ? 0 : wear * 0.22)
+        .multiplyScalar(
+          (0.96 + ((i * 31) % 11) / 250) * (worn.has(key.label) ? 1.04 : 1),
+        );
+      const colors = new Float32Array(cap.attributes.position.count * 3);
+      for (let v = 0; v < colors.length; v += 3) {
+        colors[v] = tone.r;
+        colors[v + 1] = tone.g;
+        colors[v + 2] = tone.b;
+      }
+      cap.setAttribute("color", new THREE.BufferAttribute(colors, 3));
       caps[key.accent ? 1 : 0].push(cap);
       const legend = new THREE.PlaneGeometry(key.width * 0.84, 0.125);
       legend.rotateX(-Math.PI / 2);
@@ -162,34 +194,51 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
         size={[3.63, 0.2, 1.4]}
         color={p.shadow}
         radius={0.07}
+        roughness={0.8}
       />
       <Box
         pos={[0, 0, 0]}
         size={[3.62, 0.16, 1.39]}
         color={p.ivory}
         radius={0.07}
-        roughness={0.53}
+        map={s.plasticTint}
+        tint
+        roughness={1}
+        roughnessMap={s.plasticSurface}
+        bumpMap={s.plasticSurface}
+        bumpScale={0.1}
+        envMapIntensity={0.7}
       />
       <Box
         pos={[0, 0.085, -0.035]}
         size={[3.4, 0.025, 1.16]}
-        color={p.shadow}
+        color={mix(p.shadow, p.ink, 0.5)}
         radius={0.01}
+        roughness={0.9}
       />
       {model.merged.slice(0, 2).map((geometry, i) => (
         <mesh key={i} geometry={geometry} castShadow receiveShadow>
           <meshStandardMaterial
-            color={i ? p.accent : p.paper}
-            roughness={0.43}
+            color={i ? p.accent : "white"}
+            vertexColors
+            roughness={1}
+            roughnessMap={s.plasticSurface}
+            bumpMap={s.plasticSurface}
+            bumpScale={0.06}
+            envMapIntensity={0.6}
           />
         </mesh>
       ))}
+      {/* Printed legends are lit like the plastic they sit on. */}
       <mesh geometry={model.merged[2]}>
-        <meshBasicMaterial
+        <meshStandardMaterial
           map={model.atlas}
           transparent
           alphaTest={0.1}
           depthWrite={false}
+          roughness={0.7}
+          polygonOffset
+          polygonOffsetFactor={-1}
         />
       </mesh>
       {[0, 1, 2].map((i) => (
@@ -210,19 +259,29 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
         width={0.8}
         rotation={[-Math.PI / 2, 0, 0]}
       />
+      <KeyboardWear p={p} />
     </group>
   );
 }
 
 export function DetailedTower({
   p,
-  ceramic,
   musicRequest,
   reduced,
-}: Pick<Surfaces, "p" | "ceramic"> & {
+}: Pick<Surfaces, "p"> & {
   musicRequest: number;
   reduced: boolean;
 }) {
+  const s = useSurfaces();
+  const abs = {
+    map: s.plasticTint,
+    tint: true,
+    roughness: 1,
+    roughnessMap: s.plasticSurface,
+    bumpMap: s.plasticSurface,
+    bumpScale: 0.12,
+    envMapIntensity: 0.7,
+  };
   const grille = useMemo(
     () =>
       makeTexture(256, 256, (ctx) => {
@@ -248,24 +307,23 @@ export function DetailedTower({
       <Box
         pos={[0, 0, 0]}
         size={[1.1, 1.96, 1.86]}
-        color={p.shadow}
+        color={mix(p.shadow, p.ink, 0.3)}
         radius={0.065}
-        bumpMap={ceramic}
-        bumpScale={0.0008}
+        roughness={0.85}
       />
       <Box
         pos={[0, 0.015, -0.02]}
         size={[1.08, 1.93, 1.82]}
         color={p.ivory}
         radius={0.06}
-        bumpMap={ceramic}
-        bumpScale={0.0008}
+        {...abs}
       />
       <Box
         pos={[0, 0, 0.925]}
         size={[1.065, 1.92, 0.08]}
         color={p.ivory}
         radius={0.07}
+        {...abs}
       />
       <DiscDrive p={p} request={musicRequest} reduced={reduced} />
       {[0.3, -0.02].map((y, i) => (
@@ -281,6 +339,7 @@ export function DetailedTower({
             size={[0.845, 0.24, 0.02]}
             color={p.ivory}
             radius={0.01}
+            {...abs}
           />
           {i < 2 && (
             <>
@@ -308,7 +367,12 @@ export function DetailedTower({
       ))}
       <mesh position={[0, -0.65, 0.972]}>
         <planeGeometry args={[0.72, 0.43]} />
-        <meshStandardMaterial map={grille} roughness={0.7} />
+        <meshStandardMaterial
+          map={grille}
+          roughness={0.8}
+          bumpMap={grille}
+          bumpScale={0.6}
+        />
       </mesh>
       <mesh position={[0.28, -0.29, 0.984]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.072, 0.072, 0.03, 24]} />
@@ -345,6 +409,7 @@ export function DetailedTower({
         size={[0.012, 0.018, 0.65]}
         color={p.shadow}
       />
+      <TowerWear p={p} />
       {[-0.4, 0.4].map((x) => (
         <Box
           key={x}
@@ -392,10 +457,11 @@ export function DeskMat({ p, woven }: Pick<Surfaces, "p" | "woven">) {
       <Box
         pos={[0, 0, 0]}
         size={[5.45, 0.035, 2.55]}
-        color={p.shadow}
+        color={mix(p.shadow, p.muted, 0.35)}
         bumpMap={woven}
-        bumpScale={0.0012}
-        roughness={0.93}
+        bumpScale={0.18}
+        roughness={0.96}
+        envMapIntensity={0.4}
         radius={0.015}
       />
       <lineSegments geometry={seam} position={[0, 0.019, 0]}>
@@ -449,7 +515,7 @@ export function Pottery({
     <group position={[-2.5, 0.125, 1.45]} rotation={[0, -0.2, 0]}>
       <mesh position={[0, 0.022, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.385, 0.37, 0.044, 80]} />
-        <meshStandardMaterial color={p.wood} bumpMap={grain} bumpScale={0.002} roughness={0.82} />
+        <meshStandardMaterial color={p.wood} bumpMap={grain} bumpScale={0.12} roughness={0.82} />
       </mesh>
       <Ring pos={[0, 0.043, 0]} radius={0.355} tube={0.003} color={p.woodDark} />
       <group position={[0, 0.04, 0]}>

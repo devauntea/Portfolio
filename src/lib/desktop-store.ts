@@ -1,6 +1,6 @@
 "use client";
 
-/* Desktop icon layout. Icons live on a snap grid — one icon per cell, so
+/* Desktop icon layout. Icons live on a snap grid, one icon per cell, so
    they can never overlap. Positions persist per machine; dropping an icon
    on an occupied cell swaps the two, the way a real desktop would rather
    than refusing the drop. */

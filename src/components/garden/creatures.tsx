@@ -1,10 +1,10 @@
 "use client";
 
 /* The four agent creatures as procedural low-poly R3F bodies. Pure visuals:
-   no click handling, no wandering — IslandScene wraps each body in a
+   no click handling, no wandering, IslandScene wraps each body in a
    CreatureActor that owns movement, emotes, and selection. Props:
    - hue:   base color (number, three.js can't read CSS vars)
-   - stone: dormant statue mode — grey tints, emissives off, animation frozen
+   - stone: dormant statue mode, grey tints, emissives off, animation frozen
    - pace:  idle-animation speed multiplier (energy-driven, ~0.4–1.3)   */
 
 import { useEffect, useRef } from "react";
@@ -21,9 +21,9 @@ export interface BodyProps {
 const STONE = 0x565b77;
 const STONE_DARK = 0x474c66;
 
-/** Advances a private clock only while animated — statues stay frozen
+/** Advances a private clock only while animated, statues stay frozen
     mid-pose instead of snapping back to t=0. The deterministic phase
-    desyncs creatures from each other (no Math.random in render — lint). */
+    desyncs creatures from each other (no Math.random in render, lint). */
 function useCreatureClock(active: boolean, pace: number, phase: number) {
   const t = useRef(0);
   useEffect(() => {

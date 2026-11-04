@@ -1,6 +1,6 @@
 "use client";
 
-/* The desktop wallpaper: a rotation of cat memes, drawn live on a canvas —
+/* The desktop wallpaper: a rotation of cat memes, drawn live on a canvas,
    pixel-art cats + Impact-style captions, no image files. A new meme every
    ~16 seconds; the backdrop tint follows the active palette so themes
    still matter. Toggleable from the Display app (memes ⇄ classic dots). */

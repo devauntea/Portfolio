@@ -1,6 +1,6 @@
 "use client";
 
-/* Agent Garden orchestrator — the pet-care game shell.
+/* Agent Garden orchestrator, the pet-care game shell.
    Public visitors get the frozen island diorama + lore modals. Owners get
    the live game: vitals ticking on wall-clock time, AP economy, station
    targeting (click a station, then a creature), the training minigame,
@@ -32,9 +32,9 @@ const PixelGarden = dynamic(
 );
 
 const HELD_HINT: Record<Exclude<HeldAction, null>, string> = {
-  feed: "🍖 Holding kibble — click a creature to feed it",
-  train: "💪 Training armed — click the creature to coach",
-  nap: "🌙 Nap time — click the creature to tuck in",
+  feed: "🍖 Holding kibble. Click a creature to feed it",
+  train: "💪 Training armed. Click the creature to coach",
+  nap: "🌙 Nap time. Click the creature to tuck in",
 };
 
 function statusPhrase(care: AgentCare): string {
@@ -120,10 +120,10 @@ export function Garden({ initialOwner }: { initialOwner: boolean }) {
           journal(`${name} woke up from its nap (energy 100).`);
         } else if (ev.kind === "dormant") {
           setToast(`💀 ${name} ran out of care and went dormant!`);
-          journal(`${name} went DORMANT from neglect — reactivate it at its statue.`);
+          journal(`${name} went DORMANT from neglect. Reactivate it at its statue.`);
         } else if (ev.kind === "low") {
-          setToast(`⚠️ ${name}: ${ev.stat} at ${ev.value}% — nearly dormant!`);
-          journal(`ALERT: ${name} ${ev.stat} dropped to ${ev.value}% — close to dormancy.`);
+          setToast(`⚠️ ${name}: ${ev.stat} at ${ev.value}%. Nearly dormant!`);
+          journal(`ALERT: ${name} ${ev.stat} dropped to ${ev.value}%, close to dormancy.`);
         }
       }
     };
@@ -203,7 +203,7 @@ export function Garden({ initialOwner }: { initialOwner: boolean }) {
   function statusReport() {
     const st = useGarden.getState();
     const parts = AGENTS.map((a) => `${a.name}: ${statusPhrase(st.agents[a.id])}`);
-    const line = `Agent Garden status — ${parts.join(". ")}. AP remaining: ${st.ap}.`;
+    const line = `Agent Garden status: ${parts.join(". ")}. AP remaining: ${st.ap}.`;
     setToast(line);
     journal(line);
   }
@@ -266,7 +266,7 @@ export function Garden({ initialOwner }: { initialOwner: boolean }) {
           <h1 className="glow-lumen mt-2 font-mono text-lg text-starlight">AGENT GARDEN</h1>
           <p className="mt-1 max-w-xs text-xs text-faint">
             {owner
-              ? "Owner mode — feed, play, train, nap. Keep every stat above zero."
+              ? "Owner mode: feed, play, train, nap. Keep every stat above zero."
               : "A floating island of four agent creatures. Click one to read its lore."}
           </p>
         </div>
@@ -346,8 +346,8 @@ export function Garden({ initialOwner }: { initialOwner: boolean }) {
                 onTrain={startTraining}
                 onActivated={(id) => {
                   const name = agentDef(id).name;
-                  setToast(`⚡ ${name}'s statue cracks open — it's awake!`);
-                  journal(`${name} activated — statue to living creature, vitals reset.`);
+                  setToast(`⚡ ${name}'s statue cracks open. It's awake!`);
+                  journal(`${name} activated: statue to living creature, vitals reset.`);
                 }}
               />
             </div>
@@ -393,7 +393,7 @@ export function Garden({ initialOwner }: { initialOwner: boolean }) {
               </button>
             </div>
             {journalLines.length === 0 ? (
-              <p className="text-xs text-faint/70">No entries yet — go care for somebody.</p>
+              <p className="text-xs text-faint/70">No entries yet. Go care for somebody.</p>
             ) : (
               <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-faint">
                 {journalLines.join("\n")}

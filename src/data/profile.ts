@@ -1,4 +1,4 @@
-/* Every word of page copy lives here — all real content (résumé, cover
+/* Every word of page copy lives here, all real content (résumé, cover
    letter, GitHub). Edit freely; layouts adapt to length. */
 
 export const TITLE = {
@@ -9,9 +9,9 @@ export const TITLE = {
 
 export const ABOUT = {
   intro:
-    "I'm Devauntae Norman — I build things, climb things, and occasionally burn dinner experimenting. This whole computer is my portfolio: open the folders, poke the apps, find the plant.",
+    "I'm Devauntae Norman. I build things, climb things, and sometimes burn dinner while experimenting. This whole computer is my portfolio, so open the folders, poke the apps, and find the plant.",
   mission:
-    "Fordham CS '26 with AI/ML internships behind me and a return offer in hand — looking for teams exploring the vast possibilities of AI, where ambiguous ideas get turned into shipped, trustworthy systems.",
+    "Fordham CS '26 with AI/ML internships behind me and a return offer in hand. I'm looking for teams working on AI that turn vague ideas into shipped systems people can trust.",
   personality: [
     "builder",
     "belayer",
@@ -38,7 +38,7 @@ export const PROJECTS: Project[] = [
     art: "🕸️",
     name: "Aspect Niche",
     blurb:
-      'Obsidian-style interactive graph for hobby discovery — pan/zoom node clusters, an AI "Rabbit Hole" that invents personalized niches (Groq), and location-aware "Find Nearby" via Google Places.',
+      'An Obsidian-style interactive graph for finding hobbies. You pan and zoom through node clusters, an AI "Rabbit Hole" (Groq) invents personalized niches, and "Find Nearby" uses Google Places to locate somewhere to try them.',
     tech: ["React/Next.js", "Groq API", "Google Places"],
     link: "https://aspectniche.com",
     image: {
@@ -52,7 +52,7 @@ export const PROJECTS: Project[] = [
     art: "🌧️",
     name: "Swale",
     blurb:
-      "A Brooklyn flood-readiness prototype connecting NYC catch basins, 311 reports, weather, and transit data on a 3D map. Storm scenarios, drain-priority rankings, and multilingual voice briefings help make the evidence easier to explore.",
+      "A Brooklyn flood-readiness prototype connecting NYC catch basins, 311 reports, weather, and transit data on a 3D map. Storm scenarios, drain-priority rankings, and multilingual voice briefings make the evidence easier to explore.",
     tech: [
       "React / TypeScript",
       "MapLibre / deck.gl",
@@ -70,9 +70,9 @@ export const PROJECTS: Project[] = [
     id: "personaforge",
     hue: "var(--ember)",
     art: "🎭",
-    name: "Personaforge — Adaptive Security",
+    name: "Personaforge (Adaptive Security)",
     blurb:
-      "Co-built an internal AI tool automating product-demo creation (~80% faster builds): Python/Node + FFmpeg pipeline plus a React operator console. The prototype informed a company-level product improvement, reached the CEO, and earned a return offer.",
+      "Co-built an internal AI tool that automates product-demo creation, making builds about 80% faster. It's a Python/Node + FFmpeg pipeline with a React operator console. The prototype informed a company-level product improvement, reached the CEO, and earned me a return offer.",
     tech: ["Python", "Node.js", "FFmpeg", "Next.js"],
   },
   {
@@ -81,7 +81,7 @@ export const PROJECTS: Project[] = [
     art: "🃏",
     name: "PokeSpire",
     blurb:
-      "Pokémon card game × Slay the Spire — a Swift roguelike deckbuilder mashup where gym badges are floor bosses and your deck evolves mid-run.",
+      "A Swift roguelike deckbuilder that mixes the Pokémon card game with Slay the Spire. Gym badges are the floor bosses, and your deck evolves mid-run.",
     tech: ["Swift"],
     link: "https://github.com/devauntea/PokeSpire",
   },
@@ -91,7 +91,7 @@ export const PROJECTS: Project[] = [
     art: "👕",
     name: "Garment-Prediction",
     blurb:
-      "Python ML pipeline for garment attribute prediction, structured for reproducible experiments — manifests in, reports out.",
+      "A Python ML pipeline for predicting garment attributes, built for reproducible experiments. Manifests go in and reports come out.",
     tech: ["Python", "ML"],
     link: "https://github.com/devauntea/Garment-Prediction",
   },
@@ -99,7 +99,7 @@ export const PROJECTS: Project[] = [
     id: "ml-eval",
     hue: "var(--sprout)",
     art: "📊",
-    name: "ML Evaluation Harness — Anote",
+    name: "ML Evaluation Harness (Anote)",
     blurb:
       "Benchmarked FT-GPT-3.5, SETFIT, and BERT with stratified k-fold, macro-F1/latency tracking, and a dataset QA pipeline (schema checks, leakage detection) for reproducible model selection.",
     tech: ["Python", "Scikit-Learn", "NLP"],
@@ -110,7 +110,7 @@ export const PROJECTS: Project[] = [
     art: "🤖",
     name: "Autonomous Agent Fleet",
     blurb:
-      "Four AI agents — job applications, web research, content drafting, paper trading — each with hard human-in-the-loop rails. Nothing submits, publishes, or trades without a person. They live in this computer's garden.",
+      "Four AI agents handle job applications, web research, content drafting, and paper trading, each with hard human-in-the-loop rails. Nothing submits, publishes, or trades without a person. They live in this computer's garden.",
     tech: ["Python", "LLM orchestration", "risk rails"],
   },
   {
@@ -119,7 +119,7 @@ export const PROJECTS: Project[] = [
     art: "🖥️",
     name: "DevauntaeOS (this computer)",
     blurb:
-      "A retro-desktop portfolio: draggable windows, a walkable 3D gallery, a tilting manila-folder résumé, five color schemes, and a hidden pet-care game — built with an agentic terminal workflow.",
+      "A retro-desktop portfolio: draggable windows, a walkable 3D gallery, a tilting manila-folder résumé, five color schemes, and a hidden pet-care game. I built it with an agentic terminal workflow.",
     tech: ["Next.js", "TypeScript", "R3F", "Framer Motion"],
   },
 ];
@@ -137,7 +137,7 @@ export const GAMES: GameCartridge[] = [
     name: "Enter the Gungeon",
     color: "#ff6e9a",
     memory:
-      "The dodge roll rewired my brain. Still chasing the perfect Lead God run — one day the Bullet That Can Kill The Past gets used on my backlog.",
+      "The dodge roll rewired my brain. Still chasing the perfect Lead God run. One day the Bullet That Can Kill The Past gets used on my backlog.",
   },
   {
     id: "ror2",
@@ -175,28 +175,28 @@ export const HOBBIES: HobbyStation[] = [
     icon: "🧗",
     name: "Rock climbing",
     blurb:
-      "Plastic and real rock — problems are just puzzles you're slightly scared of. The wall over there lights its holds when you look at it.",
+      "Plastic and real rock. Problems are just puzzles you're slightly scared of. The wall over there lights its holds when you look at it.",
   },
   {
     id: "pottery",
     icon: "🏺",
     name: "Pottery",
     blurb:
-      "Wheel-thrown mugs with personalities. The clay on that wheel never stops morphing, which is honestly accurate to the process.",
+      "Wheel-thrown mugs with personalities. The clay on that wheel never stops morphing, which is accurate to the process.",
   },
   {
     id: "upcycling",
     icon: "♻️",
     name: "Sewing & upcycling",
     blurb:
-      "I sew and upcycle clothes and furniture — old parts, new purposes. The kinetic sculpture is made of everything I refused to throw away.",
+      "I sew and upcycle clothes and furniture, giving old parts new purposes. The kinetic sculpture is made of everything I refused to throw away.",
   },
   {
     id: "photo",
     icon: "📷",
     name: "Photography & video",
     blurb:
-      "I collect vintage digital cameras and actually shoot them — five point-and-shoots deep, capturing friends in that perfect 2007 flash.",
+      "I collect vintage digital cameras and actually shoot them. I'm five point-and-shoots deep, capturing friends in that perfect 2007 flash.",
   },
   {
     id: "cooking",
@@ -210,7 +210,7 @@ export const HOBBIES: HobbyStation[] = [
     icon: "✨",
     name: "Friends",
     blurb:
-      "The long table with the sparkling chairs — always one seat open. Most of the camera roll is them.",
+      "The long table with the sparkling chairs, always one seat open. Most of the camera roll is them.",
   },
 ];
 
@@ -231,7 +231,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "Cap, gown, Class of 2026",
     date: "May 2026",
     story:
-      "Fordham quad after the walk — CSTEP stole on, family louder than the bells.",
+      "Fordham quad after the walk, CSTEP stole on, family louder than the bells.",
     src: "/images/gallery/photo-1.jpg",
     colors: ["#7ee0ff", "#12172b"],
   },
@@ -240,7 +240,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "The point-and-shoot family",
     date: "ongoing",
     story:
-      "Five rescued digicams, one tripod, zero regrets. The photography habit, fully out of hand.",
+      "Five rescued digicams, one tripod, zero regrets. The photography habit is fully out of hand.",
     src: "/images/gallery/photo-2.jpg",
     colors: ["#ffd45e", "#12172b"],
   },
@@ -249,7 +249,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "CSTEP send-off",
     date: "2026",
     story:
-      "The program that had my back through Fordham — one last photoshoot with the cohort.",
+      "The program that had my back through Fordham. One last photoshoot with the cohort.",
     src: "/images/gallery/photo-3.jpg",
     colors: ["#ff6e9a", "#12172b"],
   },
@@ -266,7 +266,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "Sawdust Saturday",
     date: "2025",
     story:
-      "Fresh pine legs on the deck, speed square standing by — upcycling build in progress.",
+      "Fresh pine legs on the deck, speed square standing by. An upcycling build in progress.",
     src: "/images/gallery/photo-5.jpg",
     colors: ["#ff8a4d", "#12172b"],
   },
@@ -275,7 +275,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "Salmon-shrimp rasta pasta",
     date: "house specialty",
     story:
-      "Jamaican and Cuban roots on one plate — scotch-bonnet cream, bell-pepper confetti, zero leftovers on record.",
+      "Jamaican and Cuban roots on one plate: scotch-bonnet cream, bell-pepper confetti, zero leftovers on record.",
     src: "/images/gallery/photo-6.jpg",
     colors: ["#ff6e4a", "#97e87a"],
   },
@@ -286,31 +286,31 @@ export const GALLERY: GalleryFrame[] = [
     keep it roughly in step with the uploaded document. */
 export const RESUME = {
   name: "Devauntae Norman",
-  tagline: "AI / Fullstack Engineer — builder of worlds, digital and real",
+  tagline: "AI / Fullstack Engineer, builder of worlds, digital and real",
   contact:
     "New York, NY · devauntaenorman@gmail.com · linkedin.com/in/devauntae-norman · github.com/devauntea",
   sections: [
     {
       heading: "Education",
       items: [
-        "Fordham University — B.S. in Computer Science, May 2026. Coursework: Data Structures & Algorithms, Database Systems, Operating Systems, Computer Networks, Data Mining.",
+        "Fordham University, B.S. in Computer Science, May 2026. Coursework: Data Structures & Algorithms, Database Systems, Operating Systems, Computer Networks, Data Mining.",
       ],
     },
     {
       heading: "Experience",
       items: [
-        "Adaptive Security — Artificial Intelligence Product Intern (May 2025–Mar 2026): built a Python and Node.js service automating a four-stage FFmpeg media pipeline, cutting production time roughly 80%; developed an internal React/Next.js console for launching and monitoring long-running jobs, with retry logic and job-state logging.",
-        "Anote — Back-End Software Engineering Intern (Aug–Dec 2023): engineered a Python evaluation harness benchmarking fine-tuned GPT-3.5, SetFit, and BERT with stratified k-fold cross-validation; built a dataset quality pipeline (schema validation, leakage detection, class-balance auditing) so results stayed reproducible across engineers.",
-        "Cornell Tech, Break Through Tech AI — AI/ML Development Intern (Jun–Aug 2023): built supervised learning pipelines with reproducible splits, metric tracking, and error analysis; presented model tradeoffs to non-technical stakeholders.",
-        "Fordham CSTEP — Peer Instructor & Academic Counselor (Sep 2023–May 2025): designed and taught a full Pre-Calculus curriculum and an introductory AI course for high school seniors within a 100+ student STEM program.",
+        "Adaptive Security, Artificial Intelligence Product Intern (May 2025–Mar 2026): built a Python and Node.js service automating a four-stage FFmpeg media pipeline, cutting production time roughly 80%; developed an internal React/Next.js console for launching and monitoring long-running jobs, with retry logic and job-state logging.",
+        "Anote, Back-End Software Engineering Intern (Aug–Dec 2023): engineered a Python evaluation harness benchmarking fine-tuned GPT-3.5, SetFit, and BERT with stratified k-fold cross-validation; built a dataset quality pipeline (schema validation, leakage detection, class-balance auditing) so results stayed reproducible across engineers.",
+        "Cornell Tech, Break Through Tech AI, AI/ML Development Intern (Jun–Aug 2023): built supervised learning pipelines with reproducible splits, metric tracking, and error analysis; presented model tradeoffs to non-technical stakeholders.",
+        "Fordham CSTEP, Peer Instructor & Academic Counselor (Sep 2023–May 2025): designed and taught a full Pre-Calculus curriculum and an introductory AI course for high school seniors within a 100+ student STEM program.",
       ],
     },
     {
       heading: "Projects",
       items: [
-        "Aspect Niche (aspectniche.com) — full-stack activity discovery app with an interactive graph UI supporting pan, zoom, force-directed clustering, and progressive node expansion; dynamic graph data model with an LLM API behind server-side routes.",
-        "Garment Prediction — reproducible image-classification pipeline split into manifest, preprocessing, training, and evaluation stages, rerunnable end to end from a single command.",
-        "This computer — DevauntaeOS: a retro-desktop portfolio with a walkable 3D gallery and a hidden agent-care game.",
+        "Aspect Niche (aspectniche.com): full-stack activity discovery app with an interactive graph UI supporting pan, zoom, force-directed clustering, and progressive node expansion; dynamic graph data model with an LLM API behind server-side routes.",
+        "Garment Prediction: reproducible image-classification pipeline split into manifest, preprocessing, training, and evaluation stages, rerunnable end to end from a single command.",
+        "This computer (DevauntaeOS): a retro-desktop portfolio with a walkable 3D gallery and a hidden agent-care game.",
       ],
     },
     {
@@ -326,7 +326,7 @@ export const RESUME = {
 };
 
 /** Documents filed in the résumé folder. `href` = downloadable; `gated` =
-    shown as a tab but not stored on the server — clicking asks the visitor
+    shown as a tab but not stored on the server. Clicking asks the visitor
     to reach out (the transcript is available on request only). */
 export interface DocItem {
   label: string;
@@ -361,7 +361,7 @@ export const DESK = {
   eyebrow: "A SPACE FOR WORK & WONDER",
   headline: ["Serious about", "building.", "Curious about", "everything."],
   intro:
-    "A few things I’ve made. A little of who I am. Pull up a chair and make yourself at home.",
+    "A few things I’ve made and a little of who I am. Pull up a chair and make yourself at home.",
   enter: "Explore my work",
   monitor: "Enter the computer",
   files: "Open the résumé drawer",
@@ -378,7 +378,7 @@ export const DESK = {
   resumeLabel: "Résumé",
   edition: "NEW YORK, NY / PERSONAL WORKSPACE",
   computerLabel: "NORMAN / PERSONAL COMPUTER",
-  fileLabel: "001 — RÉSUMÉ",
+  fileLabel: "001 / RÉSUMÉ",
   notebookLabel: "STAY CURIOUS.",
   ideasLabel: "IDEAS / IN PROGRESS",
   details: {
@@ -415,9 +415,16 @@ export const DESK = {
     blindsClose: "Pull to close the blinds",
     blindsHint: "Drag down, or press Enter",
     outside: "A little New York outside the window.",
+    // Stickers and notes that collected on the desk over time.
+    stickers: {
+      note: ["ship it.", "then sleep."],
+      todo: { items: ["coffee", "commit", "push", "sleep?"], done: 2 },
+      asset: ["PROPERTY OF", "D. NORMAN", "ASSET NO. 0026"],
+      hello: "hello, world",
+    },
   },
   room: {
-    shelf: "THE GOOD STUFF / VOL. 01—05",
+    shelf: "THE GOOD STUFF / VOL. 01-05",
     posters: [
       { src: "/images/posters/portrait-warm.webp", ratio: 1024 / 983 },
       { src: "/images/posters/portrait-mono.webp", ratio: 1024 / 1007 },
@@ -485,7 +492,7 @@ export const DESK = {
     denLabel: "02 / EXPLORE",
     eyebrow: "THE AFTER-HOURS ARCADE",
     title: "One more round.",
-    intro: "A tiny arcade, right where it belongs.",
+    intro: "A tiny arcade inside the computer.",
     patrol: "Void Patrol",
     patrolDetail: "Fly, dodge, collect. A pocket-sized space shooter.",
     den: "The Den",
@@ -505,7 +512,7 @@ export const DESK = {
     niche: "ASPECT NICHE",
     nicheCaption: "FOLLOW A NEW THREAD",
     forge: "PERSONAFORGE",
-    forgeCaption: "IDEA → PIPELINE → POSSIBILITY",
+    forgeCaption: "IDEA / PIPELINE / POSSIBILITY",
     cards: "POKESPIRE",
     cardsCaption: "ONE MORE RUN",
   },
@@ -540,7 +547,7 @@ export const DESK = {
   screen: {
     system: "DEVAUNTAE / PERSONAL COMPUTER",
     heading: "Ideas made real.",
-    subheading: "Engineering, imagination & everything in between.",
+    subheading: "Engineering and imagination.",
     footer: "SELECT A FOLDER TO EXPLORE",
     greeting: "WELCOME TO MY CORNER OF THE INTERNET",
   },
@@ -550,12 +557,12 @@ export const DESK = {
     select: "Explore project",
     overview: "THE IDEA",
     collection: "A FEW THINGS I’VE PUT INTO THE WORLD",
-    count: `PROJECTS / 01—${String(PROJECTS.length).padStart(2, "0")}`,
+    count: `PROJECTS / 01-${String(PROJECTS.length).padStart(2, "0")}`,
     deskTitle: "The Working Desk",
-    eyebrow: `SELECTED WORK / 01—${String(PROJECTS.length).padStart(2, "0")}`,
+    eyebrow: `SELECTED WORK / 01-${String(PROJECTS.length).padStart(2, "0")}`,
     title: "From what if, to what’s next.",
     intro:
-      "AI systems, useful tools, and the occasional world to get lost in. A selection of things I’ve built and helped bring to life.",
+      "AI systems, useful tools, and the occasional world to get lost in. These are things I’ve built or helped build.",
     open: "Explore project",
     private: "Internal project",
     more: "Project notes",
@@ -565,8 +572,8 @@ export const DESK = {
     eyebrow: "THE PERSON AT THE DESK",
     title: "Always making something.",
     intro:
-      "I’m Devauntae — an AI and full-stack engineer, Fordham CS ’26, and a firm believer that curiosity is a pretty good compass.",
-    body: "My work connects thoughtful interfaces with reliable systems. I’ve built AI-powered tools at Adaptive Security, evaluated language models at Anote, and explored machine learning through Cornell Tech’s Break Through Tech AI program.",
+      "I’m Devauntae, an AI and full-stack engineer (Fordham CS ’26) who thinks curiosity is a pretty good compass.",
+    body: "I build interfaces that are pleasant to use on top of systems that hold up. At Adaptive Security I built AI-powered tools, at Anote I evaluated language models, and through Cornell Tech’s Break Through Tech AI program I explored machine learning.",
     personal:
       "Away from the keyboard, I’m climbing, throwing pottery, rescuing vintage cameras, or giving old furniture a second life. My Jamaican and Cuban roots tend to show up in the kitchen.",
     caption: "OFFLINE, BUT STILL BUILDING.",
@@ -574,13 +581,13 @@ export const DESK = {
     philosophy: "Fail with purpose. Make something better. Stay curious.",
   },
   skills: {
-    eyebrow: "WHAT I BRING TO THE TABLE",
+    eyebrow: "WHAT I WORK WITH",
     title: "A builder’s toolkit.",
     intro:
-      "From the first experiment to the interface someone uses every day. I like working across the whole problem.",
+      "I like working across the whole problem, from the first experiment to the interface someone uses every day.",
   },
   contact: {
-    eyebrow: "GOOD THINGS START WITH A CONVERSATION",
+    eyebrow: "SAY HELLO",
     title: "Have a what if?",
     line: "Let’s make something of it.",
     intro:
@@ -613,7 +620,7 @@ export const DESK = {
       "The same work and stories, with a little more room to read. Visit on a larger screen to take a seat at the 3D desk.",
   },
   footer: {
-    note: "Made with care, in New York.",
+    note: "Made in New York.",
     legacy: "Visit the original DevauntaeOS",
     admin: "Admin",
   },
@@ -625,7 +632,7 @@ export const LEGACY_NAV = {
   escapeHint: "Esc",
   resumeTitle: "Résumé",
   stampHint: "press a stamp · drop it on ink · then on the paper",
-  tourEnd: "open any folder to explore — Escape brings you back to the desktop",
+  tourEnd: "open any folder to explore. Escape returns you to the desktop",
 };
 
 export const CAPABILITIES = [
@@ -633,7 +640,7 @@ export const CAPABILITIES = [
     number: "01",
     name: "Intelligent systems",
     description:
-      "Useful AI, backed by careful evaluation. From language models to reproducible learning pipelines.",
+      "Useful AI backed by careful evaluation, from language models to reproducible learning pipelines.",
     tools: [
       "Python",
       "PyTorch",
@@ -647,14 +654,14 @@ export const CAPABILITIES = [
     number: "02",
     name: "End-to-end products",
     description:
-      "Interfaces that feel considered, connected to services that do the work. Built to be used.",
+      "Interfaces with some thought behind them, connected to services that do the work.",
     tools: ["React", "Next.js", "TypeScript", "Node.js", "REST APIs", "SQL"],
   },
   {
     number: "03",
     name: "Creative engineering",
     description:
-      "A place for play in the process. Interactive worlds, native apps, and media workflows.",
+      "Play belongs in the process: interactive worlds, native apps, and media workflows.",
     tools: [
       "Three.js",
       "React Three Fiber",
@@ -680,7 +687,7 @@ export const PROJECT_NOTES: Record<
     category: "PRODUCT / DISCOVERY",
     summary: "Follow your curiosity.",
     detail:
-      "An interactive graph turns hobby discovery into exploration. Pan and zoom through connected interests, expand a personalized AI rabbit hole, then find somewhere nearby to try something new.",
+      "An interactive graph for exploring hobbies. Pan and zoom through connected interests, expand a personalized AI rabbit hole, then find somewhere nearby to try something new.",
   },
   personaforge: {
     category: "AI / PRODUCT ENGINEERING",
@@ -708,15 +715,15 @@ export const PROJECT_NOTES: Record<
   },
   "agent-fleet": {
     category: "AI / EXPLORATION",
-    summary: "A garden of possibilities.",
+    summary: "Agents with a human in the loop.",
     detail:
       "A personal exploration of agent orchestration across research, drafting, applications, and paper trading. Human review sits between each agent and any submission, publication, or trade. Explore the original computer’s garden for the interactive presentation.",
   },
   "devauntae-os": {
     category: "CREATIVE WEB / THIS PORTFOLIO",
-    summary: "A space worth exploring.",
+    summary: "A desk you can click around.",
     detail:
-      "A physical desk becomes the entrance to my portfolio. A custom Three.js scene, smooth camera transitions, a working file drawer, and a responsive reading view bring the work into a more personal setting. The original retro desktop remains available in the archive.",
+      "The portfolio opens on a physical desk. It has a custom Three.js scene, smooth camera transitions, a working file drawer, and a responsive reading view. The original retro desktop is still available in the archive.",
   },
 };
 
@@ -758,7 +765,7 @@ export const ADMIN = {
     "The upload didn’t finish. Your current résumé is still available. Try again.",
   expired: "Your session expired. Sign in again to replace the résumé.",
   preview: "Selected résumé preview",
-  previewEmpty: "Your next chapter, on paper.",
+  previewEmpty: "No file selected yet.",
   previewHint: "Select a PDF to preview it here before publishing.",
   previewLink: "Open selected PDF",
   previewFallback:

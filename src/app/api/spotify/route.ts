@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 /* Spotify bridge for the Music app. Uses the refresh-token flow with three
    server-only env vars (see README → "Linking Spotify"):
      SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN
-   Returns { configured:false } until they exist — the Music app shows its
+   Returns { configured:false } until they exist, the Music app shows its
    "not linked yet" state and keeps the vinyl spinning. Responses cache for
    30s per server instance to stay far inside Spotify's rate limits. */
 

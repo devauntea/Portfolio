@@ -5,7 +5,7 @@
 
    Anchor rects are measured live from data-tour attributes rather than
    hardcoded, because desktop icons are draggable and their positions persist
-   across visits — a fixed coordinate would point at bare desktop.
+   across visits, a fixed coordinate would point at bare desktop.
 
    Plays once per visitor (tourSeen), opens the résumé only if explicitly
    enabled, and exits on Esc, the skip button, or any real click. */
@@ -26,7 +26,7 @@ interface Beat {
 const BEATS: Beat[] = [
   {
     anchor: "icon-about",
-    text: "this is my desktop — every folder here is a piece of me",
+    text: "this is my desktop. every folder here is a piece of me",
     hold: 2600,
   },
   {
@@ -53,7 +53,7 @@ function rectOf(anchor: string): Rect | null {
   const el = document.querySelector(`[data-tour="${anchor}"]`);
   if (!el) return null;
   const r = el.getBoundingClientRect();
-  /* hidden tabs report 0×0 — treat that as "can't point at it" */
+  /* hidden tabs report 0×0, treat that as "can't point at it" */
   if (r.width === 0 && r.height === 0) return null;
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height };
 }
@@ -81,7 +81,7 @@ export function BootTour() {
   );
 
   /* Advance through the beats. Both the measurement and the transition happen
-     inside callbacks rather than the effect body — React 19 flags setState
+     inside callbacks rather than the effect body, React 19 flags setState
      there, and measuring a frame later also lets the desktop finish laying
      out before we point at it. */
   useEffect(() => {
@@ -141,7 +141,7 @@ export function BootTour() {
       {/* the halo on whatever we're pointing at, with the rest dimmed */}
       <motion.div
         aria-hidden
-        /* initial={false} — without it the halo animates in from 0,0 with zero
+        /* initial={false}, without it the halo animates in from 0,0 with zero
            width and reads as a stray bar in the corner on the first beat */
         initial={false}
         animate={{ left: rect.x, top: rect.y, width: rect.w + 16, height: rect.h + 16 }}

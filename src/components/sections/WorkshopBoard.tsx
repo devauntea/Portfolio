@@ -2,7 +2,7 @@
 
 /* The Workshop's project board. Each project is an orb; clicking expands
    its card (name, blurb, tech, demo-link placeholder). Cards are draggable
-   inside the board for tinkering, and any project can be pinned — pins
+   inside the board for tinkering, and any project can be pinned, pins
    persist in localStorage via the ui-store. Pinned orbs float to the
    front of the rack. */
 
@@ -53,7 +53,7 @@ export function WorkshopBoard() {
     <div className="glass rounded-2xl p-5">
       <h2 className="text-lg font-bold text-starlight">The Workshop</h2>
       <p className="mt-1 text-xs text-faint">
-        Projects hang here as orbs — click one, drag its card around, pin the
+        Projects hang here as orbs. Click one, drag its card around, and pin the
         ones worth keeping on the board.
       </p>
 
@@ -89,7 +89,7 @@ export function WorkshopBoard() {
               className="cursor-grab rounded-2xl border border-seam bg-cosmos/70 p-4 active:cursor-grabbing"
               style={{ boxShadow: `0 0 30px color-mix(in srgb, ${active.hue} 22%, transparent)` }}
             >
-              {/* preview banner — art glyph over a project-tinted gradient */}
+              {/* preview banner, art glyph over a project-tinted gradient */}
               <div
                 className="mb-3 grid h-24 place-items-center overflow-hidden rounded-xl border border-seam"
                 aria-hidden

@@ -29,7 +29,7 @@ Owner auth already exists: `POST /api/agent-link` checks a password against `OWN
 
 ## Goals
 
-- One upload updates *everything* the visitor sees — sheet and download alike.
+- One upload updates *everything* the visitor sees, sheet and download alike.
 - The site stays correct with no external service configured.
 - The intro teaches the desktop metaphor before showing the résumé.
 - No secrets exposed by going public.
@@ -77,20 +77,20 @@ Consequences:
   `vercel env pull` again; this affects local dev only, never deployments.
 
 `resume-store.ts` treats "configured" as *OIDC + `BLOB_STORE_ID` present, or
-`BLOB_READ_WRITE_TOKEN` present* — supporting both auth paths so the code keeps
+`BLOB_READ_WRITE_TOKEN` present*, supporting both auth paths so the code keeps
 working if the store is ever reconnected with a static token.
 
 The bundled fallback is committed as part of this work using the current résumé PDF, so the site serves the right document before Blob is ever configured. "Blob not configured" is a normal state, not an error state.
 
 ### Routes
 
-**`GET /api/resume`** — public metadata.
+**`GET /api/resume`**, public metadata.
 
 ```json
 { "source": "blob" | "bundled", "updatedAt": "2026-08-10T…" | null, "filename": "Devauntae_Norman_Resume.pdf" }
 ```
 
-**`GET /api/resume/file`** — public. Streams the resolved PDF through this origin.
+**`GET /api/resume/file`**, public. Streams the resolved PDF through this origin.
 `Content-Type: application/pdf`, `Content-Disposition: inline`, or `attachment` when `?download=1`.
 
 Proxying rather than redirecting to the blob URL is deliberate:
@@ -99,7 +99,7 @@ Proxying rather than redirecting to the blob URL is deliberate:
 - The download URL stays stable and readable regardless of storage backend.
 - The raw blob URL is never exposed to the client.
 
-**`POST /api/admin/resume`** — owner-gated. Accepts `multipart/form-data`.
+**`POST /api/admin/resume`**, owner-gated. Accepts `multipart/form-data`.
 
 Validation, in order: content-type is `application/pdf` → size ≤ 8 MB → first five bytes are `%PDF-`. Magic-byte checking is what actually matters; the declared content-type is attacker-controlled.
 
@@ -111,11 +111,11 @@ document. Private means the only path to the PDF is this app's own route, and
 reads go through the authenticated `get(pathname, { access: 'private' })`, which
 returns `{ stream, headers }` ready to pipe straight to the response.
 
-**`DELETE /api/admin/resume`** — owner-gated. Deletes the blob, reverting to bundled.
+**`DELETE /api/admin/resume`**, owner-gated. Deletes the blob, reverting to bundled.
 
 ### Module
 
-`src/lib/resume-store.ts` — server-only. Owns resolution, `put`, `del`, and the not-configured branch, so no route handler reaches for `@vercel/blob` directly.
+`src/lib/resume-store.ts`, server-only. Owns resolution, `put`, `del`, and the not-configured branch, so no route handler reaches for `@vercel/blob` directly.
 
 ---
 
@@ -128,14 +128,14 @@ New `src/components/spaces/ResumePdf.tsx`, client-only, dynamically imported wit
 - Loading state: a paper-toned shimmer inside the sheet, not a spinner over it.
 - **Failure falls back to the existing hardcoded `RESUME` text.** Never a blank sheet.
 
-That fallback is why `profile.ts` `RESUME` stays. It is refreshed as part of this work to match the current PDF — today it is missing Garment Prediction, the Jan 2026 Aspect Niche date, and updated skills (SwiftUI, AWS Bedrock, Postman).
+That fallback is why `profile.ts` `RESUME` stays. It is refreshed as part of this work to match the current PDF, today it is missing Garment Prediction, the Jan 2026 Aspect Niche date, and updated skills (SwiftUI, AWS Bedrock, Postman).
 
 ### What must not regress
 
 `ResumeSpace.tsx` keeps its stamp desk intact. Only the *inner content* of `PaperSheet` changes:
 
 - Tilt: `useMotionValue`/`useSpring` on the sheet, clamped ±12°.
-- Stamp marks: positioned in **% of the sheet**, inside the tilting div — so they tilt and scale with the paper and land correctly on a taller multi-page canvas.
+- Stamp marks: positioned in **% of the sheet**, inside the tilting div, so they tilt and scale with the paper and land correctly on a taller multi-page canvas.
 - Carry/ink/slam pointer model and the feedback card: untouched.
 - The `📄 download the résumé` link retargets to `/api/resume/file?download=1` and stops advertising `.docx`.
 
@@ -190,10 +190,10 @@ A ghost cursor glides between the **real** on-screen rects of anchor elements, r
 | Step | Anchor | Copy |
 | --- | --- | --- |
 | 1 | icon grid | every folder here is a piece of me |
-| 2 | taskbar / START | drag windows by their title bar — more apps live under START |
+| 2 | taskbar / START | drag windows by their title bar, more apps live under START |
 | 3 | desktop | right-click me. and find the plant 🌱 |
 | 4 | Résumé icon | cursor glides in, icon highlights, double-click ripple, `enterSpace("resume")` |
-| 5 | — | folder auto-unties; the sheet rises on its existing spring |
+| 5 |, | folder auto-unties; the sheet rises on its existing spring |
 
 Teaches the metaphor first, ends on the résumé.
 
@@ -201,7 +201,7 @@ Teaches the metaphor first, ends on the résumé.
 
 **Frequency:** `tourSeen` added to `ui-store` and persisted, so once per visitor. Display gains a "replay intro" button, which also makes it demoable.
 
-**Respects existing settings:** if `autoResume` is off, the tour does not run and nothing auto-opens — the same contract the startup item has today.
+**Respects existing settings:** if `autoResume` is off, the tour does not run and nothing auto-opens, the same contract the startup item has today.
 
 **Reduced motion:** `prefers-reduced-motion` replaces cursor glides with jump-cuts; steps and copy are unchanged.
 
@@ -209,7 +209,7 @@ Teaches the metaphor first, ends on the résumé.
 
 ### Esc layering
 
-`ResumeSpace` already layers `Escape`: carry → doc prompt → feedback → exit space. The tour inserts **above** all of them — while it is running, Esc skips the tour and nothing else.
+`ResumeSpace` already layers `Escape`: carry → doc prompt → feedback → exit space. The tour inserts **above** all of them, while it is running, Esc skips the tour and nothing else.
 
 ---
 
@@ -218,7 +218,7 @@ Teaches the metaphor first, ends on the résumé.
 Audit completed 2026-08-10 before this spec was written:
 
 - No `.env*` file appears anywhere in history. `.gitignore` covers `.env*` and `.vercel`.
-- History grep for key patterns (`sk-`, `gho_`, `ghp_`, `AKIA…`, private-key headers, literal `client_secret` assignments) returns **only** `process.env.SPOTIFY_CLIENT_SECRET` references — no values.
+- History grep for key patterns (`sk-`, `gho_`, `ghp_`, `AKIA…`, private-key headers, literal `client_secret` assignments) returns **only** `process.env.SPOTIFY_CLIENT_SECRET` references, no values.
 - `memory/*.md` contains verification and simulated-agent entries only; no third-party personal data.
 - The résumé PDF carries a phone number, already public on the live site by design.
 
@@ -264,14 +264,14 @@ memory/portfolio_lessons.md
 
 ## Verification
 
-This repo has no test framework — `scripts/simulate-48h.mjs` covers garden math only. Verification is therefore:
+This repo has no test framework, `scripts/simulate-48h.mjs` covers garden math only. Verification is therefore:
 
 1. `npm run lint` and `npm run build` clean.
 2. Browser checks in a **foreground** tab.
 
 Two rules from `memory/portfolio_lessons.md` apply directly:
 
-- Hidden preview tabs freeze rAF and report 0×0 layout. The tour depends entirely on `getBoundingClientRect`, and the stamp desk hit-tests rects — both are **untestable** in a hidden tab and need a foreground browser.
+- Hidden preview tabs freeze rAF and report 0×0 layout. The tour depends entirely on `getBoundingClientRect`, and the stamp desk hit-tests rects, both are **untestable** in a hidden tab and need a foreground browser.
 - Framer exit animations never finish in hidden tabs, so closed windows linger in the DOM. Assert against store-backed UI (taskbar buttons) or a successful *next* action, never element absence.
 
 Checklist:

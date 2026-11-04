@@ -11,7 +11,7 @@ import {
 
 /* Owner-only. POST replaces the current résumé; DELETE reverts to the copy
    bundled with the deploy. Every failure mode answers with a sentence the
-   admin panel can show verbatim — an upload that silently no-ops is worse
+   admin panel can show verbatim, an upload that silently no-ops is worse
    than one that explains itself. */
 
 export const dynamic = "force-dynamic";
@@ -29,7 +29,7 @@ const unconfigured = () =>
     {
       ok: false,
       error:
-        "Blob storage isn't configured for this environment — the bundled résumé is being served.",
+        "Blob storage isn't configured for this environment. The bundled résumé is being served.",
     },
     { status: 503 },
   );

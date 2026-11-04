@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Canvas,
   useFrame,
@@ -18,13 +25,18 @@ import {
   Box,
   Label,
   Cable,
+  ContactShadow,
   Ring,
   Screw,
   Slots,
+  SurfacesContext,
   makeTexture,
   surfaceTexture,
+  useShadowRefresh,
+  useSurfaces,
   type Palette,
 } from "./DeskMaterials";
+import { createSurfaces, mix } from "./DeskSurfaces";
 import {
   DetailedKeyboard,
   DetailedTower,
@@ -32,7 +44,10 @@ import {
   Pottery,
 } from "./DeskObjects";
 import { DeskWindow, WINDOW } from "./DeskWindow";
-import { BrickDisplay, SewingMachine } from "./DeskMakerObjects";
+import { SewingMachine } from "./DeskMakerObjects";
+import { BrickCat } from "./DeskBrickCat";
+import { BIN, TrashBin } from "./DeskBin";
+import { DeskWear, DrawerWear, MonitorWear, PedestalWear } from "./DeskWear";
 import { RoomDecor } from "./DeskRoomDecor";
 import { DeskSpeakers } from "./DeskMedia";
 import { ComputerScreen, type ComputerSection } from "./ComputerScreen";
@@ -87,6 +102,11 @@ const colorKeys: (keyof Palette)[] = [
   "posterRose",
   "posterMint",
   "posterSand",
+  "limewash",
+  "dusk",
+  "sun",
+  "iris",
+  "blush",
 ];
 
 function palette(): Palette {
@@ -101,59 +121,6 @@ function palette(): Palette {
         .trim(),
     ]),
   ) as Palette;
-}
-
-function woodTexture(p: Palette) {
-  return makeTexture(2048, 1024, (ctx) => {
-    ctx.fillStyle = p.wood;
-    ctx.fillRect(0, 0, 2048, 1024);
-    // Broad walnut ribbons under fine grain: varied boards, never ruled stripes.
-    let seed = 57;
-    const rand = () => {
-      seed = (seed * 16807) % 2147483647;
-      return (seed - 1) / 2147483646;
-    };
-    for (let board = 0; board < 5; board++) {
-      const top = board * 205;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, top, 2048, 205);
-      ctx.clip();
-      const wash = ctx.createLinearGradient(0, top, 0, top + 205);
-      wash.addColorStop(0, p.woodDark);
-      wash.addColorStop(0.4, p.clay);
-      wash.addColorStop(1, p.wood);
-      ctx.globalAlpha = 0.14 + board * 0.008;
-      ctx.fillStyle = wash;
-      ctx.fillRect(0, top, 2048, 205);
-      const knotX = 370 + (board % 3) * 530;
-      for (let i = 0; i < 680; i++) {
-        const y = top - 25 + rand() * 255;
-        ctx.strokeStyle = i % 4 ? p.woodDark : p.clay;
-        ctx.globalAlpha = 0.025 + rand() * 0.055;
-        ctx.lineWidth = 0.35 + rand() * 1.4;
-        ctx.beginPath();
-        for (let x = 0; x <= 2048; x += 12) {
-          const wave = Math.sin(x / 310 + y / 120) * 5;
-          const knot =
-            Math.exp(-(((x - knotX) / 270) ** 2)) *
-            Math.sin((y - top - 90) / 58) *
-            38;
-          const yy = y + wave + knot;
-          if (x === 0) ctx.moveTo(x, yy);
-          else ctx.lineTo(x, yy);
-        }
-        ctx.stroke();
-      }
-      ctx.restore();
-      if (board) {
-        ctx.globalAlpha = 0.16;
-        ctx.fillStyle = p.woodDark;
-        ctx.fillRect(0, top, 2048, 1);
-      }
-    }
-    ctx.globalAlpha = 1;
-  });
 }
 
 function screenTexture(p: Palette) {
@@ -189,6 +156,32 @@ function screenTexture(p: Palette) {
     ctx.fillStyle = p.paper;
     ctx.font = "18px monospace";
     ctx.fillText(DESK.computer.idleLinks, 55, 812);
+    // A tube, not a flat panel: phosphor bloom, scanlines, darker corners.
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = 0.16;
+    ctx.filter = "blur(6px)";
+    ctx.drawImage(ctx.canvas, 0, 0);
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "multiply";
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = p.ink;
+    for (let y = 0; y < 860; y += 3) ctx.fillRect(0, y, 1200, 1);
+    ctx.globalAlpha = 1;
+    const tube = ctx.createRadialGradient(600, 430, 260, 600, 430, 780);
+    tube.addColorStop(0, "transparent");
+    tube.addColorStop(1, p.ink);
+    ctx.fillStyle = tube;
+    ctx.globalAlpha = 0.75;
+    ctx.fillRect(0, 0, 1200, 860);
+    ctx.globalCompositeOperation = "screen";
+    const sheen = ctx.createRadialGradient(420, 260, 0, 420, 260, 640);
+    sheen.addColorStop(0, p.screen);
+    sheen.addColorStop(1, "transparent");
+    ctx.globalAlpha = 0.08;
+    ctx.fillStyle = sheen;
+    ctx.fillRect(0, 0, 1200, 860);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
   });
 }
 
@@ -249,15 +242,26 @@ function CameraRig({ focus, reduced }: Pick<SceneProps, "focus" | "reduced">) {
 
 function Monitor({
   p,
-  plastic,
+  night,
   screen,
   onClick,
 }: {
   p: Palette;
-  plastic: THREE.Texture;
+  night: boolean;
   screen: ReactNode;
   onClick: (event: ThreeEvent<MouseEvent>) => void;
 }) {
+  const s = useSurfaces();
+  // Aged ABS: tinted by the shared yellowing map, matte moulded tooth.
+  const abs = {
+    map: s.plasticTint,
+    tint: true,
+    roughness: 1,
+    roughnessMap: s.plasticSurface,
+    bumpMap: s.plasticSurface,
+    bumpScale: 0.12,
+    envMapIntensity: 0.7,
+  };
   const texture = useMemo(() => screenTexture(p), [p]);
   const glass = useMemo(() => {
     const geometry = new THREE.PlaneGeometry(2.78, 1.99, 40, 32);
@@ -308,39 +312,50 @@ function Monitor({
         size={[1.75, 0.2, 1.3]}
         color={p.ivory}
         radius={0.13}
+        {...abs}
       />
-      <mesh position={[0, 0.45, -0.35]} castShadow>
+      <mesh position={[0, 0.45, -0.35]} castShadow receiveShadow>
         <cylinderGeometry args={[0.37, 0.5, 0.4, 36]} />
-        <meshStandardMaterial color={p.ivory} roughness={0.5} />
+        <meshStandardMaterial
+          color={p.ivory}
+          map={s.plasticTint}
+          roughness={1}
+          roughnessMap={s.plasticSurface}
+          bumpMap={s.plasticSurface}
+          bumpScale={0.12}
+          envMapIntensity={0.7}
+        />
       </mesh>
       <Box
         pos={[0, 1.91, -0.53]}
         size={[3.48, 2.68, 1.72]}
         color={p.ivory}
         radius={0.24}
-        bumpMap={plastic}
-        bumpScale={0.0008}
+        {...abs}
       />
+      {/* Shadow line where the front bezel meets the rear housing. */}
       <Box
         pos={[0, 1.91, 0.25]}
         size={[3.47, 2.67, 0.18]}
-        color={p.shadow}
+        color={mix(p.shadow, p.ink, 0.35)}
         radius={0.08}
+        roughness={0.9}
       />
       <Box
         pos={[0, 1.91, 0.285]}
         size={[3.46, 2.66, 0.16]}
         color={p.ivory}
         radius={0.07}
-        roughness={0.54}
-        bumpMap={plastic}
-        bumpScale={0.0006}
+        {...abs}
       />
       <Box
         pos={[0, 2.01, 0.34]}
         size={[3.08, 2.25, 0.12]}
-        color={p.shadow}
+        color={mix(p.shadow, p.ink, 0.45)}
         radius={0.16}
+        roughness={0.85}
+        bumpMap={s.plasticSurface}
+        bumpScale={0.08}
       />
       <RoundedBox
         position={[0, 2.01, 0.41]}
@@ -348,20 +363,23 @@ function Monitor({
         radius={0.15}
         smoothness={5}
       >
-        <meshStandardMaterial color={p.ink} roughness={0.13} metalness={0.2} />
+        <meshStandardMaterial color={p.ink} roughness={0.3} metalness={0.1} />
       </RoundedBox>
       <mesh position={[0, 2.01, 0.469]} geometry={glass}>
         <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
+      {/* Curved tube glass: dark, a little dusty, catching the room. */}
       <mesh position={[0, 2.01, 0.471]} geometry={glass}>
         <meshPhysicalMaterial
-          color={p.paper}
+          color={p.ink}
           transparent
-          opacity={0.085}
-          roughness={0.09}
-          metalness={0.08}
+          opacity={0.2}
+          roughness={0.06}
+          metalness={0}
           clearcoat={1}
-          clearcoatRoughness={0.08}
+          clearcoatRoughness={0.04}
+          envMapIntensity={2.4}
+          alphaMap={s.grime}
           depthWrite={false}
         />
       </mesh>
@@ -386,16 +404,22 @@ function Monitor({
       />
       <mesh position={[1.34, 0.78, 0.385]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.065, 0.065, 0.04, 20]} />
-        <meshStandardMaterial color={p.accent} />
+        <meshStandardMaterial color={p.accent} roughness={0.55} />
       </mesh>
       <mesh position={[1.13, 0.78, 0.39]}>
         <sphereGeometry args={[0.023, 12, 12]} />
-        <meshBasicMaterial color={p.accentLight} />
+        <meshStandardMaterial
+          color={p.accentLight}
+          emissive={p.accentLight}
+          emissiveIntensity={1.6}
+          roughness={0.2}
+          toneMapped={false}
+        />
       </mesh>
       {[-0.7, -0.48, -0.26, -0.04].map((x) => (
         <mesh key={x} position={[x, 0.62, 0.38]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.035, 0.035, 0.035, 12]} />
-          <meshStandardMaterial color={p.shadow} />
+          <meshStandardMaterial color={p.shadow} roughness={0.7} />
         </mesh>
       ))}
       <Slots
@@ -432,11 +456,13 @@ function Monitor({
         tube={0.016}
         color={p.shadow}
       />
+      <MonitorWear p={p} />
+      {/* The tube washes the keys and the desk in front of it. */}
       <pointLight
-        position={[0, 2, 1]}
-        intensity={hover ? 2.5 : 1.3}
+        position={[0, 1.9, 1.1]}
+        intensity={(hover ? 2.5 : 1.3) * (night ? 2 : 1)}
         color={p.screen}
-        distance={4}
+        distance={night ? 5.5 : 4}
       />
     </group>
   );
@@ -447,16 +473,23 @@ function Drawer({
   focus,
   reduced,
   onClick,
-  wood,
 }: {
   p: Palette;
   focus: DeskFocus;
   reduced: boolean;
   onClick: (e: ThreeEvent<MouseEvent>) => void;
-  wood: THREE.Texture;
 }) {
   const ref = useRef<THREE.Group>(null);
   const invalidate = useThree((s) => s.invalidate);
+  const refreshShadows = useShadowRefresh();
+  const surfaces = useSurfaces();
+  const walnut = {
+    map: surfaces.wood,
+    roughness: 1,
+    roughnessMap: surfaces.woodSurface,
+    bumpMap: surfaces.woodSurface,
+    bumpScale: 0.25,
+  };
   useEffect(() => {
     invalidate();
   }, [focus, invalidate]);
@@ -471,7 +504,10 @@ function Drawer({
           6,
           Math.min(dt, 1 / 30),
         );
-    if (Math.abs(ref.current.position.z - goal) > 0.001) invalidate();
+    if (Math.abs(ref.current.position.z - goal) > 0.001) {
+      invalidate();
+      refreshShadows();
+    }
   });
   return (
     <group
@@ -490,7 +526,7 @@ function Drawer({
           pos={[x, -1.52, 0]}
           size={[0.12, 2.85, 3.7]}
           color={p.wood}
-          map={wood}
+          {...walnut}
           radius={0.025}
         />
       ))}
@@ -504,7 +540,7 @@ function Drawer({
         pos={[0, -2.9, 0]}
         size={[2.2, 0.1, 3.7]}
         color={p.wood}
-        map={wood}
+        {...walnut}
         radius={0.02}
       />
       <Box
@@ -517,7 +553,7 @@ function Drawer({
         pos={[0, -2.25, 1.9]}
         size={[2.15, 1.25, 0.12]}
         color={p.wood}
-        map={wood}
+        {...walnut}
         radius={0.03}
       />
       <Box
@@ -608,7 +644,7 @@ function Drawer({
           pos={[0, -0.84, 1.94]}
           size={[2.15, 1.43, 0.15]}
           color={p.wood}
-          map={wood}
+          {...walnut}
           radius={0.035}
         />
         <Box
@@ -644,7 +680,9 @@ function Drawer({
           pos={[0, -0.85, 2.035]}
           width={0.9}
         />
+        <DrawerWear p={p} />
       </group>
+      <PedestalWear p={p} />
     </group>
   );
 }
@@ -663,6 +701,16 @@ function Lamp({
     target.position.set(0, -3, 0);
     return target;
   }, []);
+  const { tooth } = useSurfaces();
+  // Powder-coated steel: satin, faintly orange-peeled, never mirror-bright.
+  const coat = {
+    color: p.accent,
+    roughness: 1,
+    roughnessMap: tooth,
+    bumpMap: tooth,
+    bumpScale: 0.06,
+    metalness: 0.35,
+  };
   return (
     <group
       position={[4.95, 0.1, -1.85]}
@@ -674,13 +722,9 @@ function Lamp({
         document.body.style.cursor = "";
       }}
     >
-      <mesh position={[0, 0.1, 0]} castShadow>
+      <mesh position={[0, 0.1, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.55, 0.59, 0.18, 48]} />
-        <meshStandardMaterial
-          color={p.accent}
-          roughness={0.4}
-          metalness={0.3}
-        />
+        <meshStandardMaterial {...coat} />
       </mesh>
       <mesh position={[0, 1.22, 0]} castShadow>
         <cylinderGeometry args={[0.032, 0.032, 2.2, 16]} />
@@ -715,13 +759,25 @@ function Lamp({
       <group position={[-0.24, 2.34, 0]} rotation={[0, 0, 0.22]}>
         <mesh castShadow>
           <cylinderGeometry args={[0.24, 0.69, 0.52, 48, 1, true]} />
+          <meshStandardMaterial {...coat} side={THREE.FrontSide} />
+        </mesh>
+        {/* White enamel reflector inside the shade. */}
+        <mesh>
+          <cylinderGeometry args={[0.235, 0.68, 0.515, 48, 1, true]} />
           <meshStandardMaterial
-            color={p.accent}
-            roughness={0.38}
-            metalness={0.2}
-            side={THREE.DoubleSide}
+            color={p.paper}
+            roughness={0.45}
+            side={THREE.BackSide}
+            emissive={p.light}
+            emissiveIntensity={night ? 0.55 : 0}
           />
         </mesh>
+        {night && (
+          <mesh position={[0, -0.05, 0]}>
+            <sphereGeometry args={[0.14, 20, 14]} />
+            <meshBasicMaterial color={p.light} toneMapped={false} />
+          </mesh>
+        )}
         <Ring
           pos={[0, -0.255, 0]}
           radius={0.68}
@@ -746,14 +802,18 @@ function Lamp({
         </mesh>
         <mesh position={[0, -0.255, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[0.65, 48]} />
-          <meshBasicMaterial color={night ? p.light : p.paper} />
+          <meshBasicMaterial
+            color={night ? p.light : mix(p.paper, p.ink, 0.1)}
+            transparent
+            opacity={night ? 0.92 : 1}
+          />
         </mesh>
         <primitive object={lightTarget} />
         <spotLight
           position={[0, -0.35, 0]}
           target={lightTarget}
           color={p.light}
-          intensity={night ? 30 : 5}
+          intensity={night ? 42 : 3}
           angle={1.12}
           penumbra={0.65}
           distance={10}
@@ -771,31 +831,378 @@ function Lamp({
   );
 }
 
+/** Limewashed brick with a true opening for the window, and sealed concrete. */
+function Room({ p }: { p: Palette }) {
+  const s = useSurfaces();
+  const wall = useMemo(() => {
+    const shape = new THREE.Shape()
+      .moveTo(-20, -3.1)
+      .lineTo(20, -3.1)
+      .lineTo(20, 9.9)
+      .lineTo(-20, 9.9)
+      .closePath();
+    const l = WINDOW.x - WINDOW.width / 2,
+      r = WINDOW.x + WINDOW.width / 2,
+      b = WINDOW.y - WINDOW.height / 2,
+      t = WINDOW.y + WINDOW.height / 2;
+    shape.holes.push(
+      new THREE.Path().moveTo(l, b).lineTo(r, b).lineTo(r, t).lineTo(l, t).closePath(),
+    );
+    // ShapeGeometry UVs are world units, so brick size is constant everywhere.
+    return new THREE.ShapeGeometry(shape);
+  }, []);
+  useEffect(() => () => wall.dispose(), [wall]);
+  return (
+    <>
+      <mesh geometry={wall} position={[0, 0, -3.91]} receiveShadow>
+        <meshStandardMaterial
+          map={s.wall}
+          roughness={1}
+          roughnessMap={s.wallSurface}
+          bumpMap={s.wallSurface}
+          bumpScale={0.9}
+          envMapIntensity={0.5}
+        />
+      </mesh>
+      <Box
+        pos={[0, -2.75, -3.85]}
+        size={[40, 0.35, 0.1]}
+        color={mix(p.limewash, p.shadow, 0.25)}
+        roughness={1}
+        roughnessMap={s.tooth}
+        bumpMap={s.tooth}
+        bumpScale={0.05}
+      />
+      <Box
+        pos={[0, -3.08, 0]}
+        size={[40, 0.12, 40]}
+        color={p.shadow}
+        map={s.floor}
+        roughness={1}
+        roughnessMap={s.floorSurface}
+        bumpMap={s.floorSurface}
+        bumpScale={0.35}
+        radius={0.01}
+        castShadow={false}
+      />
+    </>
+  );
+}
+
+/**
+ * Golden hour. A low sun from a tall steel window just out of frame on the
+ * left throws its sash and a few leaves across the wall and the back of the
+ * desk; a soft overhead fill reads as bounce and occlusion; the visible
+ * window adds a cooler dusk rim. At night the lamp takes over and the same
+ * window lets in a faint, cool moon.
+ */
+function Lighting({ p, night }: { p: Palette; night: boolean }) {
+  const { gobo } = useSurfaces();
+  const sunTarget = useMemo(() => {
+    const target = new THREE.Object3D();
+    target.position.set(-1.6, 1.1, -3.4);
+    return target;
+  }, []);
+  return (
+    <>
+      <ambientLight
+        intensity={night ? 0.08 : 0.12}
+        color={night ? p.skyNight : p.paper}
+      />
+      <hemisphereLight
+        color={night ? p.skyNight : p.paper}
+        groundColor={p.woodDark}
+        intensity={night ? 0.42 : 0.62}
+      />
+      <directionalLight
+        position={[1.5, 14, 5]}
+        intensity={night ? 0.1 : 0.85}
+        color={night ? p.sky : p.light}
+        castShadow={!night}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-10}
+        shadow-camera-right={9}
+        shadow-camera-top={8}
+        shadow-camera-bottom={-8}
+        shadow-camera-near={1}
+        shadow-camera-far={30}
+        shadow-normalBias={0.004}
+        shadow-bias={-0.0001}
+        shadow-radius={10}
+      />
+      <directionalLight
+        position={[4.3, 3.4, -3.4]}
+        intensity={night ? 0.3 : 0.55}
+        color={night ? p.sky : p.dusk}
+      />
+      <primitive object={sunTarget} />
+      <spotLight
+        position={[-13, 11, 10]}
+        target={sunTarget}
+        color={night ? p.sky : p.sun}
+        intensity={night ? 0.55 : 3.6}
+        angle={0.3}
+        penumbra={0.15}
+        decay={0}
+        distance={0}
+        map={gobo}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-near={8}
+        shadow-camera-far={40}
+        shadow-bias={-0.0002}
+        shadow-normalBias={0.02}
+        shadow-radius={2.5}
+      />
+      <Environment
+        resolution={128}
+        frames={1}
+        environmentIntensity={night ? 0.2 : 0.42}
+      >
+        {/* The sun window, the visible dusk window, a warm ceiling bounce. */}
+        <Lightformer
+          form="rect"
+          color={p.sun}
+          intensity={4}
+          position={[-9, 4, 5]}
+          scale={[4, 6, 1]}
+          target={[0, 1, 0]}
+        />
+        <Lightformer
+          form="rect"
+          color={p.dusk}
+          intensity={2.4}
+          position={[4.1, 2.7, -6]}
+          scale={[3.3, 3.2, 1]}
+          target={[0, 1, 2]}
+        />
+        <Lightformer
+          form="rect"
+          color={p.light}
+          intensity={0.7}
+          position={[0, 8, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[10, 6, 1]}
+        />
+        <Lightformer
+          form="rect"
+          color={p.woodDark}
+          intensity={0.5}
+          position={[0, -4, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          scale={[20, 20, 1]}
+        />
+      </Environment>
+    </>
+  );
+}
+
+/** Soft occlusion beneath everything that never moves. */
+function Grounding({ p }: { p: Palette }) {
+  const ink = p.ink;
+  const top = 0.128,
+    mat = 0.166,
+    floor = -3.015;
+  const shadows: Parameters<typeof ContactShadow>[0][] = [
+    { pos: [0.65, 0.127, 0.9], size: [5.8, 2.9], opacity: 0.32, color: ink },
+    { pos: [0.35, top, -1.0], size: [2.35, 1.8], opacity: 0.55, color: ink },
+    { pos: [0.35, 0.127, -1.35], size: [4.1, 2.7], opacity: 0.22, color: ink },
+    { pos: [-2.5, top, -1.55], size: [1.6, 2.4], opacity: 0.62, color: ink },
+    { pos: [0.22, mat, 1.25], size: [4, 1.8], opacity: 0.5, color: ink },
+    { pos: [2.52, mat, 1.3], size: [0.75, 1.05], rotation: -0.16, opacity: 0.45, round: true, color: ink },
+    { pos: [-1.72, top, -0.08], size: [0.85, 0.85], opacity: 0.55, color: ink },
+    { pos: [2.36, top, -0.25], size: [0.85, 0.85], opacity: 0.55, color: ink },
+    { pos: [3.68, top, -0.65], size: [2.8, 1.6], rotation: -0.16, opacity: 0.5, color: ink },
+    { pos: [-3.8, top, 0.45], size: [1.6, 1.45], rotation: 0.16, opacity: 0.5, color: ink },
+    { pos: [4.95, top, -1.85], size: [1.55, 1.55], opacity: 0.55, round: true, color: ink },
+    { pos: [-2.5, top, 1.45], size: [1.05, 1.05], opacity: 0.4, round: true, color: ink },
+    { pos: [0, floor, 0], size: [12.5, 6.8], opacity: 0.3, color: ink },
+    { pos: [-3.5, floor, 0.25], size: [2.8, 4.3], opacity: 0.55, color: ink },
+    { pos: [4.78, floor, -0.3], size: [0.7, 4.4], opacity: 0.45, color: ink },
+    { pos: [0, floor, -3.72], size: [40, 0.9], opacity: 0.4, color: ink },
+    { pos: [BIN.x, floor, BIN.z], size: [1.55, 1.55], opacity: 0.6, round: true, color: ink },
+  ];
+  return (
+    <>
+      {shadows.map((shadow, i) => (
+        <ContactShadow key={i} {...shadow} />
+      ))}
+    </>
+  );
+}
+
+function Mouse({ p }: { p: Palette }) {
+  const s = useSurfaces();
+  return (
+    <group position={[2.52, 0.27, 1.3]} rotation={[0, -0.16, 0]}>
+      <mesh
+        position={[0, -0.035, 0]}
+        castShadow
+        receiveShadow
+        scale={[0.269, 0.105, 0.425]}
+      >
+        <sphereGeometry args={[1, 32, 20]} />
+        <meshStandardMaterial color={p.shadow} roughness={0.75} />
+      </mesh>
+      <mesh castShadow receiveShadow scale={[0.27, 0.14, 0.43]}>
+        <sphereGeometry args={[1, 32, 24]} />
+        <meshStandardMaterial
+          color={p.ivory}
+          map={s.plasticTint}
+          roughness={1}
+          roughnessMap={s.plasticSurface}
+          bumpMap={s.plasticSurface}
+          bumpScale={0.1}
+          envMapIntensity={0.7}
+        />
+      </mesh>
+      <Box
+        pos={[0, 0.13, -0.08]}
+        size={[0.025, 0.015, 0.15]}
+        color={p.shadow}
+        radius={0.005}
+      />
+      <Cable
+        p={p}
+        color={p.shadow}
+        radius={0.005}
+        points={[
+          [0, 0.015, -0.42],
+          [0, 0.1, -0.25],
+          [0, 0.135, -0.07],
+          [0, 0.14, 0.035],
+        ]}
+      />
+      <mesh position={[0, 0.142, -0.08]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.025, 20]} />
+        <meshStandardMaterial color={p.ink} roughness={0.95} />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * A lens, not a viewport: gentle warm vignette and a fixed film grain,
+ * multiplied over the frame in the same pass. Lives on layer 1 so shadow
+ * and environment captures never see it, and never takes pointer events.
+ */
+function Grade({ p, night }: { p: Palette; night: boolean }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const geometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3),
+    );
+    return g;
+  }, []);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          tint: { value: new THREE.Color() },
+          strength: { value: 0 },
+          grain: { value: 0 },
+        },
+        vertexShader: /* glsl */ `
+          varying vec2 vUv;
+          void main() {
+            vUv = position.xy * 0.5 + 0.5;
+            gl_Position = vec4(position.xy, 0.0, 1.0);
+          }`,
+        fragmentShader: /* glsl */ `
+          uniform vec3 tint;
+          uniform float strength;
+          uniform float grain;
+          varying vec2 vUv;
+          float hash(vec2 p) {
+            p = fract(p * vec2(443.897, 441.423));
+            p += dot(p, p.yx + 19.19);
+            return fract((p.x + p.y) * p.x);
+          }
+          void main() {
+            vec2 q = (vUv - 0.5) * vec2(1.1, 1.0);
+            float v = smoothstep(0.4, 0.98, length(q));
+            vec3 shade = mix(vec3(1.0), tint, v * strength);
+            shade *= 1.0 - grain * hash(floor(gl_FragCoord.xy));
+            gl_FragColor = vec4(shade, 1.0);
+          }`,
+        blending: THREE.CustomBlending,
+        blendEquation: THREE.AddEquation,
+        blendSrc: THREE.ZeroFactor,
+        blendDst: THREE.SrcColorFactor,
+        blendSrcAlpha: THREE.ZeroFactor,
+        blendDstAlpha: THREE.OneFactor,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+        toneMapped: false,
+      }),
+    [],
+  );
+  const tint = useMemo(
+    () => (night ? p.ink : mix(p.woodDark, p.clay, 0.3)),
+    [night, p],
+  );
+  useFrame(() => {
+    const mesh = ref.current;
+    if (!mesh) return;
+    mesh.layers.set(1);
+    const { uniforms } = mesh.material as THREE.ShaderMaterial;
+    uniforms.tint.value.setStyle(tint);
+    uniforms.strength.value = night ? 0.5 : 0.3;
+    uniforms.grain.value = night ? 0.06 : 0.045;
+  });
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      material.dispose();
+    },
+    [geometry, material],
+  );
+  return (
+    <mesh
+      ref={ref}
+      geometry={geometry}
+      material={material}
+      frustumCulled={false}
+      renderOrder={10000}
+      raycast={() => null}
+    />
+  );
+}
+
 function World(props: SceneProps) {
   const { onReady, onFail } = props;
   const p = useMemo(() => palette(), []);
-  const wood = useMemo(() => woodTexture(p), [p]);
+  const surfaces = useMemo(
+    () => createSurfaces(p, { wallHead: WINDOW.y + WINDOW.height / 2 }),
+    [p],
+  );
   const grain = useMemo(() => surfaceTexture("grain"), []);
   const woven = useMemo(() => surfaceTexture("woven"), []);
   const ceramic = useMemo(() => surfaceTexture("ceramic"), []);
-  const plaster = useMemo(() => surfaceTexture("plaster"), []);
   useEffect(
     () => () => {
       grain.dispose();
       woven.dispose();
       ceramic.dispose();
-      plaster.dispose();
     },
-    [grain, woven, ceramic, plaster],
+    [grain, woven, ceramic],
   );
+  useEffect(() => () => surfaces.dispose(), [surfaces]);
   const { gl } = useThree();
+  const refreshShadows = useShadowRefresh();
+  // Any change of scene state may move a caster or switch a shadowed light.
+  useLayoutEffect(() => {
+    refreshShadows();
+  });
   useEffect(() => {
     onReady();
     return () => {
       document.body.style.cursor = "";
-      wood.dispose();
     };
-  }, [onReady, wood]);
+  }, [onReady]);
   useEffect(() => {
     const failed = (event: Event) => {
       event.preventDefault();
@@ -810,170 +1217,79 @@ function World(props: SceneProps) {
     fn();
   };
   const active = props.focus === "desk";
+  const walnut = {
+    map: surfaces.wood,
+    roughness: 1,
+    roughnessMap: surfaces.woodSurface,
+    bumpMap: surfaces.woodSurface,
+    bumpScale: 0.25,
+  };
+  const steel = {
+    color: p.ink,
+    roughness: 1,
+    roughnessMap: surfaces.tooth,
+    bumpMap: surfaces.tooth,
+    bumpScale: 0.05,
+    metalness: 0.3,
+    radius: 0.02,
+  };
   return (
-    <>
-      <color attach="background" args={[props.night ? p.shadow : p.paper]} />
-      <fog attach="fog" args={[props.night ? p.shadow : p.paper, 18, 40]} />
-      <ambientLight intensity={props.night ? 0.3 : 0.45} color={p.paper} />
-      <hemisphereLight args={[p.paper, p.woodDark, props.night ? 0.5 : 0.8]} />
-      <directionalLight
-        position={[0, 8, 12]}
-        intensity={props.night ? 0.25 : 1.8}
-        color={p.light}
-        castShadow={!props.night}
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-8.5}
-        shadow-camera-right={7}
-        shadow-camera-top={7}
-        shadow-camera-bottom={-6.5}
-        shadow-camera-near={0.5}
-        shadow-camera-far={32}
-        shadow-normalBias={0.003}
-        shadow-bias={-0.00005}
-        shadow-radius={8}
+    <SurfacesContext.Provider value={surfaces}>
+      <color attach="background" args={[props.night ? p.ink : p.paper]} />
+      <fog
+        attach="fog"
+        args={[props.night ? p.ink : mix(p.paper, p.sun, 0.12), 18, 40]}
       />
-      <directionalLight
-        position={[4.3, 3.4, -3.4]}
-        intensity={props.night ? 0.45 : 1.1}
-        color={props.night ? p.paper : p.sky}
-      />
-      <Environment
-        resolution={128}
-        frames={1}
-        environmentIntensity={props.night ? 0.32 : 0.65}
-      >
-        <Lightformer
-          form="rect"
-          color={p.paper}
-          intensity={3}
-          position={[-4, 5, 3]}
-          rotation={[0, Math.PI / 4, 0]}
-          scale={[5, 7, 1]}
-          target={[0, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          color={p.light}
-          intensity={2}
-          position={[4, 3, -3]}
-          scale={[3, 5, 1]}
-          target={[0, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          color={p.paper}
-          intensity={1}
-          position={[0, 7, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={[8, 4, 1]}
-        />
-      </Environment>
+      <Lighting p={p} night={props.night} />
       <CameraRig focus={props.focus} reduced={props.reduced} />
-      <Box
-        pos={[0, -3.08, 0]}
-        size={[40, 0.12, 40]}
-        color={p.shadow}
-        radius={0.01}
-      />
-      {/* Four plaster panels leave a real opening onto the exterior scene. */}
-      {[
-        {
-          x: (-20 + WINDOW.x - WINDOW.width / 2) / 2,
-          y: 3.4,
-          w: 20 + WINDOW.x - WINDOW.width / 2,
-          h: 13,
-        },
-        {
-          x: (20 + WINDOW.x + WINDOW.width / 2) / 2,
-          y: 3.4,
-          w: 20 - WINDOW.x - WINDOW.width / 2,
-          h: 13,
-        },
-        {
-          x: WINDOW.x,
-          y: (-3.1 + WINDOW.y - WINDOW.height / 2) / 2,
-          w: WINDOW.width,
-          h: WINDOW.y - WINDOW.height / 2 + 3.1,
-        },
-        {
-          x: WINDOW.x,
-          y: (9.9 + WINDOW.y + WINDOW.height / 2) / 2,
-          w: WINDOW.width,
-          h: 9.9 - WINDOW.y - WINDOW.height / 2,
-        },
-      ].map((wall, i) => (
-        <Box
-          key={i}
-          pos={[wall.x, wall.y, -4]}
-          size={[wall.w, wall.h, 0.18]}
-          bumpMap={plaster}
-          bumpScale={0.003}
-          roughness={0.95}
-          color={p.paper}
-          radius={0.01}
-        />
-      ))}
-      <Box pos={[0, -2.75, -3.85]} size={[40, 0.35, 0.1]} color={p.ivory} />
+      <Room p={p} />
       <DeskWindow
         p={p}
         night={props.night}
         reduced={props.reduced}
         active={active}
       />
+      {/* Oiled walnut top: matte, worn where it is used. */}
       <Box
         pos={[0, 0, 0]}
         size={[11.2, 0.25, 5.65]}
-        bumpMap={grain}
-        bumpScale={0.004}
-        roughness={0.43}
-        clearcoat={0.28}
         color={p.wood}
-        map={wood}
+        map={surfaces.deskTop}
+        roughness={1}
+        roughnessMap={surfaces.deskTopSurface}
+        bumpMap={surfaces.deskTopSurface}
+        bumpScale={0.3}
+        clearcoat={0.06}
+        clearcoatRoughness={0.55}
         radius={0.065}
       />
       <Box
         pos={[0, -0.17, 2.67]}
         size={[11, 0.08, 0.09]}
         color={p.woodDark}
-        map={wood}
+        {...walnut}
         radius={0.02}
       />
       <Box
         pos={[0, -0.33, -2.55]}
         size={[10.85, 0.42, 0.12]}
         color={p.wood}
-        map={wood}
+        {...walnut}
         radius={0.02}
       />
-      <Box
-        pos={[4.78, -1.52, 1.5]}
-        size={[0.17, 2.85, 0.17]}
-        color={p.ink}
-        radius={0.02}
-      />
-      <Box
-        pos={[4.78, -1.52, -2.1]}
-        size={[0.17, 2.85, 0.17]}
-        color={p.ink}
-        radius={0.02}
-      />
-      <Box
-        pos={[4.78, -2.83, -0.3]}
-        size={[0.19, 0.14, 3.8]}
-        color={p.ink}
-        radius={0.02}
-      />
+      <Box pos={[4.78, -1.52, 1.5]} size={[0.17, 2.85, 0.17]} {...steel} />
+      <Box pos={[4.78, -1.52, -2.1]} size={[0.17, 2.85, 0.17]} {...steel} />
+      <Box pos={[4.78, -2.83, -0.3]} size={[0.19, 0.14, 3.8]} {...steel} />
       <Drawer
         p={p}
         focus={props.focus}
         reduced={props.reduced}
         onClick={click(props.onResume)}
-        wood={wood}
       />
       <DeskMat p={p} woven={woven} />
       <Monitor
         p={p}
-        plastic={ceramic}
+        night={props.night}
         onClick={click(() => {
           if (props.focus === "desk") props.onMonitor();
         })}
@@ -991,41 +1307,7 @@ function World(props: SceneProps) {
         }
       />
       <DetailedKeyboard p={p} />
-      <group position={[2.52, 0.27, 1.3]} rotation={[0, -0.16, 0]}>
-        <mesh
-          position={[0, -0.035, 0]}
-          castShadow
-          scale={[0.269, 0.105, 0.425]}
-        >
-          <sphereGeometry args={[1, 32, 20]} />
-          <meshStandardMaterial color={p.shadow} roughness={0.65} />
-        </mesh>
-        <mesh castShadow scale={[0.27, 0.14, 0.43]}>
-          <sphereGeometry args={[1, 32, 24]} />
-          <meshStandardMaterial color={p.ivory} roughness={0.45} />
-        </mesh>
-        <Box
-          pos={[0, 0.13, -0.08]}
-          size={[0.025, 0.015, 0.15]}
-          color={p.shadow}
-          radius={0.005}
-        />
-        <Cable
-          p={p}
-          color={p.shadow}
-          radius={0.005}
-          points={[
-            [0, 0.015, -0.42],
-            [0, 0.1, -0.25],
-            [0, 0.135, -0.07],
-            [0, 0.14, 0.035],
-          ]}
-        />
-        <mesh position={[0, 0.142, -0.08]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.04, 0.04, 0.025, 20]} />
-          <meshStandardMaterial color={p.ink} roughness={0.95} />
-        </mesh>
-      </group>
+      <Mouse p={p} />
       <Cable
         p={p}
         points={[
@@ -1046,11 +1328,10 @@ function World(props: SceneProps) {
       />
       <DetailedTower
         p={p}
-        ceramic={ceramic}
         musicRequest={props.musicRequest}
         reduced={props.reduced}
       />
-      <RoomDecor p={p} wood={wood} />
+      <RoomDecor p={p} />
       <DeskSpeakers
         p={p}
         request={props.musicRequest}
@@ -1069,13 +1350,17 @@ function World(props: SceneProps) {
         })}
       />
       <Pottery p={p} ceramic={ceramic} grain={grain} />
-      <BrickDisplay p={p} />
+      <BrickCat p={p} />
+      <TrashBin p={p} />
+      <DeskWear p={p} />
       <SewingMachine
         p={p}
         woven={woven}
         reduced={props.reduced}
         active={active}
       />
+      <Grounding p={p} />
+      <Grade p={p} night={props.night} />
       {/* Real light shadow maps update on demand with the camera, drawer and
           blinds. No baked overhead layer that leaves shadows behind. */}
       {active && (
@@ -1121,7 +1406,7 @@ function World(props: SceneProps) {
           </Html>
         </>
       )}
-    </>
+    </SurfacesContext.Provider>
   );
 }
 
@@ -1138,9 +1423,13 @@ export default function DeskScene(props: SceneProps) {
         alpha: false,
         powerPreference: "high-performance",
       }}
-      onCreated={({ gl }) => {
+      onCreated={({ gl, camera }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1;
+        // Shadow maps re-render only when a caster moves; see useShadowRefresh.
+        gl.shadowMap.autoUpdate = false;
+        gl.shadowMap.needsUpdate = true;
+        camera.layers.enable(1);
       }}
     >
       <RenderQuality onChange={setDpr} />

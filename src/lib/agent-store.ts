@@ -41,7 +41,7 @@ export const TOYS: { id: ToyId; label: string; icon: string }[] = [
 
 export type EmoteKind = "hearts" | "play" | "train" | "wake";
 export interface Emote {
-  n: number; // nonce — bump triggers the reaction animation
+  n: number; // nonce, bump triggers the reaction animation
   kind: EmoteKind;
 }
 
@@ -139,7 +139,7 @@ export const useGarden = create<GardenState>()(
         const a = st.agents[id];
         const def = agentDef(id);
         if (a.status === "dormant") {
-          return { ok: false, note: `${def.name} is dormant — activate it first.` };
+          return { ok: false, note: `${def.name} is dormant. Activate it first.` };
         }
         if (a.status === "asleep") {
           const mins = Math.max(1, Math.ceil(((a.sleepUntil ?? 0) - Date.now()) / 60000));
@@ -147,7 +147,7 @@ export const useGarden = create<GardenState>()(
         }
         const spent = spendAP(st.ap, action);
         if (!spent.ok) {
-          return { ok: false, note: `Not enough AP — wait for it to regenerate.` };
+          return { ok: false, note: `Not enough AP. Wait for it to regenerate.` };
         }
         let agent = a;
         let note = "";
@@ -163,7 +163,7 @@ export const useGarden = create<GardenState>()(
           kind = "play";
         } else {
           agent = applyNap(a, Date.now());
-          note = `${def.name} curled up on a mushroom — energy 100, back in ${Math.round(
+          note = `${def.name} curled up on a mushroom, energy 100, back in ${Math.round(
             NAP_MS / 60000,
           )}m.`;
           kind = "wake";

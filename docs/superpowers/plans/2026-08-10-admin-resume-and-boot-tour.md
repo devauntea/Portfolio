@@ -14,11 +14,11 @@
 - **All page copy lives in `src/data/profile.ts`.**
 - **Retro chrome = four CSS utilities:** `bevel-out`, `bevel-in`, `titlebar-gradient`, `desktop-pattern`.
 - **React 19 purity:** no `Math.random()` in render, no `setState` in an effect body, copy `ref.current` to a local inside effects before cleanup.
-- **Blob access is `private`.** Never `public` — the proxy is the only read path.
+- **Blob access is `private`.** Never `public`, the proxy is the only read path.
 - **Blob auth is OIDC:** `VERCEL_OIDC_TOKEN` + `BLOB_STORE_ID`. There is no `BLOB_READ_WRITE_TOKEN` in this project; code still accepts one as an alternate path.
 - **Never read `public/` from a route handler.** Files under `public/` are CDN assets and are not reliably present in the serverless bundle. Fall back by **redirecting** to the static path.
 - **Test command:** `npm test` → `node --test tests/`. Node 24 strips TypeScript natively; test imports must use explicit `.ts` extensions.
-- Verify visuals in a **foreground** browser tab. Per `memory/portfolio_lessons.md`, hidden tabs freeze rAF, report 0×0 rects, and never finish Framer exit animations — assert on store-backed UI, never element absence.
+- Verify visuals in a **foreground** browser tab. Per `memory/portfolio_lessons.md`, hidden tabs freeze rAF, report 0×0 rects, and never finish Framer exit animations, assert on store-backed UI, never element absence.
 
 ---
 
@@ -28,7 +28,7 @@
 
 | Path | Responsibility |
 | --- | --- |
-| `src/lib/owner-auth.ts` | Sole definition of a valid owner cookie. Pure — no `next/*` imports, so it is unit-testable. |
+| `src/lib/owner-auth.ts` | Sole definition of a valid owner cookie. Pure, no `next/*` imports, so it is unit-testable. |
 | `src/lib/resume-validate.ts` | Pure PDF validation (size + magic bytes). |
 | `src/lib/resume-store.ts` | Blob read/write/delete + bundled fallback resolution. Server-only. |
 | `src/app/api/resume/route.ts` | Public résumé metadata. |
@@ -148,7 +148,7 @@ test("passwordMatches compares against the configured password", () => {
 - [ ] **Step 3: Run the test to verify it fails**
 
 Run: `npm test`
-Expected: FAIL — `Cannot find module '../src/lib/owner-auth.ts'`
+Expected: FAIL, `Cannot find module '../src/lib/owner-auth.ts'`
 
 - [ ] **Step 4: Write the implementation**
 
@@ -159,7 +159,7 @@ Create `src/lib/owner-auth.ts`:
    else, so there is exactly one definition of a valid session.
 
    The cookie carries sha256(salt + OWNER_PASSWORD), never the password. The
-   cookie is a bearer token — anything that leaks it (a log, a screenshot, a
+   cookie is a bearer token, anything that leaks it (a log, a screenshot, a
    shared browser) would otherwise leak the password itself. */
 
 import { createHash, timingSafeEqual } from "node:crypto";
@@ -205,7 +205,7 @@ export function isOwner(cookieValue: string | undefined): boolean {
 - [ ] **Step 5: Run the test to verify it passes**
 
 Run: `npm test`
-Expected: PASS — 8 tests, 0 fail
+Expected: PASS, 8 tests, 0 fail
 
 - [ ] **Step 6: Point `agent-link` at the module**
 
@@ -223,7 +223,7 @@ import {
   passwordMatches,
 } from "@/lib/owner-auth";
 
-/* Owner auth. The password lives in OWNER_PASSWORD (server-only) — NOT
+/* Owner auth. The password lives in OWNER_PASSWORD (server-only), NOT
    NEXT_PUBLIC_*, which would ship the secret to every visitor's bundle.
    Success sets an httpOnly cookie holding a hash of the password; the UI
    never sees either value. Swap this file for real auth (magic link /
@@ -262,7 +262,7 @@ export async function DELETE() {
 
 - [ ] **Step 7: Update the other three gated routes**
 
-In each of `src/app/api/resume-feedback/route.ts`, `src/app/api/garden-journal/route.ts`, and `src/app/api/agent-activation/route.ts`, find the owner check — it looks like this:
+In each of `src/app/api/resume-feedback/route.ts`, `src/app/api/garden-journal/route.ts`, and `src/app/api/agent-activation/route.ts`, find the owner check, it looks like this:
 
 ```ts
 const jar = await cookies();
@@ -382,7 +382,7 @@ test("accepts a file exactly at the cap", () => {
 - [ ] **Step 4: Run the test to verify it fails**
 
 Run: `npm test`
-Expected: FAIL — `Cannot find module '../src/lib/resume-validate.ts'`
+Expected: FAIL, `Cannot find module '../src/lib/resume-validate.ts'`
 
 - [ ] **Step 5: Write the validator**
 
@@ -407,7 +407,7 @@ export function validateResumePdf(bytes: Uint8Array): ResumeValidation {
   }
   if (bytes.length > MAX_RESUME_BYTES) {
     const mb = (bytes.length / 1024 / 1024).toFixed(1);
-    return { ok: false, error: `That file is ${mb} MB — the limit is 8 MB.` };
+    return { ok: false, error: `That file is ${mb} MB, the limit is 8 MB.` };
   }
   if (bytes.length < PDF_MAGIC.length) {
     return { ok: false, error: "That doesn't look like a PDF." };
@@ -423,7 +423,7 @@ export function validateResumePdf(bytes: Uint8Array): ResumeValidation {
 - [ ] **Step 6: Run the test to verify it passes**
 
 Run: `npm test`
-Expected: PASS — 14 tests total across both files, 0 fail
+Expected: PASS, 14 tests total across both files, 0 fail
 
 - [ ] **Step 7: Write the storage module**
 
@@ -432,7 +432,7 @@ Create `src/lib/resume-store.ts`:
 ```ts
 /* Where the current résumé lives. Blob first, bundled PDF second.
 
-   Auth is OIDC (VERCEL_OIDC_TOKEN + BLOB_STORE_ID) on this project — the SDK
+   Auth is OIDC (VERCEL_OIDC_TOKEN + BLOB_STORE_ID) on this project, the SDK
    ignores BLOB_READ_WRITE_TOKEN whenever OIDC and a store id are both present.
    Both paths are accepted so reconnecting the store with a static token later
    changes nothing here.
@@ -473,7 +473,7 @@ export async function resumeMeta(): Promise<ResumeMeta> {
       filename: RESUME_FILENAME,
     };
   } catch {
-    /* not uploaded yet, or storage is unreachable — the bundled copy stands in */
+    /* not uploaded yet, or storage is unreachable, the bundled copy stands in */
     return bundled();
   }
 }
@@ -482,7 +482,7 @@ export async function resumeMeta(): Promise<ResumeMeta> {
 export async function readResumeStream(): Promise<ReadableStream<Uint8Array> | null> {
   if (!blobConfigured()) return null;
   try {
-    /* useCache:false — the pathname is overwritten in place, so a cached copy
+    /* useCache:false, the pathname is overwritten in place, so a cached copy
        would keep serving the previous résumé after an upload. */
     const res = await get(RESUME_BLOB_PATH, { access: "private", useCache: false });
     if (!res || res.statusCode !== 200) return null;
@@ -577,7 +577,7 @@ head -c 5 /tmp/r.pdf
 
 Expected: `{"source":"bundled","updatedAt":null,"filename":"Devauntae_Norman_Resume.pdf"}`, then `200 application/pdf`, then `%PDF-`.
 
-(`source` is `bundled` because nothing has been uploaded yet — that is the correct state.)
+(`source` is `bundled` because nothing has been uploaded yet, that is the correct state.)
 
 - [ ] **Step 11: Lint, build, commit**
 
@@ -617,7 +617,7 @@ import {
 
 /* Owner-only. POST replaces the current résumé; DELETE reverts to the copy
    bundled with the deploy. Every failure mode answers with a sentence the
-   admin panel can show verbatim — an upload that silently no-ops is worse
+   admin panel can show verbatim, an upload that silently no-ops is worse
    than one that explains itself. */
 
 export const dynamic = "force-dynamic";
@@ -635,7 +635,7 @@ const unconfigured = () =>
     {
       ok: false,
       error:
-        "Blob storage isn't configured for this environment — the bundled résumé is being served.",
+        "Blob storage isn't configured for this environment, the bundled résumé is being served.",
     },
     { status: 503 },
   );
@@ -688,7 +688,7 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST localhost:3000/api/admin/resume
 curl -s -o /dev/null -w '%{http_code}\n' -X DELETE localhost:3000/api/admin/resume
 ```
 
-Expected: `401` for both. **If either returns 503, the gate is being skipped** — the auth check must run before the storage check.
+Expected: `401` for both. **If either returns 503, the gate is being skipped**, the auth check must run before the storage check.
 
 - [ ] **Step 3: Verify a valid upload as the owner**
 
@@ -703,7 +703,7 @@ curl -s localhost:3000/api/resume
 
 Expected: `{"owner":true}`, then `{"ok":true,"source":"blob",...}`, then `source` is `"blob"` with a non-null `updatedAt`.
 
-If `OWNER_PASSWORD` is absent from `.env.local`, the first call returns 503 — add it to the Development environment and re-run `npx vercel env pull .env.local`.
+If `OWNER_PASSWORD` is absent from `.env.local`, the first call returns 503, add it to the Development environment and re-run `npx vercel env pull .env.local`.
 
 - [ ] **Step 4: Verify a non-PDF is rejected**
 
@@ -760,13 +760,13 @@ Create `src/components/spaces/ResumePdf.tsx`:
    because a résumé rendered at CSS pixels looks soft on retina displays.
 
    Any failure calls onFail() once, and the parent falls back to the text
-   résumé — a blank sheet would be worse than a slightly stale one. */
+   résumé, a blank sheet would be worse than a slightly stale one. */
 
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
   src: string;
-  /** must be referentially stable — memoize it in the parent */
+  /** must be referentially stable, memoize it in the parent */
   onFail: () => void;
 }
 
@@ -912,7 +912,7 @@ Then replace the `<header>` element and the `{RESUME.sections.map(...)}` block w
 )}
 ```
 
-Leave everything else in `PaperSheet` untouched — the tilt springs, the corner fold, the marks overlay, and the download link all still work.
+Leave everything else in `PaperSheet` untouched, the tilt springs, the corner fold, the marks overlay, and the download link all still work.
 
 - [ ] **Step 4: Retarget the download link**
 
@@ -946,31 +946,31 @@ Replace the `RESUME` object at `src/data/profile.ts:245` so the fallback matches
 ```ts
 export const RESUME = {
   name: "Devauntae Norman",
-  tagline: "AI / Fullstack Engineer — builder of worlds, digital and real",
+  tagline: "AI / Fullstack Engineer, builder of worlds, digital and real",
   contact:
     "New York, NY · devauntaenorman@gmail.com · linkedin.com/in/devauntae-norman · github.com/devauntea",
   sections: [
     {
       heading: "Education",
       items: [
-        "Fordham University — B.S. Computer Science, May 2026. Coursework: Data Structures & Algorithms, Database Systems, Operating Systems, Computer Networks, Data Mining.",
+        "Fordham University, B.S. Computer Science, May 2026. Coursework: Data Structures & Algorithms, Database Systems, Operating Systems, Computer Networks, Data Mining.",
       ],
     },
     {
       heading: "Experience",
       items: [
-        "Adaptive Security — Artificial Intelligence Product Intern (May 2025–Mar 2026): built a Python/Node service automating a four-stage FFmpeg media pipeline, cutting production time roughly 80%; built an internal React/Next.js console for launching and monitoring long-running jobs.",
-        "Anote — Back-End Software Engineering Intern (Aug–Dec 2023): engineered a Python evaluation harness benchmarking fine-tuned GPT-3.5, SetFit, and BERT with stratified k-fold cross-validation; built a dataset quality pipeline for reproducibility across engineers.",
-        "Cornell Tech, Break Through Tech AI — AI/ML Development Intern (Jun–Aug 2023): built supervised learning pipelines with reproducible splits, metric tracking, and error analysis; presented model tradeoffs to non-technical stakeholders.",
-        "Fordham CSTEP — Peer Instructor & Academic Counselor (Sep 2023–May 2025): designed and taught a full Pre-Calculus curriculum and an introductory AI course within a 100+ student STEM program.",
+        "Adaptive Security, Artificial Intelligence Product Intern (May 2025–Mar 2026): built a Python/Node service automating a four-stage FFmpeg media pipeline, cutting production time roughly 80%; built an internal React/Next.js console for launching and monitoring long-running jobs.",
+        "Anote, Back-End Software Engineering Intern (Aug–Dec 2023): engineered a Python evaluation harness benchmarking fine-tuned GPT-3.5, SetFit, and BERT with stratified k-fold cross-validation; built a dataset quality pipeline for reproducibility across engineers.",
+        "Cornell Tech, Break Through Tech AI, AI/ML Development Intern (Jun–Aug 2023): built supervised learning pipelines with reproducible splits, metric tracking, and error analysis; presented model tradeoffs to non-technical stakeholders.",
+        "Fordham CSTEP, Peer Instructor & Academic Counselor (Sep 2023–May 2025): designed and taught a full Pre-Calculus curriculum and an introductory AI course within a 100+ student STEM program.",
       ],
     },
     {
       heading: "Projects",
       items: [
-        "Aspect Niche (aspectniche.com) — full-stack activity discovery app with an interactive graph UI: pan, zoom, force-directed clustering, progressive node expansion, and an LLM API behind server-side routes.",
-        "Garment Prediction — reproducible image-classification pipeline split into manifest, preprocessing, training, and evaluation stages, rerunnable end to end from a single command.",
-        "This computer — DevauntaeOS: a retro-desktop portfolio with a walkable 3D gallery and a hidden agent-care game.",
+        "Aspect Niche (aspectniche.com), full-stack activity discovery app with an interactive graph UI: pan, zoom, force-directed clustering, progressive node expansion, and an LLM API behind server-side routes.",
+        "Garment Prediction, reproducible image-classification pipeline split into manifest, preprocessing, training, and evaluation stages, rerunnable end to end from a single command.",
+        "This computer, DevauntaeOS: a retro-desktop portfolio with a walkable 3D gallery and a hidden agent-care game.",
       ],
     },
     {
@@ -1008,7 +1008,7 @@ export const CONTACT = {
 
 Start the dev server and open `http://localhost:3000` in a **foreground** tab. Open the Résumé space and untie the folder.
 
-Expected: the sheet shows the rendered PDF — your actual résumé layout, not the styled text version. Check the console for pdf.js worker errors.
+Expected: the sheet shows the rendered PDF, your actual résumé layout, not the styled text version. Check the console for pdf.js worker errors.
 
 **If the worker fails to load**, copy it into `public/` and use a plain path instead:
 
@@ -1026,7 +1026,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 Still in the foreground tab: pick up the HIRED stamp, drop it on the ink pad, then carry it over the rendered PDF and release.
 
-Expected: the dashed preview ring tracks the pointer over the sheet, and the mark lands where released, tilting with the paper. This must be checked in a foreground tab — rects are 0×0 in hidden tabs.
+Expected: the dashed preview ring tracks the pointer over the sheet, and the mark lands where released, tilting with the paper. This must be checked in a foreground tab, rects are 0×0 in hidden tabs.
 
 - [ ] **Step 9: Verify the text fallback**
 
@@ -1078,7 +1078,7 @@ Create `src/components/admin/AdminApp.tsx`:
 /* The owner's control panel: swap the résumé without touching the repo.
 
    The window itself is only reachable behind the password gate, but the
-   server re-checks the cookie on every call — this UI is a convenience, not
+   server re-checks the cookie on every call, this UI is a convenience, not
    the security boundary. */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -1121,14 +1121,14 @@ export function AdminApp() {
         const d = await r.json().catch(() => ({}));
         if (r.ok && d.ok) {
           setMeta({ source: d.source, updatedAt: d.updatedAt, filename: d.filename });
-          setMsg({ tone: "ok", text: "✓ Résumé replaced — reopen the Résumé folder to see it." });
+          setMsg({ tone: "ok", text: "✓ Résumé replaced, reopen the Résumé folder to see it." });
           chime();
         } else {
           setMsg({ tone: "bad", text: d.error ?? "Upload failed." });
           thunk();
         }
       } catch {
-        setMsg({ tone: "bad", text: "Network error — the upload didn't land." });
+        setMsg({ tone: "bad", text: "Network error, the upload didn't land." });
         thunk();
       }
       setBusy(false);
@@ -1402,7 +1402,7 @@ Create `src/components/os/BootTour.tsx`:
 
    Anchor rects are measured live from data-tour attributes rather than
    hardcoded, because desktop icons are draggable and their positions persist
-   across visits — a fixed coordinate would point at empty desktop.
+   across visits, a fixed coordinate would point at empty desktop.
 
    Plays once per visitor (tourSeen), obeys the same autoResume switch the
    startup item uses, and exits on Esc, the skip button, or any real click. */
@@ -1420,7 +1420,7 @@ interface Beat {
 }
 
 const BEATS: Beat[] = [
-  { anchor: "icon-about", text: "this is my desktop — every folder here is a piece of me", hold: 2600 },
+  { anchor: "icon-about", text: "this is my desktop, every folder here is a piece of me", hold: 2600 },
   { anchor: "taskbar", text: "drag windows by their title bar. more apps live under START", hold: 2800 },
   { anchor: "icon-games", text: "right-click the desktop for more. and look for the plant 🌱", hold: 2600 },
   { anchor: "icon-resume", text: "let's start with the résumé…", hold: 1500 },
@@ -1554,7 +1554,7 @@ Replace the startup effect at `src/app/page.tsx:76-87` with:
 ```tsx
   /* startup item: the intro tour runs once, teaches the desktop, then opens
      the Résumé folder the way a login item would. Turn it off in Display →
-     Startup items — the setting is read at boot only. */
+     Startup items, the setting is read at boot only. */
   const [tourRunning, setTourRunning] = useState(false);
   useEffect(() => {
     if (!booted) return;
@@ -1654,7 +1654,7 @@ Replace the last paragraph of `README.md` with:
 ```markdown
 Built with Next.js (App Router) + TypeScript, Tailwind v4, Framer Motion,
 React Three Fiber + drei. Sound is synthesized Web Audio (off by default).
-No database — owner auth is a server-side password check via an httpOnly
+No database, owner auth is a server-side password check via an httpOnly
 cookie carrying a hash of the password.
 
 The résumé is swappable from the site itself: unlock `🔑 Admin` in the Start
@@ -1662,7 +1662,7 @@ menu and drop in a PDF. It lands in a private Vercel Blob and is served through
 `/api/resume/file`; the Résumé space renders that PDF with pdf.js, falling back
 to the copy bundled in `public/docs` and then to the text in `src/data/profile.ts`.
 
-Unit tests cover the pure logic (`npm test`, Node's built-in runner — no framework).
+Unit tests cover the pure logic (`npm test`, Node's built-in runner, no framework).
 ```
 
 - [ ] **Step 2: Append the lessons**
@@ -1672,14 +1672,14 @@ Add to the end of `memory/portfolio_lessons.md`:
 ```markdown
 ## v3.6: the résumé became data
 - Blob auth on this project is OIDC (`VERCEL_OIDC_TOKEN` + `BLOB_STORE_ID`),
-  NOT `BLOB_READ_WRITE_TOKEN` — the SDK ignores the static token whenever OIDC
+  NOT `BLOB_READ_WRITE_TOKEN`, the SDK ignores the static token whenever OIDC
   and a store id are both present. Connecting a store in the dashboard sets the
   store id on Production+Preview only, so Development needs it added by hand or
   local uploads silently fall back to the bundled PDF.
 - OIDC tokens are short-lived; a stale `.env.local` breaks local blob calls and
   nothing else. Re-run `vercel env pull`.
 - Blobs are `access: 'private'` and read through `/api/resume/file`, so there is
-  exactly one path to the document. `get(..., { useCache: false })` matters —
+  exactly one path to the document. `get(..., { useCache: false })` matters,
   the pathname is overwritten in place, and a cached copy keeps serving the
   previous résumé after an upload.
 - **Never read `public/` from a route handler.** Those are CDN assets and are
@@ -1688,12 +1688,12 @@ Add to the end of `memory/portfolio_lessons.md`:
 - Uploads trust the magic number (`%PDF-`), never the browser's content-type.
   A .docx is a ZIP (`PK\x03\x04`) and is caught by exactly this check.
 - The owner cookie now holds sha256(salt + password) instead of the password.
-  `timingSafeEqual` throws on length mismatch — length-check first.
+  `timingSafeEqual` throws on length mismatch, length-check first.
 - Node 24 runs `.ts` under `node --test` with no loader and no dev dependency;
   test imports need explicit `.ts` extensions. Pure logic (auth, validation)
   is unit-tested; anything touching rects or rAF still needs a foreground tab.
 - BootTour measures anchors live from `data-tour` attributes because desktop
-  icons are draggable AND their positions persist — hardcoded coordinates would
+  icons are draggable AND their positions persist, hardcoded coordinates would
   point at bare desktop on a returning visitor.
 ```
 

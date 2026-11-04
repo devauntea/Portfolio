@@ -4,7 +4,7 @@ import { Garden } from "@/components/garden/Garden";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 export const metadata: Metadata = {
-  title: "Agent Garden — Devauntae Norman",
+  title: "Agent Garden | Devauntae Norman",
   description:
     "Behind the observatory's green door: a floating island where four AI agents live. Visitors watch; the keeper cares for them.",
   robots: { index: false, follow: false },
