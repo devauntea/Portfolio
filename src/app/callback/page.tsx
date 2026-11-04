@@ -4,7 +4,7 @@ import { TokenPanel } from "./TokenPanel";
 /* Spotify's redirect target. Exchanges the ?code for a refresh token
    server-side (client secret never reaches the browser) and shows the
    token once, with copy-paste instructions. Whoever completes this is the
-   owner — they just logged into Spotify — so it's safe to display here.
+   owner, they just logged into Spotify, so it's safe to display here.
    Setting SPOTIFY_REFRESH_TOKEN in the env + redeploying makes the Music
    app light up permanently. */
 
@@ -51,7 +51,7 @@ export default async function CallbackPage({
     ? ({ ok: false, error: `Spotify said: ${error}` } as const)
     : code
       ? await exchange(code)
-      : ({ ok: false, error: "No code in the URL — start from the Connect button in the Music app." } as const);
+      : ({ ok: false, error: "No code in the URL. Start from the Connect button in the Music app." } as const);
 
   return (
     <main className="desktop-pattern grid min-h-screen place-items-center p-6">
@@ -59,7 +59,7 @@ export default async function CallbackPage({
         <div className="titlebar-gradient flex items-center gap-2 px-2 py-1.5">
           <span aria-hidden>🎧</span>
           <h1 className="font-mono text-[11px] font-bold uppercase tracking-wider text-starlight">
-            Spotify — link setup
+            Spotify link setup
           </h1>
         </div>
         <div className="bevel-in m-1 bg-cosmos/60 p-4">
@@ -75,7 +75,7 @@ export default async function CallbackPage({
               <ol className="mt-3 list-decimal space-y-1 pl-4 text-[11px] leading-relaxed text-faint">
                 <li>Copy the token above.</li>
                 <li>
-                  Paste it back in chat and Devauntae&apos;s assistant will store it &amp; redeploy —
+                  Paste it back in chat and Devauntae&apos;s assistant will store it &amp; redeploy,
                   or set <code className="text-lumen">SPOTIFY_REFRESH_TOKEN</code> in Vercel yourself.
                 </li>
               </ol>

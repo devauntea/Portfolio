@@ -19,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Devauntae Norman — The Working Desk",
+  title: "Devauntae Norman | The Working Desk",
   description:
-    "Step into the workspace of Devauntae Norman, an AI and full-stack engineer in New York. Explore selected work, a little curiosity, and the person behind the projects.",
+    "Portfolio of Devauntae Norman, an AI and full-stack engineer in New York. Selected work, a few side projects, and a résumé, all laid out on one desk.",
 };
 
 export default function RootLayout({

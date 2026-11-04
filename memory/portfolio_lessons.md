@@ -1,4 +1,4 @@
-# Portfolio lessons — The Archive
+# Portfolio lessons, The Archive
 
 Implementation notes and known issues. Update after each tricky fix.
 
@@ -11,14 +11,14 @@ absolute-positioned at `top: offset%` inside one 1000vh container.
 
 ## Porting the garden: the remap checklist that finally sticks
 Token remap must cover: Tailwind color utilities (prefix-aware regex, never
-bare substring — "star" lives inside "start"), `var(--token)` refs, glow
+bare substring, "star" lives inside "start"), `var(--token)` refs, glow
 classes, the cookie name, the localStorage persist key in
 `lib/agent-store.ts` (missed once in a previous port), and the login-modal
 copy. After any port: `grep -rn "<old-brand>" src/ scripts/`.
 
 ## React 19 purity lint patterns (recur every build)
 - Deterministic scatter (motes, title letters, room stars) from index math
-  or module-scope seeded LCGs — never `Math.random()` in render.
+  or module-scope seeded LCGs, never `Math.random()` in render.
 - Countdown/clock UIs: `useState(() => Date.now())` + an always-running
   interval; derive in render.
 - Reset-per-subject state: remount with `key`, not effect resets.
@@ -46,9 +46,9 @@ warnings.
 
 ## Known issues / deliberate cuts
 - Firefox untested here (only a Chromium preview available); stack is
-  standard R3F/Framer. Lighthouse not run headlessly — no browser harness
+  standard R3F/Framer. Lighthouse not run headlessly, no browser harness
   for it in this environment.
-- The Game Room avatar can't "carry" items — walking to a cartridge and
+- The Game Room avatar can't "carry" items, walking to a cartridge and
   inspecting it (↑/Space) is the pickup interaction.
 - Workshop card drag positions are playful, not persisted; pins are.
 - The 3D garden door needs a pointer; the observatory console includes a
@@ -62,7 +62,7 @@ a `useEffect` keyed on the theme id: it covers both the persisted choice on
 load and later changes, with a one-frame default flash as the only cost.
 
 ## The preview console buffer lies; fresh tabs tell the truth
-`read_console_messages` returns the tab's accumulated history — stale
+`read_console_messages` returns the tab's accumulated history, stale
 compile errors survive reloads and even dev-server restarts. When an error
 looks fixed but keeps appearing: restart the dev server (fresh `preview_logs`
 is authoritative for compile state) and open a NEW tab for a clean console.
@@ -72,7 +72,7 @@ is authoritative for compile state) and open a NEW tab for a clean console.
   frame zoom) blended by damped lerp toward per-frame recomputed targets;
   `focus` lives in the scroll store and any real scroll (Δp > 0.004)
   releases the zoom.
-- Resume tilt: DOM path (sanctioned by the brief) — motion values + springs,
+- Resume tilt: DOM path (sanctioned by the brief), motion values + springs,
   `onPointerMove` normalized to the sheet's center, clamped ±12°. Pointer
   events cover touch drags for free (`touch-none` on the sheet).
 
@@ -81,7 +81,7 @@ The scroll experience was replaced by a desktop metaphor on user request:
 windows (framer drag via dragControls on the title bar, z-order = an
 incrementing counter in os-store) + fullscreen "spaces". Old scroll files
 were deleted; the 3D gallery room survived and gained a first-person rig.
-- Walkable gallery: no PointerLockControls — drag-to-look (pointer events,
+- Walkable gallery: no PointerLockControls, drag-to-look (pointer events,
   works for touch) + a shared `pressed` Set fed by both WASD keys and
   on-screen pad buttons; movement clamped to room bounds in useFrame.
   Because the pointer stays a real cursor, R3F hover events keep driving
@@ -92,7 +92,7 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
   desktop-pattern) over the same palette tokens, so the theme switcher
   (now the Display app) rethemes the whole OS.
 - Verification in hidden tabs: framer exit animations never finish, so
-  closed windows/spaces linger in the DOM — assert against store-backed
+  closed windows/spaces linger in the DOM, assert against store-backed
   UI (taskbar buttons) or successful *next* actions, not element absence.
 
 ## v3.1: real content + meme wallpaper
@@ -112,13 +112,13 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
   + shadowBlur) reading --lumen at draw time, plus pixel sparks; gated on
   pointer:fine and prefers-reduced-motion.
 - Deployed to Vercel via device-flow login (`npx vercel login` prints a
-  vercel.com/oauth/device code the user confirms — works without TTY).
+  vercel.com/oauth/device code the user confirms, works without TTY).
   Link → `vercel env add OWNER_PASSWORD production` → `vercel --prod --yes`.
-  NOTE: `vercel link` rewrites .env.local (pulled remote env over it) —
+  NOTE: `vercel link` rewrites .env.local (pulled remote env over it),
   keep the password in Vercel env; local dev needs it re-added if lost.
 - After dropping gallery photos into public/images/gallery, the LIVE site
   needs `npx vercel --prod` again (static assets ship at build time).
-- WorkshopBoard orbs carry names only in aria-label — assert on that, not
+- WorkshopBoard orbs carry names only in aria-label, assert on that, not
   textContent, when verifying headlessly.
 
 ## v3.3: the stamp desk
@@ -128,7 +128,7 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
 - Feedback pipeline: public POST /api/resume-feedback appends to
   memory/resume_feedback.md locally (serialized queue + LOCAL date
   headings); on Vercel the fs is read-only so the route returns ok:false
-  and the client opens a prefilled mailto to devauntaenorman@gmail.com —
+  and the client opens a prefilled mailto to devauntaenorman@gmail.com,
   feedback is never silently dropped. GET is owner-gated.
 - Esc layering: feedback card closes first, space exits on the next press.
 
@@ -137,7 +137,7 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
   `info.point` against pad/sheet rects (inRect). Ink is per-stamp state,
   spent on each mark. whileDrag lift = scale/rotateX/shadow in a
   [perspective] wrapper. Gesture untestable in the 0×0 hidden tab (rects
-  are zero-size) — foreground check required.
+  are zero-size), foreground check required.
 - Void Patrol: canvas shooter, all state in refs inside one effect; drops
   (gem/rapid/spread/shield/cartridge) roll on kill; cartridges call back
   into React to light the "games i love" shelf.
@@ -155,14 +155,14 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
 - Spotify: /api/spotify/login 307s to the authorize screen; /callback
   (server component) exchanges ?code for the refresh token and shows it.
   Redirect URI must EXACTLY match the one registered in the Spotify app
-  dashboard — the user set https://devauntaenorman.vercel.app/callback, so
+  dashboard, the user set https://devauntaenorman.vercel.app/callback, so
   SPOTIFY_REDIRECT_URI is set to that (localhost was unreachable for them).
   /api/spotify needs all of CLIENT_ID+SECRET+REFRESH_TOKEN → configured:true.
 - Headphones bug was a rotated half-torus putting the band on the bottom (U
   not ∩). Fix: torus arc=π rotated [PI/2,0,0] as an arch, ear cups = X-axis
   cylinders at the ±radius band ends. Note particles = geometry (head circle
   + stem + flag box), rising/fading loop, only visible when playing.
-- Stamp carry: replaced framer drag with a manual pointer-carry model —
+- Stamp carry: replaced framer drag with a manual pointer-carry model,
   pointerdown on a tray stamp starts a carry; window pointermove tracks a
   fixed z-400 ghost (stamp face + ✊ hand, cursor-none on the space) and, over
   the open paper, a dashed-ring preview mark; pointerup hit-tests pad vs
@@ -172,7 +172,7 @@ were deleted; the 3D gallery room survived and gained a first-person rig.
 - Orb art: each Project got an `art` emoji, shown centered in the orb + big
   in a tinted gradient preview banner on the expanded card.
 
-## v3.5.1: /callback 500 — server component had an event handler
+## v3.5.1: /callback 500, server component had an event handler
 The Spotify /callback page (server component) put onFocus on a <textarea> →
 "Event handlers cannot be passed to Client Component props" → hard 500 at
 render, which ALSO consumed the one-time auth code. Fix: moved the token
@@ -191,7 +191,7 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   `BLOB_READ_WRITE_TOKEN` from the store's `.env.local` tab; `resume-store.ts`
   accepts either auth path so nothing changes in production.
 - Blobs are `access: 'private'` and read through `/api/resume/file`, so there is
-  exactly one path to the document. `get(..., { useCache: false })` matters —
+  exactly one path to the document. `get(..., { useCache: false })` matters,
   the pathname is overwritten in place, and a cached copy keeps serving the
   previous résumé after an upload. `PutBody` takes Buffer, not bare Uint8Array.
 - **Never read `public/` from a route handler.** Those are CDN assets and are
@@ -200,7 +200,7 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Uploads trust the magic number (`%PDF-`), never the browser's content-type.
   A .docx is a ZIP (`PK\x03\x04`) and is caught by exactly this check.
 - The owner cookie now holds sha256(salt + password). `timingSafeEqual` throws
-  on length mismatch — length-check first. `grep -rn "archive_owner"` found a
+  on length mismatch, length-check first. `grep -rn "archive_owner"` found a
   FIFTH gated surface the plan missed (`app/garden/page.tsx` did its own raw
   comparison); after any auth change, grep before trusting the file list.
 - Node 24 runs `.ts` under `node --test` with no loader and no dev dependency,
@@ -212,10 +212,10 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   passing both is contradictory. The worker resolves fine through
   `new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url)`.
 - BootTour measures anchors from `data-tour` attributes because desktop icons
-  are draggable AND persist — hardcoded coordinates point at bare desktop on a
+  are draggable AND persist, hardcoded coordinates point at bare desktop on a
   returning visitor. Measure on a `setTimeout`, not rAF: background tabs freeze
   rAF outright but only throttle timers. Entrance animations that start at
-  opacity 0 leave copy invisible when stalled — slide instead of fade.
+  opacity 0 leave copy invisible when stalled, slide instead of fade.
 - OwnerSync flips `owner` false→true on every load, so "open the admin window
   when the owner appears" fires at every boot. Key that off the gate having
   been opened instead.
@@ -342,7 +342,7 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   headline. Ray-test candidate spots against the desk/pedestal boxes and
   project to screen before committing (see DeskBin's BIN position).
 - **Decals:** polygonOffset −4, renderOrder 2, alphaTest for die-cut vinyl,
-  alphaMap + colour for grime. Keep them on flat faces only — a rounded
+  alphaMap + colour for grime. Keep them on flat faces only, a rounded
   box's flat band is tiny (radius clamps to 45% of the smallest side).
   Anything printed already on a face (Label planes) sits in front; check
   its z before stacking a sticker over it.

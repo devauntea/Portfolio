@@ -5,7 +5,7 @@ import { ResumeAdmin } from "@/components/admin/ResumeAdmin";
 import "./admin.css";
 
 export const metadata: Metadata = {
-  title: "Studio admin — Devauntae Norman",
+  title: "Studio admin | Devauntae Norman",
   robots: { index: false, follow: false },
 };
 

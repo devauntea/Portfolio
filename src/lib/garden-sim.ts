@@ -1,5 +1,5 @@
 /* Pure game math for the Agent Garden pet-care game.
-   No React, no zustand, no browser APIs — lib/agent-store.ts wraps these
+   No React, no zustand, no browser APIs, lib/agent-store.ts wraps these
    functions, and scripts/simulate-48h.mjs runs the same code in Node to
    verify a full 48-hour cycle. Keep the syntax erasable (no enums) so
    `node` can strip types and import this file directly. */
@@ -78,7 +78,7 @@ export function moodIndex(happiness: number): 0 | 1 | 2 | 3 | 4 {
   return 4;
 }
 
-/** Average happiness of non-dormant agents — drives the campfire color. */
+/** Average happiness of non-dormant agents, drives the campfire color. */
 export function overallHappiness(agents: AgentCare[]): number {
   const live = agents.filter((a) => a.status !== "dormant");
   if (live.length === 0) return 0;

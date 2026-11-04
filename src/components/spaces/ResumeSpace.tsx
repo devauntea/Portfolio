@@ -1,8 +1,8 @@
 "use client";
 
-/* Fullscreen Résumé space — a physical stamp desk.
+/* Fullscreen Résumé space, a physical stamp desk.
 
-   The ritual: press a rubber stamp to pick it up — a grabbing hand replaces
+   The ritual: press a rubber stamp to pick it up, a grabbing hand replaces
    the cursor and the stamp rides along as a floating ghost. Carry it to the
    ink tray and release on the matching pad to ink it (the face comes back
    wet). Then carry it over the résumé: a live preview shows exactly where
@@ -43,15 +43,15 @@ const STAMPS: Record<
     ink: "#1e7d32",
     small: "APPROVED",
     big: "HIRED",
-    prompt: "Stamped HIRED ✓ — what sealed the deal?",
+    prompt: "Stamped HIRED ✓. What sealed the deal?",
     placeholder: "the projects? the cat memes? tell Devauntae…",
   },
   rejected: {
     ink: "#c62828",
     small: "DENIED",
     big: "REJECTED",
-    prompt: "Stamped REJECTED ✗ — ouch. What would change your mind?",
-    placeholder: "be honest — what's missing?",
+    prompt: "Stamped REJECTED ✗. Ouch. What would change your mind?",
+    placeholder: "be honest, what's missing?",
   },
 };
 
@@ -146,7 +146,7 @@ function TrayStamp({
         onPickUp(verdict, e);
       }}
       data-cursor="hand"
-      aria-label={`${s.big} stamp — press and drag it to the ink pad, then onto the résumé${inked ? " (inked)" : " (dry)"}`}
+      aria-label={`${s.big} stamp: press and drag it to the ink pad, then onto the résumé${inked ? " (inked)" : " (dry)"}`}
       className={`flex cursor-grab touch-none select-none flex-col items-center gap-1.5 transition-opacity active:cursor-grabbing ${
         carried ? "opacity-25" : "hover:-translate-y-0.5"
       }`}
@@ -251,7 +251,7 @@ function PaperSheet({
       exit={{ y: 120, opacity: 0 }}
       transition={{ type: "spring", stiffness: 170, damping: 22 }}
       style={{ rotateX: srx, rotateY: sry, transformStyle: "preserve-3d" }}
-      aria-label="Résumé sheet — carry an inked stamp over it, then release to stamp"
+      aria-label="Résumé sheet: carry an inked stamp over it, then release to stamp"
       className={`touch-pan-y relative mx-auto max-h-[72vh] w-full max-w-2xl overflow-y-auto rounded-[3px] bg-[#f5f1e6] p-3 text-[#241f1a] shadow-[0_34px_80px_rgb(0_0_0/0.6)] sm:p-5 ${
         highlight ? "ring-4 ring-gilt/70" : ""
       }`}
@@ -326,12 +326,12 @@ function FeedbackCard({ verdict, onClose }: { verdict: Verdict; onClose: () => v
       ok = false;
     }
     if (ok) {
-      setDone("📬 Feedback filed — thank you!");
+      setDone("📬 Feedback filed. Thank you!");
     } else {
-      const subject = encodeURIComponent(`Résumé feedback — stamped ${s.big}`);
+      const subject = encodeURIComponent(`Résumé feedback: stamped ${s.big}`);
       const body = encodeURIComponent(note.trim() || `(stamped ${s.big}, no note)`);
       window.open(`mailto:${CONTACT.email}?subject=${subject}&body=${body}`, "_blank");
-      setDone("📮 Opened your mail app — send it from there!");
+      setDone("📮 Opened your mail app. Send it from there!");
     }
     setBusy(false);
     setTimeout(onClose, 2400);
@@ -454,7 +454,7 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
       if (inRect(padR, x, y)) {
         setInk((s) => ({ ...s, [carrying]: true }));
         thunk();
-        setHint(`${STAMPS[carrying].big} stamp inked — now press it on the résumé.`);
+        setHint(`${STAMPS[carrying].big} stamp inked. Now press it on the résumé.`);
       } else if (inRect(sheetR, x, y) && open && sheetR) {
         if (!ink[carrying]) {
           thunk();
@@ -475,7 +475,7 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
           setFeedback(carrying);
         }
       } else if (inRect(sheetR, x, y) && !open) {
-        setHint("Untie the folder first — the résumé is still filed.");
+        setHint("Untie the folder first. The résumé is still filed.");
       }
       setCarrying(null);
       setPreview(null);
@@ -519,7 +519,7 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
         <span className="bevel-out flex min-w-0 items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
           <PixelIcon id="resume" className="h-4 w-4 shrink-0" />
           {LEGACY_NAV.resumeTitle}
-          <span className="hidden sm:inline">— {LEGACY_NAV.stampHint}</span>
+          <span className="hidden sm:inline">· {LEGACY_NAV.stampHint}</span>
         </span>
         <button
           onClick={exitSpace}
@@ -570,7 +570,7 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
             <div className="absolute -top-3 left-10 h-4 w-36 rounded-t-lg bg-[#d8b878]" aria-hidden />
             <div className="flex items-center justify-between rounded-lg bg-[#c9a869] px-4 py-3">
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#5a4520] sm:text-sm">
-                Norman, D. — Curriculum Vitae
+                Norman, D., Curriculum Vitae
               </span>
               <button
                 onClick={() => {
@@ -596,7 +596,7 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
               </AnimatePresence>
               {!open && (
                 <p className="py-10 text-center font-mono text-xs text-[#5a4520]/70">
-                  ( contents filed — untie the string{marks.length > 0 ? "; your verdict is on record" : ""} )
+                  ( contents filed, untie the string{marks.length > 0 ? "; your verdict is on record" : ""} )
                 </p>
               )}
             </div>
@@ -655,14 +655,14 @@ export function ResumeSpace({ autoOpen = false }: { autoOpen?: boolean } = {}) {
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
             className="bevel-out fixed inset-x-3 bottom-4 z-20 mx-auto max-w-md bg-panel p-3 shadow-[8px_8px_0_rgb(0_0_0/0.4)]"
             role="dialog"
-            aria-label={`${docPrompt} — available on request`}
+            aria-label={`${docPrompt}: available on request`}
           >
             <p className="font-mono text-[11px] font-bold text-gilt">
-              🔒 {docPrompt} — available on request
+              🔒 {docPrompt}: available on request
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-faint">
               I keep my {docPrompt.toLowerCase()} private rather than posting it publicly.
-              If you&apos;re recruiting and want it, reach out — happy to share it directly.
+              If you&apos;re recruiting and want it, reach out. Happy to share it directly.
             </p>
             <div className="mt-2 flex gap-2">
               <a

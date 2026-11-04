@@ -275,7 +275,7 @@ function buildCat() {
         0.004,
       );
 
-  // Eyes: a printed round tile — iris, slit pupil, catch-light, heavy lid.
+  // Eyes: a printed round tile, iris, slit pupil, catch-light, heavy lid.
   for (const side of [-1, 1]) {
     const ex = side * S,
       ey = yh + 1.48 * B;

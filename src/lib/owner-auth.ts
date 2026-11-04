@@ -2,7 +2,7 @@
    else, so there is exactly one definition of a valid session.
 
    The cookie carries sha256(salt + OWNER_PASSWORD), never the password. The
-   cookie is a bearer token — anything that leaks it (a log, a screenshot, a
+   cookie is a bearer token, anything that leaks it (a log, a screenshot, a
    shared browser) would otherwise leak the password itself. */
 
 import { createHash, timingSafeEqual } from "node:crypto";

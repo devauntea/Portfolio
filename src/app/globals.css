@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* The Archive — celestial library palette. Components reference tokens only. */
+/* The Archive, celestial library palette. Components reference tokens only. */
 :root {
   --cosmos: #070912; /* deep space background */
   --panel: #12172b; /* raised surfaces */
   --seam: #263052; /* borders / dividers */
   --starlight: #f0f2ff; /* primary text */
   --faint: #8e97c2; /* muted text */
-  --lumen: #7ee0ff; /* glowing ice-cyan — interactive */
+  --lumen: #7ee0ff; /* glowing ice-cyan, interactive */
   --ember: #ff8a4d; /* warm accent, campfire */
-  --gilt: #ffd45e; /* gold — primary action */
+  --gilt: #ffd45e; /* gold, primary action */
   --sprout: #97e87a; /* growth / online green */
   --rose: #ff6e9a; /* alerts / affection */
 }
@@ -156,7 +156,7 @@ body {
   }
 }
 
-/* The Working Desk — physical materials and interface share a single palette. */
+/* The Working Desk, physical materials and interface share a single palette. */
 :root {
   --desk-paper: #eee5d7;
   --desk-ivory: #d5c8b4;

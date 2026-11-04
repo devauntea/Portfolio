@@ -30,14 +30,14 @@ const clamp = (n: number, lo: number, hi: number) =>
   Math.min(hi, Math.max(lo, n));
 
 /** How many whole cells fit between the top-left padding and the taskbar.
-    Null until measured — the layout must never be computed against a guess,
+    Null until measured, the layout must never be computed against a guess,
     since re-flowing on a wrong size would rewrite the saved arrangement. */
 export function useGrid() {
   const [grid, setGrid] = useState<{ cols: number; rows: number } | null>(null);
   useEffect(() => {
     const measure = () =>
       setGrid((prev) => {
-        /* a backgrounded tab reports 0×0 — measuring then would re-flow the
+        /* a backgrounded tab reports 0×0, measuring then would re-flow the
            whole desktop into a single column */
         if (!window.innerWidth || !window.innerHeight) return prev;
         const next = {
@@ -63,7 +63,7 @@ export function useGrid() {
       t = setTimeout(measure, 200);
     };
     window.addEventListener("resize", onResize);
-    /* covers the cases `resize` misses — a hidden pane getting its first
+    /* covers the cases `resize` misses, a hidden pane getting its first
        layout, or a container the window never notices changing */
     const ro = new ResizeObserver(onResize);
     ro.observe(document.documentElement);
@@ -125,7 +125,7 @@ function Icon({
         onPreview(null);
         setHeld(false);
         onDrop(t.col, t.row);
-        /* framer fires click after a drag — swallow that one */
+        /* framer fires click after a drag, swallow that one */
         setTimeout(() => {
           dragging.current = false;
         }, 0);
@@ -143,7 +143,7 @@ function Icon({
         zIndex: held ? 30 : 10,
       }}
       data-cursor="hand"
-      /* the boot tour measures these live — icons are draggable and their
+      /* the boot tour measures these live, icons are draggable and their
          positions persist, so hardcoded coordinates would drift */
       data-tour={`icon-${item.id}`}
       aria-label={`Open ${item.label}`}
@@ -190,12 +190,12 @@ export function IconGrid({
     );
   }, [items, grid, arrange]);
 
-  /* nothing to draw until the desktop has been measured on the client —
+  /* nothing to draw until the desktop has been measured on the client,
      which also keeps the server markup and the first client pass identical */
   if (!grid) return null;
   const { cols, rows } = grid;
 
-  /* gold outline means "this square is taken — dropping here swaps us" */
+  /* gold outline means "this square is taken, dropping here swaps us" */
   const occupied =
     ghost !== null &&
     Object.entries(slots).some(

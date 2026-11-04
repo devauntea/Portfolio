@@ -2,7 +2,7 @@
 
 /* Fullscreen walkable gallery: a first-person room built around the same
    six framed prints. Drag (mouse or finger) to look around; WASD / arrow
-   keys — or the on-screen pad on touch — to walk. Position is clamped to
+   keys, or the on-screen pad on touch, to walk. Position is clamped to
    the room, plaques appear when you point at a frame (click pins one).
    Esc or the top bar returns to the desktop. */
 
@@ -188,7 +188,7 @@ export function GallerySpace() {
       <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
         <span className="bevel-out flex items-center gap-2 bg-panel px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-starlight">
           <PixelIcon id="gallery" className="h-4 w-4 shrink-0" />
-          The Gallery — drag to look · WASD to walk · point at a print for its story
+          The Gallery: drag to look · WASD to walk · point at a print for its story
         </span>
         <button
           onClick={exitSpace}

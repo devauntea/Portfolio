@@ -1,6 +1,6 @@
 "use client";
 
-/* The Outdoor Lounge's hobby stations as cards — the 3D clearing behind
+/* The Outdoor Lounge's hobby stations as cards, the 3D clearing behind
    shows the physical versions (lit boulder holds, spinning clay, kinetic
    sculpture). The photography card gets a mini polaroid row that
    "develops" on click. */
@@ -47,8 +47,8 @@ export function LoungeStations() {
     <div className="glass rounded-2xl p-5">
       <h2 className="text-lg font-bold text-starlight">The Outdoor Lounge</h2>
       <p className="mt-1 text-xs text-faint">
-        A sunlit clearing off the library floor — every hobby has its own
-        station out there in the grass.
+        A sunlit clearing off the library floor, with a station for every
+        hobby out there in the grass.
       </p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {HOBBIES.map((h, i) => (

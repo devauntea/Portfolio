@@ -1,9 +1,9 @@
 "use client";
 
-/* The Game Room space — a two-cabinet retro arcade:
-     🚀 VOID PATROL — the playable space shooter (enemies drop items;
+/* The Game Room space, a two-cabinet retro arcade:
+     🚀 VOID PATROL, the playable space shooter (enemies drop items;
         rare 📼 cartridges light up the shelf).
-     🕹️ THE DEN — the original pixel room: walk the avatar, inspect
+     🕹️ THE DEN, the original pixel room: walk the avatar, inspect
         the cartridge collection.
    The shelf on the right lists the games Devauntae actually loves; each
    cartridge collected in the shooter highlights the next one and shows

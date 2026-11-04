@@ -5,7 +5,7 @@ import path from "path";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 /* Visitor feedback from the résumé stamps. POST is public (that's the
-   point — recruiters stamp and talk); writes append to
+   point, recruiters stamp and talk); writes append to
    memory/resume_feedback.md when the filesystem allows it. On read-only
    hosts (Vercel) it returns ok:false and the client falls back to a
    prefilled mailto. GET (the collected feedback) is owner-only. */
@@ -37,7 +37,7 @@ async function appendEntry(verdict: string, note: string): Promise<void> {
   }
   await fs.appendFile(
     FILE,
-    `- ${hm} — **${verdict.toUpperCase()}** ${note ? `— ${note}` : "(no note)"}\n`,
+    `- ${hm} | **${verdict.toUpperCase()}** ${note ? `| ${note}` : "(no note)"}\n`,
     "utf-8",
   );
 }

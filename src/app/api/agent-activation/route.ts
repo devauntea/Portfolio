@@ -5,7 +5,7 @@ import path from "path";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner-auth";
 
 /* Appends an activation entry to memory/agent_activation_log.md.
-   Owner-gated by the same cookie as the portal — a public visitor can't write
+   Owner-gated by the same cookie as the portal, a public visitor can't write
    to the log. This records the *simulated* activation; it does not start any
    real process (see the activation guide in the README). */
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   const dir = path.join(process.cwd(), "memory");
   const file = path.join(dir, "agent_activation_log.md");
   const stamp = new Date().toISOString();
-  const line = `- ${stamp} — **${name}** (\`${id}\`) marked ONLINE (simulated activation)\n`;
+  const line = `- ${stamp} | **${name}** (\`${id}\`) marked ONLINE (simulated activation)\n`;
 
   await fs.mkdir(dir, { recursive: true });
   try {

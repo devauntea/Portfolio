@@ -1,7 +1,7 @@
 "use client";
 
 /* Public read-only lore modal for a creature: name, type, lore. No live data,
-   no controls — that's the whole point of the public view. */
+   no controls, that's the whole point of the public view. */
 
 import { AGENTS } from "@/data/agents";
 import { GameModal } from "@/components/ui/GameModal";

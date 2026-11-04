@@ -8,7 +8,7 @@
 
 import { create } from "zustand";
 
-/** Scroll bands for each realm — used by the camera, sound, and cursor. */
+/** Scroll bands for each realm, used by the camera, sound, and cursor. */
 export const REALMS = {
   title: { from: 0, to: 0.1 },
   workshop: { from: 0.1, to: 0.27 },

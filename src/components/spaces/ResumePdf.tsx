@@ -15,7 +15,7 @@ import { DESK } from "@/data/profile";
 
 interface Props {
   src: string;
-  /** must be referentially stable — memoize it in the parent */
+  /** must be referentially stable, memoize it in the parent */
   onFail: () => void;
 }
 

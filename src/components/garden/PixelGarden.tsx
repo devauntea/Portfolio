@@ -1,7 +1,7 @@
 "use client";
 
 /* Top-down 2D pixel-art view of the Agent Garden (owner toggle). Reads the
-   SAME zustand store as the 3D island — vitals, statuses, AP, toy, emotes —
+   SAME zustand store as the 3D island, vitals, statuses, AP, toy, emotes,
    so the two views can never disagree. Everything is drawn procedurally on
    one canvas at integer scale; interactions mirror the 3D scene: click a
    station to arm/cycle, click a creature to apply the held action or focus
@@ -140,7 +140,7 @@ function drawScene(
   cell(ctx, 22, 14, "#2f7d52", 6, 4);
   cell(ctx, 23, 13, "#39905f", 4, 1);
 
-  // campfire — color tracks average happiness (same rule as 3D)
+  // campfire, color tracks average happiness (same rule as 3D)
   const h = overallHappiness(Object.values(st.agents));
   const fire = h < 50 ? (h < 25 ? "#4d5f8f" : "#c76a4a") : h < 85 ? "#ff7a3d" : "#ffd45e";
   const [fx, fy] = FIRE_2D;
@@ -334,7 +334,7 @@ export function PixelGarden({
       <div className="pixel-box w-full max-w-3xl bg-panel px-4 py-2 text-center font-mono text-[9px] leading-relaxed text-starlight">
         ⚡ {ap}/20 · toy: {TOYS[toyIndex].icon} {TOYS[toyIndex].label} ·{" "}
         {held === "feed"
-          ? "holding kibble — click a creature"
+          ? "holding kibble, click a creature"
           : held === "train"
             ? "pick a trainee"
             : held === "nap"

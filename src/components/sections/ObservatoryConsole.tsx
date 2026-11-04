@@ -2,7 +2,7 @@
 
 /* The Summit console at the observatory: social links, email, résumé
    download, the telescope (a constellation that spells THANK YOU), the
-   owner lock, and a quiet hint about the glowing green door — the DOM path
+   owner lock, and a quiet hint about the glowing green door, the DOM path
    to /garden for anyone who can't click the 3D door. */
 
 import { useState } from "react";
@@ -47,7 +47,7 @@ function TelescopeView({ open, onClose }: { open: boolean; onClose: () => void }
             </p>
           ))}
           <p className="absolute bottom-6 font-mono text-[9px] uppercase tracking-widest text-faint">
-            — for making it all the way up —
+            for making it all the way up
           </p>
         </div>
       </div>

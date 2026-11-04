@@ -1,6 +1,6 @@
 "use client";
 
-/* Synthesized soundscape — Web Audio only, zero asset files (the brief
+/* Synthesized soundscape, Web Audio only, zero asset files (the brief
    allows procedural generation; Howler is unnecessary without files).
    Each realm gets an ambient profile, crossfaded as you scroll:
      title/gallery → soft celestial wind

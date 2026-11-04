@@ -4,7 +4,7 @@
    Contact/Display/README) or fullscreen spaces (Résumé/Gallery/Game Room)
    and can be dragged anywhere on the snap grid; the taskbar shows a Start
    menu, buttons for open windows, the sound toggle, and a clock. The
-   garden hides in the Start menu — and as a lone plant in the corner for
+   garden hides in the Start menu, and as a lone plant in the corner for
    the observant. */
 
 import { useEffect, useRef, useState } from "react";
@@ -38,7 +38,7 @@ const DESKTOP_ICONS: (DesktopItem & {
   { id: "readme", label: "README.txt", icon: "readme", kind: "app", target: "readme" },
 ];
 
-/** stable list for the grid (identity matters — it drives a layout effect) */
+/** stable list for the grid (identity matters, it drives a layout effect) */
 const GRID_ITEMS: DesktopItem[] = DESKTOP_ICONS.map(({ id, label, icon }) => ({
   id,
   label,
@@ -94,7 +94,7 @@ function StartMenu({ onClose, onOpenGate }: { onClose: () => void; onOpenGate: (
         </button>
       ))}
       <div className="my-1 border-t border-seam" />
-      {/* the keeper's door — password-gated, so harmless in plain sight */}
+      {/* the keeper's door, password-gated, so harmless in plain sight */}
       <button
         onClick={() => {
           if (owner) openWindow("admin");
@@ -231,7 +231,7 @@ export function Desktop() {
         if (menu) setMenu(null);
       }}
       onContextMenu={(e) => {
-        /* only the bare desktop gets the menu — icons and windows keep the
+        /* only the bare desktop gets the menu, icons and windows keep the
            browser's own */
         if (e.target !== e.currentTarget) return;
         e.preventDefault();
@@ -249,7 +249,7 @@ export function Desktop() {
         {menu && <DesktopMenu at={menu} onClose={() => setMenu(null)} />}
       </AnimatePresence>
 
-      {/* the lone plant in the corner — the garden's quiet door */}
+      {/* the lone plant in the corner, the garden's quiet door */}
       <Link
         href="/garden"
         data-cursor="hand"

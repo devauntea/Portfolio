@@ -163,7 +163,7 @@ function packSurface(
 
 /**
  * Oiled walnut: glued-up boards of uneven width, cathedral and straight
- * figure, open pores, and — on the desk top only — the wear of actual use:
+ * figure, open pores, and, on the desk top only, the wear of actual use:
  * a polished wrist rest, a faded coffee ring, and hairline scratches.
  */
 export function woodMaps(

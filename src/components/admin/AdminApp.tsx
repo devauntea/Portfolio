@@ -3,7 +3,7 @@
 /* The owner's control panel: swap the résumé without touching the repo.
 
    The window is only reachable behind the password gate, but the server
-   re-checks the cookie on every call — this UI is a convenience, not the
+   re-checks the cookie on every call, this UI is a convenience, not the
    security boundary. Storage errors are shown verbatim because the ones that
    happen here are configuration problems worth reading. */
 
@@ -25,7 +25,7 @@ export function AdminApp() {
 
   /* Load once on mount. Upload and revert set the card from their own
      responses, so this is the only read. The .then chain (rather than an
-     awaited call) keeps setState out of the effect body — see the React 19
+     awaited call) keeps setState out of the effect body, see the React 19
      purity notes in memory/portfolio_lessons.md. */
   useEffect(() => {
     let live = true;
@@ -50,14 +50,14 @@ export function AdminApp() {
       const d = await r.json().catch(() => ({}));
       if (r.ok && d.ok) {
         setMeta({ source: d.source, updatedAt: d.updatedAt, filename: d.filename });
-        setMsg({ tone: "ok", text: "✓ Résumé replaced — reopen the Résumé folder to see it." });
+        setMsg({ tone: "ok", text: "✓ Résumé replaced. Reopen the Résumé folder to see it." });
         chime();
       } else {
         setMsg({ tone: "bad", text: d.error ?? "Upload failed." });
         thunk();
       }
     } catch {
-      setMsg({ tone: "bad", text: "Network error — the upload didn't land." });
+      setMsg({ tone: "bad", text: "Network error. The upload didn't land." });
       thunk();
     }
     setBusy(false);

@@ -1,5 +1,5 @@
 /* The four agents, as game creatures. These map to REAL agents that live in
-   the user's ~/Downloads folder — the activation guide wires this UI to them.
+   the user's ~/Downloads folder, the activation guide wires this UI to them.
    Care-game state (vitals, AP, naps) lives in lib/agent-store.ts; this file
    is the static registry every view keys off. */
 
@@ -16,7 +16,7 @@ export interface AgentDef {
   hue: "teleporter" | "ember" | "gold" | "toxic";
   /** home spot index on the island, also the statue pedestal slot */
   slot: number;
-  /** favorite kibble — feeding flavor text */
+  /** favorite kibble, feeding flavor text */
   favoriteFood: string;
   /** the skill the Training Post improves */
   skill: string;
@@ -30,7 +30,7 @@ export const AGENTS: AgentDef[] = [
     name: "Paper Wing",
     type: "Job Application Agent",
     project: "~/Downloads/job-agent",
-    lore: "A bat with folded origami wings. Reads job boards in the dark, tailors a résumé for each catch, and drafts the cover letter — but never presses submit. That part is yours.",
+    lore: "A bat with folded origami wings. Reads job boards in the dark, tailors a résumé for each catch, and drafts the cover letter, but never presses submit. That part is yours.",
     hue: "teleporter",
     slot: 0,
     favoriteFood: "Ink Berries",
@@ -38,7 +38,7 @@ export const AGENTS: AgentDef[] = [
     metrics: [
       { label: "Applications prepared", value: "0" },
       { label: "Mode", value: "human-in-loop" },
-      { label: "Last sweep", value: "—" },
+      { label: "Last sweep", value: "none yet" },
     ],
   },
   {
@@ -54,7 +54,7 @@ export const AGENTS: AgentDef[] = [
     metrics: [
       { label: "Feeds watched", value: "6" },
       { label: "Digest size", value: "top 6 of ~40" },
-      { label: "Last crawl", value: "—" },
+      { label: "Last crawl", value: "none yet" },
     ],
   },
   {
@@ -62,7 +62,7 @@ export const AGENTS: AgentDef[] = [
     name: "Cash Raptor",
     type: "YouTube / Pinterest Agent",
     project: "~/Downloads/content-agent",
-    lore: "A cybernetic raptor with camera-lens eyes and pin-quills. Drafts Shorts and pins with the #ad disclosure baked in. Publishes nothing without a human review — its talons stay sheathed.",
+    lore: "A cybernetic raptor with camera-lens eyes and pin-quills. Drafts Shorts and pins with the #ad disclosure baked in. Publishes nothing without a human review. Its talons stay sheathed.",
     hue: "gold",
     slot: 2,
     favoriteFood: "Pixel Jerky",

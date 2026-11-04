@@ -16,7 +16,7 @@ export function validateResumePdf(bytes: Uint8Array): ResumeValidation {
   }
   if (bytes.length > MAX_RESUME_BYTES) {
     const mb = (bytes.length / 1024 / 1024).toFixed(1);
-    return { ok: false, error: `That file is ${mb} MB — the limit is 4 MB.` };
+    return { ok: false, error: `That file is ${mb} MB. The limit is 4 MB.` };
   }
   if (bytes.length < PDF_MAGIC.length) {
     return { ok: false, error: "That doesn't look like a PDF." };

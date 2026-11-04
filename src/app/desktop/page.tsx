@@ -1,9 +1,9 @@
 "use client";
 
-/* DevauntaeOS — the portfolio as a retro computer. A short boot screen,
+/* DevauntaeOS, the portfolio as a retro computer. A short boot screen,
    then a desktop of folders and apps: windows for the reading material,
    fullscreen spaces for the Résumé folder, the walkable Gallery, and the
-   Game Room. No scrolling required — everything is a click away. */
+   Game Room. No scrolling required, everything is a click away. */
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -32,12 +32,12 @@ const GamesSpace = dynamic(
 );
 
 const BOOT_LINES = [
-  "DEVAUNTAE-OS v5.0 — BIOS OK",
+  "DEVAUNTAE-OS v5.0 | BIOS OK",
   "mounting /worlds ... done",
   "loading personality drivers ... done",
   "4 agents found (dormant)",
   "startup items: resume.folder",
-  "starting desktop —",
+  "starting desktop ...",
 ];
 
 function BootScreen({ onDone }: { onDone: () => void }) {

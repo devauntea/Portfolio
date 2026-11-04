@@ -40,7 +40,7 @@ function AboutApp() {
       </div>
       <p className="pt-2 font-mono text-[10px] text-faint/70">
         tip: the 3D spaces (Gallery, Game Room, Résumé) open full-screen from
-        the desktop — this whole computer is the portfolio.
+        the desktop. This whole computer is the portfolio.
       </p>
     </div>
   );
@@ -52,7 +52,7 @@ function DisplayApp() {
   return (
     <div>
       <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-faint">
-        Appearance — pick a scheme
+        Appearance: pick a scheme
       </p>
       <div className="space-y-1.5">
         {PALETTES.map((p) => (
@@ -241,8 +241,8 @@ function MusicApp() {
             {data === null
               ? "checking the turntable…"
               : data.configured
-                ? "the needle is up — nothing playing right now."
-                : "Spotify isn't linked yet — the platter idles until it is."}
+                ? "the needle is up, nothing playing right now."
+                : "Spotify isn't linked yet, so the platter idles until it is."}
           </p>
         )}
       </div>
@@ -290,16 +290,16 @@ function MusicApp() {
 function ReadmeApp() {
   return (
     <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-starlight/90">
-{`DEVAUNTAE-OS — README.txt
+{`DEVAUNTAE-OS README.txt
 ==========================
 
 Welcome. This computer *is* the portfolio.
 
   • Double-click desktop icons (single tap works too).
-  • Drag any icon where you like — it snaps to the grid, and
+  • Drag any icon where you like. It snaps to the grid, and
     dropping it on a taken square trades the two, so nothing
     ever stacks. Right-click the desktop for "Tidy icons".
-  • ABOUT ME, PROJECTS, HOBBIES, CONTACT open as windows — drag
+  • ABOUT ME, PROJECTS, HOBBIES, CONTACT open as windows. Drag
     them by their title bars.
   • RÉSUMÉ, GALLERY and GAME ROOM open as full-screen spaces.
     RÉSUMÉ is a startup item: it opens itself once the desktop
@@ -310,14 +310,14 @@ Welcome. This computer *is* the portfolio.
   • Somewhere on this machine a garden grows. 🌱
 
 FOR DEVAUNTAE (customizing):
-  1. Every word of copy lives in src/data/profile.ts — all real
+  1. Every word of copy lives in src/data/profile.ts. It's all real
      content now (résumé, cover letter, GitHub).
   2. Gallery photos: drop files at
      public/images/gallery/photo-1.jpg … photo-6.jpg
      (1 grad · 2 cameras · 3 CSTEP · 4 neon · 5 woodworking ·
       6 the rasta pasta glamour shot).
   3. Documents live in public/docs/ (résumé .docx, cover letter,
-     transcript) — replace the files to update the folder.
+     transcript). Replace the files to update the folder.
   4. Owner password: OWNER_PASSWORD in .env.local (server-only).
   5. Real agent wiring: see the owner dashboard inside CONTACT.
 `}
