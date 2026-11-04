@@ -1,6 +1,6 @@
 # The Working Desk — Devauntae Norman
 
-A first-person 3D workspace for an AI and full-stack engineer. The ivory CRT hosts the portfolio directly on its glass, the left file drawer reveals the résumé, the camera lifts into your hands to browse the photo roll, and the lamp switches the lighting. Pull the window cord to lift the blinds onto a layered city view with brick façades, fire escapes, and rooftop water tanks; press Enter or Space for the same action. The maker’s desk adds a wall shelf of manga, the owner’s framed photo posters, a studded brick cat, stereo speakers, and a sewing machine with a brief needle and handwheel animation. Opening Music loads a disc into the tower and sends musical notes up from the speakers. Work, Arcade, Music, About, Toolkit, and Contact share the computer screen. Built on the existing Next.js portfolio and its real content.
+A first-person 3D workspace for an AI and full-stack engineer. The ivory CRT hosts the portfolio directly on its glass, the left file drawer reveals the résumé, the camera lifts into your hands to browse the photo roll, and the lamp switches the lighting. Pull the window cord to lift the blinds onto a layered city view with brick façades, fire escapes, and rooftop water tanks; press Enter or Space for the same action. The maker’s desk adds a wall shelf of manga, the owner’s framed photo posters, a brick-built tuxedo cat on its nameplate plinth, a wastepaper bin overflowing with drafts, stereo speakers, and a sewing machine with a brief needle and handwheel animation. Opening Music loads a disc into the tower and sends musical notes up from the speakers. Work, Arcade, Music, About, Toolkit, and Contact share the computer screen. Built on the existing Next.js portfolio and its real content.
 
 ## Run locally
 
@@ -29,10 +29,13 @@ Every desk destination has a normal keyboard-accessible control. The résumé di
 - `src/components/desk/DeskWindow.tsx` — draggable backlit blinds, cancellation/keyboard controls, steel sash, dusty glass, and oiled sill.
 - `src/components/desk/DeskOutside.tsx` — procedural golden-hour/evening skyline, sunlit and shadowed façades, and merged fire-escape geometry.
 - `src/components/desk/DeskCamera.tsx` / `CameraRoll.tsx` — animated physical camera with a rear LCD photo browser.
-- `src/components/desk/DeskMakerObjects.tsx` — manga with original cover graphics, merged brick geometry, and the detailed sewing machine.
+- `src/components/desk/DeskMakerObjects.tsx` — manga in glossy jackets with original spine and cover designs, and the detailed sewing machine.
+- `src/components/desk/DeskBrickCat.tsx` — tuxedo cat built on a true stud grid (bricks, plates, tiles, side studs), merged into one mesh per colour.
+- `src/components/desk/DeskBin.tsx` — ribbed lathe-turned bin, faceted crumpled paper, rolled sheets with real spiral ends, and a draped draft page.
+- `src/components/desk/DeskWear.tsx` — original stickers, sticky notes, an asset tag, grime where hands go, and chips along the desk edge, as decals on static surfaces.
 - `src/components/desk/ComputerScreen.tsx` — monitor applications, live Spotify states, and lazy-loaded original games.
 - `src/components/desk/DeskMedia.tsx` — retractable disc drive, reflective disc, speakers, and bounded note animation.
-- `src/components/desk/DeskRoomDecor.tsx` — wall shelf and aspect-correct photos developed into prints, matted and glazed in ebonised wood frames.
+- `src/components/desk/DeskRoomDecor.tsx` — wall shelf, cloth- and leather-bound journals with foil titles, and aspect-correct photos developed into prints, matted and glazed in ebonised wood frames.
 - `src/components/desk/DeskMaterials.tsx` — rounded geometry with normalized texture coordinates, shared surface maps, hardware, and merged ventilation slots.
 - `src/components/desk/PortfolioContent.tsx` — projects, about, capabilities, contact, and résumé.
 - `src/components/admin/ResumeAdmin.tsx` — owner dashboard using the existing authenticated upload API.

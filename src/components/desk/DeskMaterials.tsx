@@ -43,7 +43,9 @@ export type Palette = Record<
   | "posterSand"
   | "limewash"
   | "dusk"
-  | "sun",
+  | "sun"
+  | "iris"
+  | "blush",
   string
 >;
 

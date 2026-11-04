@@ -841,6 +841,42 @@ function courseAligned(texture: THREE.Texture, height: number) {
   return texture;
 }
 
+/**
+ * Book page edges: hundreds of leaves, faintly yellowed, dustier at the
+ * exposed edge, with the odd foxing spot. Lines run along U.
+ */
+export function pageEdgeTexture(p: Palette, seed = 91) {
+  const W = 512,
+    H = 256;
+  const rand = rng(seed);
+  const { element, ctx } = canvas(W, H);
+  ctx.fillStyle = mix(p.paper, p.clay, 0.2);
+  ctx.fillRect(0, 0, W, H);
+  for (let y = 0; y < H; y += 1.5 + rand()) {
+    ctx.globalAlpha = 0.08 + rand() * 0.22;
+    ctx.fillStyle = rand() < 0.75 ? p.shadow : p.paper;
+    ctx.fillRect(0, y, W, 0.7 + rand() * 0.6);
+  }
+  // Dust and handling darken the outer margins; foxing speckles here and there.
+  for (const [x0, x1] of [[0, 70], [W, W - 70]]) {
+    const edge = ctx.createLinearGradient(x0, 0, x1, 0);
+    edge.addColorStop(0, p.clay);
+    edge.addColorStop(1, "transparent");
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = edge;
+    ctx.fillRect(0, 0, W, H);
+  }
+  for (let i = 0; i < 40; i++) {
+    ctx.globalAlpha = 0.08 + rand() * 0.12;
+    ctx.fillStyle = p.clay;
+    ctx.beginPath();
+    ctx.arc(rand() * W, rand() * H, 1 + rand() * 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  return colorTexture(element);
+}
+
 export type Surfaces = {
   wood: THREE.Texture;
   woodSurface: THREE.Texture;
@@ -857,6 +893,7 @@ export type Surfaces = {
   gobo: THREE.Texture;
   contact: THREE.Texture;
   contactRound: THREE.Texture;
+  pages: THREE.Texture;
   dispose: () => void;
 };
 
@@ -887,6 +924,7 @@ export function createSurfaces(
     gobo: goboTexture(),
     contact: contactTexture(0.35),
     contactRound: contactTexture(1),
+    pages: pageEdgeTexture(p),
   };
   return {
     ...textures,

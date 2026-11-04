@@ -44,7 +44,10 @@ import {
   Pottery,
 } from "./DeskObjects";
 import { DeskWindow, WINDOW } from "./DeskWindow";
-import { BrickDisplay, SewingMachine } from "./DeskMakerObjects";
+import { SewingMachine } from "./DeskMakerObjects";
+import { BrickCat } from "./DeskBrickCat";
+import { BIN, TrashBin } from "./DeskBin";
+import { DeskWear, DrawerWear, MonitorWear, PedestalWear } from "./DeskWear";
 import { RoomDecor } from "./DeskRoomDecor";
 import { DeskSpeakers } from "./DeskMedia";
 import { ComputerScreen, type ComputerSection } from "./ComputerScreen";
@@ -102,6 +105,8 @@ const colorKeys: (keyof Palette)[] = [
   "limewash",
   "dusk",
   "sun",
+  "iris",
+  "blush",
 ];
 
 function palette(): Palette {
@@ -451,6 +456,7 @@ function Monitor({
         tube={0.016}
         color={p.shadow}
       />
+      <MonitorWear p={p} />
       {/* The tube washes the keys and the desk in front of it. */}
       <pointLight
         position={[0, 1.9, 1.1]}
@@ -674,7 +680,9 @@ function Drawer({
           pos={[0, -0.85, 2.035]}
           width={0.9}
         />
+        <DrawerWear p={p} />
       </group>
+      <PedestalWear p={p} />
     </group>
   );
 }
@@ -1012,6 +1020,7 @@ function Grounding({ p }: { p: Palette }) {
     { pos: [-3.5, floor, 0.25], size: [2.8, 4.3], opacity: 0.55, color: ink },
     { pos: [4.78, floor, -0.3], size: [0.7, 4.4], opacity: 0.45, color: ink },
     { pos: [0, floor, -3.72], size: [40, 0.9], opacity: 0.4, color: ink },
+    { pos: [BIN.x, floor, BIN.z], size: [1.55, 1.55], opacity: 0.6, round: true, color: ink },
   ];
   return (
     <>
@@ -1341,7 +1350,9 @@ function World(props: SceneProps) {
         })}
       />
       <Pottery p={p} ceramic={ceramic} grain={grain} />
-      <BrickDisplay p={p} />
+      <BrickCat p={p} />
+      <TrashBin p={p} />
+      <DeskWear p={p} />
       <SewingMachine
         p={p}
         woven={woven}

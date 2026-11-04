@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { Box, Label, useSurfaces, type Palette } from "./DeskMaterials";
+import {
+  Box,
+  Label,
+  makeTexture,
+  useSurfaces,
+  type Palette,
+} from "./DeskMaterials";
 import { mix, printTexture } from "./DeskSurfaces";
 import { MangaStack } from "./DeskMakerObjects";
 import { DESK } from "@/data/profile";
@@ -98,6 +104,119 @@ function Poster({ p, index }: { p: Palette; index: number }) {
   );
 }
 
+/** Cloth- and leather-bound journals, each with its own foil title. */
+const JOURNALS: ((p: Palette) => {
+  cover: string;
+  foil: string;
+  title: string;
+  leather?: boolean;
+})[] = [
+  (p) => ({ cover: mix(p.red, p.woodDark, 0.35), foil: mix(p.sun, p.light, 0.3), title: DESK.notebookLabel, leather: true }),
+  (p) => ({ cover: p.posterMint, foil: p.ink, title: DESK.ideasLabel }),
+  (p) => ({ cover: mix(p.paper, p.clay, 0.22), foil: mix(p.red, p.woodDark, 0.2), title: DESK.notebookLabel }),
+];
+
+function Hardcover({
+  p,
+  position,
+  rotation,
+  cover,
+  foil,
+  title,
+  leather = false,
+}: {
+  p: Palette;
+  position: [number, number, number];
+  rotation: number;
+  cover: string;
+  foil: string;
+  title: string;
+  leather?: boolean;
+}) {
+  const s = useSurfaces();
+  const w = 1.4,
+    h = 0.13,
+    d = 0.96;
+  const spine = useMemo(
+    () =>
+      makeTexture(1024, 96, (ctx) => {
+        ctx.fillStyle = cover;
+        ctx.fillRect(0, 0, 1024, 96);
+        // Book cloth weave, or the pebble of leather.
+        ctx.globalAlpha = leather ? 0.12 : 0.08;
+        ctx.fillStyle = p.ink;
+        if (leather)
+          for (let i = 0; i < 1600; i++)
+            ctx.fillRect((i * 389) % 1024, (i * 131) % 96, 2 + (i % 3), 1 + (i % 2));
+        else
+          for (let x = 0; x < 1024; x += 3) ctx.fillRect(x, 0, 1, 96);
+        // Foil rules and a stamped title.
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = foil;
+        for (const x of [56, 64, 960, 968]) ctx.fillRect(x, 14, 2, 68);
+        ctx.font = "bold 34px Georgia, serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(title, 512, 50, 760);
+        // Worn ends and a rubbed lower edge.
+        for (const [x0, x1] of [[0, 40], [1024, 984]]) {
+          const rub = ctx.createLinearGradient(x0, 0, x1, 0);
+          rub.addColorStop(0, p.paper);
+          rub.addColorStop(1, "transparent");
+          ctx.globalAlpha = 0.25;
+          ctx.fillStyle = rub;
+          ctx.fillRect(0, 0, 1024, 96);
+        }
+        ctx.globalAlpha = 1;
+      }),
+    [p, cover, foil, title, leather],
+  );
+  useEffect(() => () => spine.dispose(), [spine]);
+  const board = {
+    color: cover,
+    roughness: 1,
+    roughnessMap: s.tooth,
+    bumpMap: s.tooth,
+    bumpScale: leather ? 0.14 : 0.08,
+    clearcoat: leather ? 0.25 : 0,
+    clearcoatRoughness: 0.5,
+  };
+  return (
+    <group position={position} rotation={[0, rotation, 0]}>
+      {/* Boards overhang the text block on three sides, as real ones do. */}
+      {[-1, 1].map((side) => (
+        <Box
+          key={side}
+          pos={[0, side * (h / 2 - 0.008), 0]}
+          size={[w, 0.016, d]}
+          radius={0.005}
+          {...board}
+        />
+      ))}
+      <Box
+        pos={[0, 0, -0.012]}
+        size={[w - 0.04, h - 0.03, d - 0.05]}
+        color={p.paper}
+        map={s.pages}
+        roughness={0.95}
+        radius={0.004}
+      />
+      {/* A rounded spine with its stamped title. */}
+      <Box pos={[0, 0, d / 2 - 0.016]} size={[w, h + 0.004, 0.034]} radius={0.015} {...board} />
+      <mesh position={[0, 0, d / 2 + 0.0015]}>
+        <planeGeometry args={[w - 0.04, h - 0.012]} />
+        <meshStandardMaterial
+          map={spine}
+          roughness={0.85}
+          bumpMap={s.tooth}
+          bumpScale={0.06}
+          transparent={false}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 export function RoomDecor({ p }: { p: Palette }) {
   const s = useSurfaces();
   return (
@@ -138,26 +257,14 @@ export function RoomDecor({ p }: { p: Palette }) {
             />
           </group>
         ))}
-        {[0, 1, 2].map((i) => (
-          <group
+        {JOURNALS.map((book, i) => (
+          <Hardcover
             key={i}
+            p={p}
             position={[0.8, 0.16 + i * 0.15, 0.05]}
-            rotation={[0, i * 0.035, 0]}
-          >
-            <Box
-              pos={[0, 0, 0]}
-              size={[1.4, 0.13, 0.96]}
-              color={i % 2 ? p.posterMint : p.paper}
-              radius={0.009}
-            />
-            <Label
-              text={i === 1 ? DESK.ideasLabel : DESK.notebookLabel}
-              p={p}
-              pos={[0, 0, 0.486]}
-              width={1.25}
-              printOnly
-            />
-          </group>
+            rotation={i * 0.035 - 0.02}
+            {...book(p)}
+          />
         ))}
         <Label
           text={DESK.room.shelf}

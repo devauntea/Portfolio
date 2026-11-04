@@ -2943,6 +2943,9 @@ body {
   --desk-limewash: #e7dfd1;
   --desk-dusk: #b9a5c2;
   --desk-sun: #ffbd80;
+  /* The brick cat's printed eyes and nose. */
+  --desk-iris: #4f93bf;
+  --desk-blush: #d9929f;
 }
 
 .blind-control.is-open { width:36px; height:40px; padding:8px; justify-content:center; }

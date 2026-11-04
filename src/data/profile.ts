@@ -415,6 +415,13 @@ export const DESK = {
     blindsClose: "Pull to close the blinds",
     blindsHint: "Drag down, or press Enter",
     outside: "A little New York outside the window.",
+    // Stickers and notes that collected on the desk over time.
+    stickers: {
+      note: ["ship it.", "then sleep."],
+      todo: { items: ["coffee", "commit", "push", "sleep?"], done: 2 },
+      asset: ["PROPERTY OF", "D. NORMAN", "ASSET NO. 0026"],
+      hello: "hello, world",
+    },
   },
   room: {
     shelf: "THE GOOD STUFF / VOL. 01—05",

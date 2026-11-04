@@ -323,3 +323,28 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   small fbm fields upsampled with drawImage, and per-pixel loops only where
   edges need to be crisp (brick).
 
+## v4.1: the lived-in pass (cat, books, bin, wear)
+- **Brick models: build on the stud grid.** S = stud pitch, brick = 1.2 S,
+  plate = B/3, stud r = 0.3 S. Bodies aligned to cells hide plinth studs
+  completely, so studs can be scattered over every free cell. Keep a GAP
+  between neighbouring parts; the rounded edges read as real seams.
+- **mergeGeometries needs matching attributes and indexing.** RoundedBox,
+  Extrude, Icosahedron are non-indexed; Cylinder needs `.toNonIndexed()`;
+  vertex-coloured merges need a `color` attribute on every part.
+- **Crumpled paper:** icosphere detail 2, push each vertex 0.7–1.18 keyed
+  on its rounded position (so shared corners move together), then
+  `computeVertexNormals()` on the non-indexed result gives faceted folds.
+- **Spine/cover UVs in the rotated manga stack:** local +x is world-up, so
+  U runs foot→head. Spines read top-to-bottom by rotating the canvas 180°;
+  the outer cover draws in cover space via `setTransform(0, 1, -1, 0, H, 0)`.
+- **Placing floor props:** the desk overhang occludes anything tucked
+  beside it in perspective, and the intro button owns the floor below the
+  headline. Ray-test candidate spots against the desk/pedestal boxes and
+  project to screen before committing (see DeskBin's BIN position).
+- **Decals:** polygonOffset −4, renderOrder 2, alphaTest for die-cut vinyl,
+  alphaMap + colour for grime. Keep them on flat faces only — a rounded
+  box's flat band is tiny (radius clamps to 45% of the smallest side).
+  Anything printed already on a face (Label planes) sits in front; check
+  its z before stacking a sticker over it.
+- New copy (sticker text, notes) lives in `DESK.details.stickers`.
+

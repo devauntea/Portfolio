@@ -17,6 +17,7 @@ import {
 } from "./DeskMaterials";
 import { mix } from "./DeskSurfaces";
 import { DiscDrive } from "./DeskMedia";
+import { KeyboardWear, TowerWear } from "./DeskWear";
 import { DESK } from "@/data/profile";
 
 type Surfaces = {
@@ -106,10 +107,13 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
         });
       }),
     );
+    // The most-typed legends have half worn away.
+    const worn = new Set(["A", "S", "E", "R", "T", "N", "back", "←", "→"]);
     const atlas = makeTexture(1024, 1024, (ctx) => {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       keys.forEach((key, i) => {
+        ctx.globalAlpha = worn.has(key.label) ? 0.38 : 1;
         ctx.fillStyle = key.accent ? p.paper : p.ink;
         ctx.font = `${key.label.length > 2 ? 22 : 34}px monospace`;
         ctx.fillText(
@@ -146,7 +150,9 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
       tone
         .copy(key.accent ? accent : key.modifier ? modifier : alpha)
         .lerp(aged, key.accent ? 0 : wear * 0.22)
-        .multiplyScalar(0.96 + ((i * 31) % 11) / 250);
+        .multiplyScalar(
+          (0.96 + ((i * 31) % 11) / 250) * (worn.has(key.label) ? 1.04 : 1),
+        );
       const colors = new Float32Array(cap.attributes.position.count * 3);
       for (let v = 0; v < colors.length; v += 3) {
         colors[v] = tone.r;
@@ -253,6 +259,7 @@ export function DetailedKeyboard({ p }: { p: Palette }) {
         width={0.8}
         rotation={[-Math.PI / 2, 0, 0]}
       />
+      <KeyboardWear p={p} />
     </group>
   );
 }
@@ -402,6 +409,7 @@ export function DetailedTower({
         size={[0.012, 0.018, 0.65]}
         color={p.shadow}
       />
+      <TowerWear p={p} />
       {[-0.4, 0.4].map((x) => (
         <Box
           key={x}
