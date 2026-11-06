@@ -311,8 +311,11 @@ export function DetailedTower({
         radius={0.065}
         roughness={0.85}
       />
+      {/* Lifted 5mm above the case top (and tucked 5mm inside its back) so
+          the faces are never coplanar: coplanar tops z-fought as the camera
+          parallaxed with the pointer. */}
       <Box
-        pos={[0, 0.015, -0.02]}
+        pos={[0, 0.02, -0.015]}
         size={[1.08, 1.93, 1.82]}
         color={p.ivory}
         radius={0.06}
