@@ -67,6 +67,20 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: "corpora",
+    hue: "var(--rose)",
+    art: "🖋️",
+    name: "Corpora Studio",
+    blurb:
+      "A desktop studio for planning tattoos and garments on anatomical bodies. You pose torso, arm and leg models, place artwork, check the fit, then print it true to size. The site lets you ink the body with your cursor, and a macOS app is available.",
+    tech: ["macOS desktop app", "3D anatomy models", "true-to-size print"],
+    link: "https://corpora-studio.vercel.app",
+    image: {
+      src: "/images/projects/corpora.webp",
+      alt: "Corpora Studio website: a tattooed 3D torso in front of the word CORPORA, with the line Ink and cloth ask the same thing of the body: will you carry me?",
+    },
+  },
+  {
     id: "personaforge",
     hue: "var(--ember)",
     art: "🎭",

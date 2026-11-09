@@ -348,3 +348,6 @@ code now renders the graceful "couldn't finish" state (200), not 500.
   its z before stacking a sticker over it.
 - New copy (sticker text, notes) lives in `DESK.details.stickers`.
 
+
+## v4.6.4: Corpora Studio
+- Corpora uses the user's site screenshot as an optimized 1600px WebP (~57 KB), placed third in PROJECTS after Swale. The blurb uses only copy from that screenshot (the live site was unreachable from the build sandbox); the link points to the site until the user supplies a GitHub repository.
