@@ -47,6 +47,20 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: "corpora",
+    hue: "var(--rose)",
+    art: "🖋️",
+    name: "Corpora Studio",
+    blurb:
+      "A desktop studio for planning tattoos and garments on anatomical bodies. You pose torso, arm and leg models, place artwork, check the fit, then print it true to size. The site lets you ink the body with your cursor, and a macOS app is available.",
+    tech: ["TypeScript", "Three.js", "Tauri", "Vite"],
+    link: "https://github.com/devauntea/corpora-studio",
+    image: {
+      src: "/images/projects/corpora.webp",
+      alt: "Corpora Studio website: a tattooed 3D torso in front of the word CORPORA, with the line Ink and cloth ask the same thing of the body: will you carry me?",
+    },
+  },
+  {
     id: "swale",
     hue: "var(--lumen)",
     art: "🌧️",
@@ -64,20 +78,6 @@ export const PROJECTS: Project[] = [
     image: {
       src: "/images/projects/swale.webp",
       alt: "Swale project tour showing its Brooklyn 3D flood-readiness map",
-    },
-  },
-  {
-    id: "corpora",
-    hue: "var(--rose)",
-    art: "🖋️",
-    name: "Corpora Studio",
-    blurb:
-      "A desktop studio for planning tattoos and garments on anatomical bodies. You pose torso, arm and leg models, place artwork, check the fit, then print it true to size. The site lets you ink the body with your cursor, and a macOS app is available.",
-    tech: ["macOS desktop app", "3D anatomy models", "true-to-size print"],
-    link: "https://corpora-studio.vercel.app",
-    image: {
-      src: "/images/projects/corpora.webp",
-      alt: "Corpora Studio website: a tattooed 3D torso in front of the word CORPORA, with the line Ink and cloth ask the same thing of the body: will you carry me?",
     },
   },
   {
@@ -245,7 +245,7 @@ export const GALLERY: GalleryFrame[] = [
     title: "Cap, gown, Class of 2026",
     date: "May 2026",
     story:
-      "Fordham quad after the walk, CSTEP stole on, family louder than the bells.",
+      "Finally graduated Fordham University! Shout out to my mom, who supported me the whole way through.",
     src: "/images/gallery/photo-1.jpg",
     colors: ["#7ee0ff", "#12172b"],
   },
@@ -293,6 +293,20 @@ export const GALLERY: GalleryFrame[] = [
     src: "/images/gallery/photo-6.jpg",
     colors: ["#ff6e4a", "#97e87a"],
   },
+];
+
+/** The digital camera's roll: the portrait first, then the gallery prints.
+    Kept separate so the 3D gallery wall keeps its six frames. */
+export const CAMERA_ROLL: GalleryFrame[] = [
+  {
+    id: "portrait",
+    title: "Devauntae Norman",
+    date: "hello",
+    story: "Thank you for viewing my portfolio.",
+    src: "/images/gallery/portrait.jpg",
+    colors: ["#7ee0ff", "#12172b"],
+  },
+  ...GALLERY,
 ];
 
 /** The résumé sheet's FALLBACK content. The sheet normally renders the real

@@ -352,3 +352,5 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 ## v4.6.4: Corpora Studio
 - Corpora uses the user's site screenshot as an optimized 1600px WebP (~57 KB), placed third in PROJECTS after Swale. The blurb uses only copy from that screenshot (the live site was unreachable from the build sandbox); the link points to the site until the user supplies a GitHub repository.
 - Every PROJECTS id also needs a PROJECT_NOTES entry (category/summary/detail). PROJECT_NOTES is a `Record<string, …>`, so a missing key type-checks but throws at render and takes down the whole Work list. This shipped once with Corpora.
+- Corpora is now #2 in PROJECTS and links to github.com/devauntea/corpora-studio; its tech tags come from that repo's package.json (TypeScript, Three.js, Tauri, Vite).
+- The desk camera reads `CAMERA_ROLL` (the LinkedIn portrait `gallery/portrait.jpg` first, then GALLERY). GALLERY itself still feeds the 3D gallery wall, whose layout is sized from GALLERY.length, so camera-only photos go in CAMERA_ROLL.

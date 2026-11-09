@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { DESK, GALLERY } from "@/data/profile";
+import { CAMERA_ROLL, DESK } from "@/data/profile";
 
-const photos = GALLERY.filter((photo) => photo.src);
+const photos = CAMERA_ROLL.filter((photo) => photo.src);
 export function CameraRoll({
   pocket = false,
   onClose,
