@@ -703,6 +703,12 @@ export const PROJECT_NOTES: Record<
     detail:
       "An interactive graph for exploring hobbies. Pan and zoom through connected interests, expand a personalized AI rabbit hole, then find somewhere nearby to try something new.",
   },
+  corpora: {
+    category: "DESIGN TOOLS / 3D",
+    summary: "Will you carry me?",
+    detail:
+      "A desktop studio for planning tattoos and garments on anatomical bodies. Pose torso, arm and leg models, place the artwork, check the fit, then print it true to size. On the site you can ink the body with your cursor; the studio itself is a macOS app.",
+  },
   personaforge: {
     category: "AI / PRODUCT ENGINEERING",
     summary: "Less production. More possibility.",
