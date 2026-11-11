@@ -93,22 +93,6 @@ function ProjectArt({ id, imageLoading }: { id: string; imageLoading: ImageLoadi
         <span className="art-meta">{DESK.art.nicheCaption}</span>
       </div>
     );
-  if (id === "personaforge")
-    return (
-      <div className="project-art art-forge" aria-hidden="true">
-        <div className="forge-line">
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-        <div className="forge-symbol">
-          p<span>f</span>
-        </div>
-        <span className="art-caption">{DESK.art.forge}</span>
-        <span className="art-meta">{DESK.art.forgeCaption}</span>
-      </div>
-    );
   if (id === "pokespire")
     return (
       <div className="project-art art-cards" aria-hidden="true">
@@ -182,7 +166,12 @@ export function WorkContent({ idPrefix = "", imageLoading = "lazy" }: ContentPro
                 <strong>
                   {item.id === "devauntae-os" ? DESK.work.deskTitle : item.name}
                 </strong>
-                <small>{PROJECT_NOTES[item.id].category}</small>
+                <small>
+                  {item.pinned && (
+                    <span className="project-pin">{DESK.work.pinned} · </span>
+                  )}
+                  {PROJECT_NOTES[item.id].category}
+                </small>
               </div>
               <b aria-hidden="true">↗</b>
             </button>
@@ -219,11 +208,18 @@ export function WorkContent({ idPrefix = "", imageLoading = "lazy" }: ContentPro
                 {DESK.work.open}
                 <Arrow diagonal />
               </a>
-            ) : (
-              (project.id === "personaforge" || project.id === "ml-eval") && (
-                <small className="project-private">{DESK.work.private}</small>
-              )
-            )}
+            ) : null}
+            {project.repo ? (
+              <a
+                className="project-feature-link"
+                href={project.repo}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {DESK.work.source}
+                <Arrow diagonal />
+              </a>
+            ) : null}
           </div>
         </article>
       </div>

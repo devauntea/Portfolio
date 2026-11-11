@@ -12,8 +12,13 @@ import { PROJECTS, type Project } from "@/data/profile";
 import { useUi } from "@/lib/ui-store";
 import { chime, thunk } from "@/lib/sound";
 
+/* Projects marked `pinned` in profile start pinned; the visitor's toggles
+   (stored ids) flip that default either way. */
+const isPinned = (p: Project, toggled: string[]) =>
+  Boolean(p.pinned) !== toggled.includes(p.id);
+
 function Orb({ p, active, onClick }: { p: Project; active: boolean; onClick: () => void }) {
-  const pinned = useUi((s) => s.pinned.includes(p.id));
+  const pinned = useUi((s) => isPinned(p, s.pinned));
   return (
     <button
       onClick={onClick}
@@ -45,7 +50,7 @@ export function WorkshopBoard() {
   const togglePin = useUi((s) => s.togglePin);
 
   const ordered = [...PROJECTS].sort(
-    (a, b) => Number(pinned.includes(b.id)) - Number(pinned.includes(a.id)),
+    (a, b) => Number(isPinned(b, pinned)) - Number(isPinned(a, pinned)),
   );
   const active = PROJECTS.find((p) => p.id === activeId) ?? null;
 
@@ -106,14 +111,14 @@ export function WorkshopBoard() {
                 <button
                   onClick={() => {
                     togglePin(active.id);
-                    if (pinned.includes(active.id)) thunk();
+                    if (isPinned(active, pinned)) thunk();
                     else chime();
                   }}
                   data-cursor="hand"
-                  aria-pressed={pinned.includes(active.id)}
+                  aria-pressed={isPinned(active, pinned)}
                   className="shrink-0 rounded-full border border-seam px-2 py-0.5 font-mono text-[10px] text-faint transition-colors hover:text-starlight"
                 >
-                  {pinned.includes(active.id) ? "📌 pinned" : "📍 pin"}
+                  {isPinned(active, pinned) ? "📌 pinned" : "📍 pin"}
                 </button>
               </div>
               {/* mini screenshot placeholder */}

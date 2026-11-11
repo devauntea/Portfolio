@@ -354,3 +354,8 @@ code now renders the graceful "couldn't finish" state (200), not 500.
 - Every PROJECTS id also needs a PROJECT_NOTES entry (category/summary/detail). PROJECT_NOTES is a `Record<string, …>`, so a missing key type-checks but throws at render and takes down the whole Work list. This shipped once with Corpora.
 - Corpora is now #2 in PROJECTS and links to github.com/devauntea/corpora-studio; its tech tags come from that repo's package.json (TypeScript, Three.js, Tauri, Vite).
 - The desk camera reads `CAMERA_ROLL` (the LinkedIn portrait `gallery/portrait.jpg` first, then GALLERY). GALLERY itself still feeds the 3D gallery wall, whose layout is sized from GALLERY.length, so camera-only photos go in CAMERA_ROLL.
+
+## v4.6.5: trimmed work list, pins, firm-RAG
+- Work list is Aspect Niche, Corpora, Swale, firm-RAG (all `pinned: true`), then PokeSpire and the Working Desk. Personaforge, Garment-Prediction, the ML Evaluation Harness and the Agent Fleet were removed as projects (Adaptive Security and Anote stay in the résumé/About copy). Their dead art/"internal project" branches and CSS went with them.
+- `pinned` shows a "Pinned ·" marker in the desk index; on the retro WorkshopBoard it's the default, and a visitor's stored toggle flips it (XOR), so they can still unpin.
+- `repo` adds a "View code" link beside `link` (firm-RAG has both). firm-RAG's preview is its own repo screenshot `docs/screenshots/02-ethical-wall-holds.png`; the live site was unreachable from the sandbox.

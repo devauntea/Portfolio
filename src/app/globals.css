@@ -811,55 +811,6 @@ body {
     monospace;
   letter-spacing: 0.04em;
 }
-.art-forge {
-  background: var(--desk-pink);
-  color: var(--desk-clay);
-  display: grid;
-  place-items: center;
-}
-.forge-symbol {
-  font:
-    italic 110px/0.9 Georgia,
-    serif;
-  letter-spacing: -14px;
-  padding-bottom: 14px;
-  z-index: 1;
-}
-.forge-symbol span {
-  color: var(--desk-ink);
-}
-.forge-line {
-  position: absolute;
-  inset: 30px;
-  border: 1px solid color-mix(in srgb, var(--desk-clay) 30%, transparent);
-  border-radius: 50%;
-  transform: rotate(-30deg) scale(1.2, 0.7);
-}
-.forge-line i {
-  width: 8px;
-  height: 8px;
-  background: var(--desk-clay);
-  border: 3px solid var(--desk-pink);
-  box-sizing: content-box;
-  border-radius: 50%;
-  position: absolute;
-}
-.forge-line i:nth-child(1) {
-  left: 0;
-  top: 30%;
-}
-.forge-line i:nth-child(2) {
-  right: 0;
-  top: 60%;
-}
-.forge-line i:nth-child(3) {
-  top: -6px;
-  left: 50%;
-}
-.forge-line i:nth-child(4) {
-  bottom: 0;
-  left: 30%;
-}
 .art-cards {
   background: var(--desk-purple);
   color: var(--desk-ink);
@@ -2161,9 +2112,11 @@ body {
   border-bottom: 1px solid currentColor;
   padding-bottom: 8px;
 }
-.project-private {
-  font-size: 11px;
-  color: var(--desk-muted);
+.project-feature-link + .project-feature-link {
+  margin-left: 28px;
+}
+.project-pin {
+  color: var(--desk-accent);
 }
 .monitor-screen .work-browser {
   padding: 28px;

@@ -28,6 +28,10 @@ export interface Project {
   blurb: string;
   tech: string[];
   link?: string;
+  /** source repo, shown beside `link` when both exist */
+  repo?: string;
+  /** shown first in the work lists, with a pin marker */
+  pinned?: boolean;
   image?: { src: string; alt: string };
 }
 
@@ -40,6 +44,7 @@ export const PROJECTS: Project[] = [
     blurb:
       'An Obsidian-style interactive graph for finding hobbies. You pan and zoom through node clusters, an AI "Rabbit Hole" (Groq) invents personalized niches, and "Find Nearby" uses Google Places to locate somewhere to try them.',
     tech: ["React/Next.js", "Groq API", "Google Places"],
+    pinned: true,
     link: "https://aspectniche.com",
     image: {
       src: "/images/projects/aspect-niche.webp",
@@ -54,6 +59,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "A desktop studio for planning tattoos and garments on anatomical bodies. You pose torso, arm and leg models, place artwork, check the fit, then print it true to size. The site lets you ink the body with your cursor, and a macOS app is available.",
     tech: ["TypeScript", "Three.js", "Tauri", "Vite"],
+    pinned: true,
     link: "https://github.com/devauntea/corpora-studio",
     image: {
       src: "/images/projects/corpora.webp",
@@ -74,6 +80,7 @@ export const PROJECTS: Project[] = [
       "SurrealDB",
       "Amazon Bedrock",
     ],
+    pinned: true,
     link: "https://github.com/devauntea/Swale",
     image: {
       src: "/images/projects/swale.webp",
@@ -81,13 +88,20 @@ export const PROJECTS: Project[] = [
     },
   },
   {
-    id: "personaforge",
-    hue: "var(--ember)",
-    art: "🎭",
-    name: "Personaforge (Adaptive Security)",
+    id: "firm-rag",
+    hue: "var(--gilt)",
+    art: "⚖️",
+    name: "firm-RAG",
     blurb:
-      "Co-built an internal AI tool that automates product-demo creation, making builds about 80% faster. It's a Python/Node + FFmpeg pipeline with a React operator console. The prototype informed a company-level product improvement, reached the CEO, and earned me a return offer.",
-    tech: ["Python", "Node.js", "FFmpeg", "Next.js"],
+      "A permission-aware legal document Q&A system. Retrieval is scoped in the SQL query itself to the matters a user can access, so an ethical wall holds even when the model searches on its own, and every claim must cite a specific source chunk.",
+    tech: ["Next.js / TypeScript", "Postgres + pgvector", "Groq", "Gemini embeddings"],
+    link: "https://firm-rag.vercel.app",
+    repo: "https://github.com/devauntea/firm-rag",
+    pinned: true,
+    image: {
+      src: "/images/projects/firm-rag.webp",
+      alt: "firm-RAG: the same question asked by two attorneys; one gets a cited answer, the walled-off attorney gets no sources",
+    },
   },
   {
     id: "pokespire",
@@ -98,34 +112,6 @@ export const PROJECTS: Project[] = [
       "A Swift roguelike deckbuilder that mixes the Pokémon card game with Slay the Spire. Gym badges are the floor bosses, and your deck evolves mid-run.",
     tech: ["Swift"],
     link: "https://github.com/devauntea/PokeSpire",
-  },
-  {
-    id: "garment-prediction",
-    hue: "var(--lumen)",
-    art: "👕",
-    name: "Garment-Prediction",
-    blurb:
-      "A Python ML pipeline for predicting garment attributes, built for reproducible experiments. Manifests go in and reports come out.",
-    tech: ["Python", "ML"],
-    link: "https://github.com/devauntea/Garment-Prediction",
-  },
-  {
-    id: "ml-eval",
-    hue: "var(--sprout)",
-    art: "📊",
-    name: "ML Evaluation Harness (Anote)",
-    blurb:
-      "Benchmarked FT-GPT-3.5, SETFIT, and BERT with stratified k-fold, macro-F1/latency tracking, and a dataset QA pipeline (schema checks, leakage detection) for reproducible model selection.",
-    tech: ["Python", "Scikit-Learn", "NLP"],
-  },
-  {
-    id: "agent-fleet",
-    hue: "var(--gilt)",
-    art: "🤖",
-    name: "Autonomous Agent Fleet",
-    blurb:
-      "Four AI agents handle job applications, web research, content drafting, and paper trading, each with hard human-in-the-loop rails. Nothing submits, publishes, or trades without a person. They live in this computer's garden.",
-    tech: ["Python", "LLM orchestration", "risk rails"],
   },
   {
     id: "devauntae-os",
@@ -539,8 +525,6 @@ export const DESK = {
   art: {
     niche: "ASPECT NICHE",
     nicheCaption: "FOLLOW A NEW THREAD",
-    forge: "PERSONAFORGE",
-    forgeCaption: "IDEA / PIPELINE / POSSIBILITY",
     cards: "POKESPIRE",
     cardsCaption: "ONE MORE RUN",
   },
@@ -592,7 +576,8 @@ export const DESK = {
     intro:
       "AI systems, useful tools, and the occasional world to get lost in. These are things I’ve built or helped build.",
     open: "Explore project",
-    private: "Internal project",
+    source: "View code",
+    pinned: "Pinned",
     more: "Project notes",
     close: "Close project notes",
   },
@@ -723,35 +708,17 @@ export const PROJECT_NOTES: Record<
     detail:
       "A desktop studio for planning tattoos and garments on anatomical bodies. Pose torso, arm and leg models, place the artwork, check the fit, then print it true to size. On the site you can ink the body with your cursor; the studio itself is a macOS app.",
   },
-  personaforge: {
-    category: "AI / PRODUCT ENGINEERING",
-    summary: "Less production. More possibility.",
+  "firm-rag": {
+    category: "AI / LEGAL RETRIEVAL",
+    summary: "Never fetched, not filtered.",
     detail:
-      "At Adaptive Security, I co-built a four-stage media pipeline with Python, Node.js, and FFmpeg, plus a React console for launching and monitoring jobs. Retry logic and job-state logging made long-running workflows easier to operate. The work reduced demo build time by roughly 80%.",
+      "A legal Q&A demo over real public court filings and SEC exhibits, set inside a fictional law firm. Permissions are enforced in the retrieval query, never left to the model, so a document from a walled-off matter is never pulled from the database. Answers carry citations, a verifier rejects invented sources, and the model's own follow-up search runs under the same scope, capped at two rounds.",
   },
   pokespire: {
     category: "NATIVE / GAME DEVELOPMENT",
     summary: "One more run.",
     detail:
       "A Swift roguelike deckbuilder that combines Pokémon cards with a branching, Slay the Spire-style run. Decks evolve as players progress toward gym-badge bosses.",
-  },
-  "garment-prediction": {
-    category: "MACHINE LEARNING / VISION",
-    summary: "From pixels to predictions.",
-    detail:
-      "A reproducible garment classification pipeline, organized into manifest generation, preprocessing, training, and evaluation. Each stage can be rerun and inspected, with reports at the end.",
-  },
-  "ml-eval": {
-    category: "NLP / EVALUATION",
-    summary: "Better questions. Better models.",
-    detail:
-      "At Anote, I benchmarked fine-tuned GPT-3.5, SetFit, and BERT using stratified k-fold cross-validation. Macro-F1 and latency tracking were paired with schema validation, leakage detection, and class-balance auditing.",
-  },
-  "agent-fleet": {
-    category: "AI / EXPLORATION",
-    summary: "Agents with a human in the loop.",
-    detail:
-      "A personal exploration of agent orchestration across research, drafting, applications, and paper trading. Human review sits between each agent and any submission, publication, or trade. Explore the original computer’s garden for the interactive presentation.",
   },
   "devauntae-os": {
     category: "CREATIVE WEB / THIS PORTFOLIO",
